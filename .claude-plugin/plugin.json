@@ -1,0 +1,26 @@
+{
+  "name": "staff-kit",
+  "version": "1.0.0",
+  "description": "Staff-level engineering standards for Claude Code: 25 skills (staff-*, data-*, destructive-ops guard, evidence-gated validation, cost-conscious orchestration, Simplified Technical English), 19 agents with explicit model routing, 12 slash commands, 19 rules, tiered contexts, and a PreToolUse guard that stops irreversible operations. Built for Snowflake and dbt data platforms and for cost-disciplined multi-agent work.",
+  "author": {
+    "name": "Rajib Bahar",
+    "url": "https://github.com/rajib2k5"
+  },
+  "homepage": "https://github.com/rajib2k5/claude-staff-kit",
+  "repository": "https://github.com/rajib2k5/claude-staff-kit",
+  "license": "MIT",
+  "keywords": [
+    "engineering-standards",
+    "skills",
+    "agents",
+    "adversarial-validation",
+    "data-engineering",
+    "snowflake",
+    "dbt",
+    "sql",
+    "destructive-ops-guard",
+    "model-routing",
+    "definition-of-done",
+    "simplified-technical-english"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "claude-staff-kit",
+  "owner": {
+    "name": "Rajib Bahar",
+    "url": "https://github.com/rajib2k5"
+  },
+  "metadata": {
+    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) and market-watch (live market data in the session)."
+  },
+  "plugins": [
+    {
+      "name": "staff-kit",
+      "source": "./",
+      "version": "1.0.0",
+      "category": "development",
+      "description": "Staff-level engineering standards: 25 skills, 19 model-routed agents, 12 commands, 19 rules, tiered contexts, and a destructive-ops guard hook. Snowflake, dbt, SQL, and cost-disciplined multi-agent work."
+    },
+    {
+      "name": "market-watch",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/claude-market-watch"
+      },
+      "category": "productivity",
+      "description": "Stock ticker in the status line, /quote pane, price alerts, a market-context band, and a quote tool the model can call."
+    }
+  ]
+}

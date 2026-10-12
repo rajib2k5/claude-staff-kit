@@ -1,0 +1,51 @@
+{
+  "marketplace": "claude-plugins-official",
+  "tiers": {
+    "install": [
+      "session-report",
+      "receipts",
+      "hookify",
+      "plugin-dev"
+    ],
+    "evaluate": [
+      "security-guidance",
+      "snowflake-cortex-code",
+      "duckdb-skills",
+      "pyright-lsp",
+      "typescript-lsp",
+      "altimate-code",
+      "huggingface-skills",
+      "data-engineering",
+      "astronomer-data-agents",
+      "skill-creator",
+      "pr-review-toolkit",
+      "remember",
+      "project-artifact",
+      "playground",
+      "mcp-server-dev",
+      "exa",
+      "bigdata-com",
+      "linq-alpha",
+      "codspeed",
+      "semgrep",
+      "claude-security"
+    ]
+  },
+  "already_installed": [
+    "superpowers",
+    "code-review",
+    "code-simplifier",
+    "commit-commands",
+    "context7",
+    "playwright",
+    "frontend-design",
+    "greptile",
+    "coderabbit",
+    "claude-md-management",
+    "claude-code-setup",
+    "agent-sdk-dev",
+    "artifact",
+    "explanatory-output-style",
+    "learning-output-style"
+  ]
+}
