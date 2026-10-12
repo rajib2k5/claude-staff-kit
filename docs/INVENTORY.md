@@ -48,3 +48,11 @@ what this repo contains. The `evolv-dq-ai-accelerator` hook copy of the destruct
 | `claude-market-watch`, `claude-code-mods/cert-quiz` | `~/dev` | Function-hook mods with their own repos. `market-watch` is listed in this marketplace by reference. |
 | `memory/evolv-lowercase.md` | `~/.claude/memory` | Employer brand rule. |
 | `~/.claude/settings.json`, `settings.local.json`, `.claude.json` | `~/.claude` | Machine-specific and may hold permissions and paths; `scripts/merge-settings.py` adds only the hook entries. |
+
+## Third-party, vendored 2026-10-12
+
+`third-party/` holds four packages written by other people, added at the owner's request: `threejs`,
+`cert-safari-quiz` (Tony Turner), `evolv-taste-pilot` (evolv Consulting, MIT), and the standalone skill
+`code-mods-essentials` (author unknown). They are listed in the marketplace but are not part of `staff-kit`
+and are not installed by `scripts/install.sh`. Provenance and licence status: `third-party/README.md`.
+**These block making this repo public** until redistribution is cleared or they are removed.
