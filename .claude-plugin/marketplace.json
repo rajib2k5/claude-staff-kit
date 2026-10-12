@@ -5,7 +5,7 @@
     "url": "https://github.com/rajib2k5"
   },
   "metadata": {
-    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) and market-watch (live market data in the session)."
+    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) and market-watch (live market data in the session), plus vendored third-party plugins (threejs, cert-safari-quiz, evolv-taste-pilot)."
   },
   "plugins": [
     {
@@ -23,6 +23,27 @@
       },
       "category": "productivity",
       "description": "Stock ticker in the status line, /quote pane, price alerts, a market-context band, and a quote tool the model can call."
+    },
+    {
+      "name": "threejs",
+      "source": "./third-party/plugins/threejs",
+      "version": "1.0.0",
+      "category": "development",
+      "description": "Third-party (Tony Turner). Ten grounded three.js r185 skills: scene setup, glTF, materials/lighting, performance, picking, animation, post-processing, debugging, WebGPU/TSL."
+    },
+    {
+      "name": "cert-safari-quiz",
+      "source": "./third-party/plugins/cert-safari-quiz",
+      "version": "0.1.0",
+      "category": "learning",
+      "description": "Third-party (Tony Turner). CCA-F practice quiz: 100 scenario questions, confidence ratings, spaced repetition."
+    },
+    {
+      "name": "evolv-taste-pilot",
+      "source": "./third-party/plugins/evolv-taste-pilot",
+      "version": "0.1.0",
+      "category": "quality",
+      "description": "Third-party (evolv Consulting, MIT). Executable frontend ship gate: 27 source checks and 9 rendered checks, with the taste-precedence overlay."
     }
   ]
 }
