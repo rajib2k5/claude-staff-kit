@@ -1,0 +1,9 @@
+{
+  "name": "evolv-taste-pilot",
+  "version": "0.1.0",
+  "description": "Executable frontend ship gate plus the arbitration overlay for the upstream taste skills. Runs 27 source checks and 9 rendered checks instead of self-attesting.",
+  "author": { "name": "evolv Consulting" },
+  "license": "MIT",
+  "keywords": ["frontend", "design-review", "ship-gate", "quality-gate", "anti-slop"],
+  "skills": ["./skills/frontend-ship-gate"]
+}

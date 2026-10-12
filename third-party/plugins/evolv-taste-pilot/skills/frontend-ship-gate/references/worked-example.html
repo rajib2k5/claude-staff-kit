@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>evolv &middot; AI Architecture Assessment</title>
+<style>
+/* ---- evolv-brand tokens: the six approved values plus two sanctioned neutrals ---- */
+:root{
+  --orange:#D15635; --grey:#D9D9D9; --white:#FFFFFF;
+  --navy:#2E3952;   --tan:#D68B60;  --charcoal:#343434;
+  --paper:#FAF8F5;  --line:#E4E0DA;
+  --nav-h:68px;                     /* checkable: cap is 80 */
+  --r:12px;                         /* one shape family: soft 12px, pill only for chips */
+  --measure:64ch;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--charcoal);
+  font-family:'Nunito Sans',system-ui,Helvetica,Arial,sans-serif;
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.eyebrow,.chip,.cta,.stat-n,nav a,.wordmark{
+  font-family:'Montserrat',system-ui,Helvetica,Arial,sans-serif}
+h1,h2,h3{color:var(--navy);text-wrap:balance;letter-spacing:-0.02em;margin:0}
+p{text-wrap:pretty;margin:0}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange);margin:0 0 14px}
+
+/* nav: one line, 68px, no chrome theatre */
+nav{height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line);background:rgba(250,248,245,.88);
+  backdrop-filter:blur(8px);position:sticky;top:0;z-index:20}
+.wordmark{font-weight:800;font-size:19px;color:var(--orange);letter-spacing:-.02em}
+nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:13.5px;font-weight:600}
+nav a{text-decoration:none;color:var(--navy);opacity:.82}
+nav a:hover{opacity:1;color:var(--orange)}
+
+/* ---------- section rhythm: generous, and it varies by family ---------- */
+section{padding:104px 0}
+section[data-layout="full-bleed"]{padding:0}
+.pad-tight{padding:76px 0}
+
+/* 1. HERO - asymmetric, not centered. 2-line headline, 18-word sub, 4 slots. */
+#hero{padding-top:88px;padding-bottom:96px}
+.hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:60px;align-items:end}
+#hero h1{font-size:clamp(2rem,3.5vw,3.15rem);line-height:1.06;font-weight:800;max-width:20ch}
+#hero h1 em{font-style:italic;color:var(--orange);font-weight:800}
+.hero-sub{margin-top:26px;font-size:19.5px;max-width:46ch;color:var(--charcoal);opacity:.9}
+.hero-actions{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap}
+.cta{display:inline-block;font-size:14px;font-weight:700;letter-spacing:.02em;
+  padding:14px 26px;border-radius:var(--r);text-decoration:none;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.cta-1{background:var(--orange);color:var(--white);box-shadow:0 1px 2px rgba(46,57,82,.14)}
+.cta-1:hover{transform:translateY(-2px);box-shadow:0 8px 20px -8px rgba(209,86,53,.55)}
+.cta-2{border:1px solid var(--navy);color:var(--navy)}
+.cta-2:hover{background:var(--navy);color:var(--white)}
+.hero-aside{border-left:3px solid var(--tan);padding-left:22px}
+.hero-aside p{font-size:15.5px;font-style:italic;opacity:.88}
+.hero-aside .src{font-style:normal;font-size:12.5px;margin-top:10px;font-weight:700;color:var(--navy)}
+
+/* 2. FULL-BLEED navy band - the tonal break, one deliberate theme exception */
+.band{background:var(--navy);color:var(--white);padding:82px 0}
+.band h2{color:var(--white);font-size:clamp(1.7rem,3vw,2.5rem);max-width:24ch;line-height:1.12}
+.band .eyebrow{color:var(--tan)}
+.band-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.band p{opacity:.86;max-width:52ch}
+
+/* 3. ASYMMETRIC - offset column, mixed spans, no equal thirds */
+.asym{display:grid;grid-template-columns:2fr 1fr 1fr;gap:34px;align-items:start}
+.asym .lede{font-size:20px;max-width:38ch}
+.numbered{border-top:2px solid var(--navy);padding-top:16px}
+.stat-n{font-size:38px;font-weight:800;color:var(--orange);line-height:1;
+  font-variant-numeric:tabular-nums}
+.numbered h3{font-size:15px;margin:12px 0 6px;letter-spacing:0}
+.numbered p{font-size:14.5px;opacity:.85}
+
+/* 4. BENTO - mixed cell spans, cell count equals item count, real variation */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(150px,auto);
+  gap:16px;grid-auto-flow:dense}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+  padding:26px;transition:border-color .25s var(--ease),transform .25s var(--ease)}
+.card:hover{border-color:var(--tan);transform:translateY(-2px)}
+.card h3{font-size:16.5px;margin-bottom:9px;letter-spacing:0}
+.card p{font-size:14.5px;opacity:.86}
+.c-wide{grid-column:span 2}
+.c-tall{grid-row:span 2}
+.c-feature{grid-column:span 2;grid-row:span 2}
+.c-fill{background:var(--navy);border-color:var(--navy)}
+.c-fill h3,.c-fill p{color:var(--white)}
+.c-fill p{opacity:.82}
+.c-grey{background:var(--grey);border-color:var(--grey)}
+
+/* 5. EDITORIAL - single narrow measure, long-form voice */
+.editorial{max-width:var(--measure);margin:0 auto}
+.editorial h2{font-size:clamp(1.6rem,2.6vw,2.1rem);margin-bottom:22px}
+.editorial p+p{margin-top:20px}
+.editorial blockquote{margin:28px 0;border-left:3px solid var(--orange);padding-left:20px;
+  font-style:italic;font-size:18.5px}
+
+/* 6. RAIL - horizontal scroll-snap, the escalation for a long list */
+.rail{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-bottom:14px;list-style:none;margin:0}
+.rail li{scroll-snap-align:start;flex:0 0 236px;background:var(--white);
+  border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.rail .chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;padding:4px 10px;border-radius:999px;
+  background:rgba(209,86,53,.12);color:var(--orange);margin-bottom:12px}
+.rail h3{font-size:15px;letter-spacing:0;margin-bottom:6px}
+.rail p{font-size:14px;opacity:.85}
+
+/* 7. STACKED LIST - grouped, one hairline per group, not per row */
+.groups{display:grid;grid-template-columns:repeat(3,1fr);gap:38px}
+.group{border-top:1px solid var(--line);padding-top:18px}
+.group h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);
+  margin-bottom:14px}
+.group dl{margin:0;display:grid;gap:11px}
+.group dt{font-weight:700;font-size:14.5px}
+.group dd{margin:2px 0 0;font-size:14px;opacity:.84}
+
+/* 8. CENTERED FOCAL - used exactly once, at the close */
+.focal{text-align:center;max-width:34ch;margin:0 auto}
+.focal h2{font-size:clamp(1.8rem,3.4vw,2.7rem);line-height:1.1}
+.focal p{margin:20px auto 30px;max-width:44ch;opacity:.88}
+
+footer{border-top:1px solid var(--line);padding:34px 0;font-size:13.5px;opacity:.72}
+.foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* reveal: transform + opacity only, and it collapses honestly */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none !important;animation:none !important}
+  .reveal{opacity:1;transform:none}
+}
+@media (max-width:900px){
+  .hero-grid,.band-grid,.asym,.groups{grid-template-columns:1fr;gap:34px}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .c-wide,.c-tall,.c-feature{grid-column:auto;grid-row:auto}
+  section{padding:72px 0}
+  nav ul{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="wrap">
+  <span class="wordmark">evolv</span>
+  <ul>
+    <li><a href="#method">Method</a></li>
+    <li><a href="#lenses">Lenses</a></li>
+    <li><a href="#deliverables">Deliverables</a></li>
+  </ul>
+</nav>
+
+<!-- 1 / hero -->
+<section id="hero" data-layout="asymmetric" data-hero="true">
+  <div class="wrap hero-grid">
+    <div data-hero-stack>
+      <p class="eyebrow">AI Architecture Assessment</p>
+      <h1>Know what your stack<br>can actually <em>carry</em>.</h1>
+      <p class="hero-sub">A two-week read of your system that ends in a ranked plan, not a slide about potential.</p>
+      <div class="hero-actions">
+        <a class="cta cta-1" href="#method">Book a read</a>
+        <a class="cta cta-2" href="#lenses">See the lenses</a>
+      </div>
+    </div>
+    <aside class="hero-aside">
+      <p>We stopped guessing which service to instrument first. The assessment put an order on it and the order held.</p>
+      <p class="src">Platform lead, mid-market logistics</p>
+    </aside>
+  </div>
+</section>
+
+<!-- 2 / full-bleed tonal band -->
+<section data-layout="full-bleed">
+  <div class="band">
+    <div class="wrap band-grid">
+      <div>
+        <h2>Most assessments describe a system. Yours has to decide something.</h2>
+      </div>
+      <p>A readiness score tells a steering committee how it feels. An ordered list of insertion points, each with the file it touches and the effort it costs, tells an engineering team what to do on Monday. We only ship the second kind.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 / asymmetric offset -->
+<section id="method" data-layout="asymmetric">
+  <div class="wrap asym">
+    <div>
+      <h2 style="font-size:clamp(1.5rem,2.6vw,2rem);max-width:20ch;margin-bottom:16px">How the read works</h2>
+      <p class="lede">Three passes over the same repository, each one narrowing what the next has to look at.</p>
+    </div>
+    <div class="numbered">
+      <div class="stat-n">01</div>
+      <h3>Facts before opinions</h3>
+      <p>Dependency graph, entry points, data stores, external calls. Nothing interpretive until the inventory is complete.</p>
+    </div>
+    <div class="numbered">
+      <div class="stat-n">02</div>
+      <h3>Lenses in parallel</h3>
+      <p>Architecture, security, observability, and AI opportunity each run against the same facts, independently.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 / bento, six items and exactly six cells -->
+<section id="lenses" data-layout="bento" class="pad-tight">
+  <div class="wrap">
+    <p class="eyebrow">Six lenses</p>
+    <h2 style="font-size:clamp(1.6rem,2.8vw,2.2rem);max-width:26ch;margin-bottom:34px">Each one answers a question a different person in the room is asking.</h2>
+    <div class="bento">
+      <article class="card c-feature c-fill">
+        <h3>AI opportunity</h3>
+        <p>Where the system could carry a model, ranked by impact against effort, with the insertion point named in code rather than described in the abstract.</p>
+      </article>
+      <article class="card c-tall">
+        <h3>Architecture</h3>
+        <p>Container and component views generated from source, so the diagram matches the repository instead of last year's whiteboard.</p>
+      </article>
+      <article class="card">
+        <h3>Security posture</h3>
+        <p>Secrets, authz gaps, unsafe patterns, dependency hygiene. Severity-ranked, evidence-cited.</p>
+      </article>
+      <article class="card c-grey">
+        <h3>Observability</h3>
+        <p>Whether anyone could tell this system was failing before a customer did.</p>
+      </article>
+      <article class="card c-wide">
+        <h3>Vertical slice</h3>
+        <p>One real user action followed from the click to the data store and back, with the gap at every hop flagged.</p>
+      </article>
+      <article class="card c-wide">
+        <h3>Modernization order</h3>
+        <p>What to do first, and what it is safe to leave alone. The order is the deliverable.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 5 / editorial column -->
+<section data-layout="editorial">
+  <div class="wrap editorial">
+    <h2>The order matters more than the list</h2>
+    <p>Nearly every team we meet already has a list. It came out of a retro, or an incident, or a vendor conversation, and everything on it is defensible. What the list does not have is an order, which is why it has not moved in nine months.</p>
+    <blockquote>Sequencing is the deliverable. The inventory is just how you earn the right to sequence.</blockquote>
+    <p>So the assessment spends its last pass doing the unglamorous thing: deciding what is cheapest to do that unlocks the most of what comes after. Typography before layout, in design terms. Instrumentation before optimization, in ours.</p>
+  </div>
+</section>
+
+<!-- 6 / rail: eight items escalated out of a bulleted list -->
+<section data-layout="rail" class="pad-tight">
+  <div class="wrap">
+    <h2 style="font-size:clamp(1.4rem,2.4vw,1.8rem);margin-bottom:26px">Where it has run</h2>
+    <ul class="rail escalated">
+      <li><span class="chip">Logistics</span><h3>Route planner</h3><p>Legacy monolith, no tracing, three teams sharing one deploy.</p></li>
+      <li><span class="chip">Health</span><h3>Intake portal</h3><p>Compliance-bound, so every insertion point needed a data-handling note.</p></li>
+      <li><span class="chip">Fintech</span><h3>Ledger service</h3><p>Well observed, badly documented. The diagram was the whole value.</p></li>
+      <li><span class="chip">Retail</span><h3>Storefront</h3><p>Inherited from an agency, then extended by four contractors.</p></li>
+      <li><span class="chip">Industrial</span><h3>Telemetry</h3><p>High volume, low signal. Metrics existed, alerts did not.</p></li>
+      <li><span class="chip">Media</span><h3>Asset pipeline</h3><p>Batch jobs nobody owned. Ownership map came out of the recon pass.</p></li>
+      <li><span class="chip">SaaS</span><h3>Admin console</h3><p>The vertical slice found two hops nobody knew were synchronous.</p></li>
+      <li><span class="chip">Public</span><h3>Permit intake</h3><p>Accessibility was the constraint that ordered everything else.</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 7 / stacked list, grouped -->
+<section id="deliverables" data-layout="stacked-list">
+  <div class="wrap">
+    <p class="eyebrow">What lands</p>
+    <div class="groups">
+      <div class="group">
+        <h3>For engineering</h3>
+        <dl>
+          <dt>Generated diagrams</dt><dd>Container, component, and one sequence view per critical flow.</dd>
+          <dt>Findings with evidence</dt><dd>Every claim cites the file and line it came from.</dd>
+          <dt>Machine-readable output</dt><dd>A JSON master record you can diff on the next read.</dd>
+        </dl>
+      </div>
+      <div class="group">
+        <h3>For leadership</h3>
+        <dl>
+          <dt>Ordered roadmap</dt><dd>Sequenced by unlock value, not by severity theatre.</dd>
+          <dt>Risk register</dt><dd>What we found, what it would cost, what happens if you wait.</dd>
+        </dl>
+      </div>
+      <div class="group">
+        <h3>For the next team</h3>
+        <dl>
+          <dt>Onboarding read</dt><dd>The document a new engineer reads on day one instead of asking around for a month.</dd>
+          <dt>Decision log</dt><dd>Why we ranked it this way, so you can argue with it later.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 / centered focal, used exactly once -->
+<section data-layout="centered-focal">
+  <div class="wrap focal">
+    <h2>Two weeks. One ordered plan.</h2>
+    <p>Bring a repository and the three questions you are tired of not being able to answer.</p>
+    <a class="cta cta-1" href="#hero">Start a read</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>evolv Consulting</span>
+    <span>AI architecture, delivered in order.</span>
+  </div>
+</footer>
+
+<script>
+// reveal-on-view: transform and opacity only, no scroll listener, honors reduced motion
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var targets = document.querySelectorAll('section > .wrap');
+  if (reduce || !('IntersectionObserver' in window)) { return; }
+  targets.forEach(function(el){ el.classList.add('reveal'); });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.16 });
+  targets.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
