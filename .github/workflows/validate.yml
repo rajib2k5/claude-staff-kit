@@ -1,0 +1,21 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Actions are pinned to commit SHAs (rules/security.md: "Pin CI actions to a commit SHA, not a mutable tag").
+# actions/checkout v4.2.2 and actions/setup-node v4.4.0 at the time of pinning (2026-10-12).
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "20"
+      - name: Install Claude Code CLI (pinned; used only for `claude plugin validate`)
+        run: npm install -g @anthropic-ai/claude-code@2.1.287
+      - name: Validate kit
+        run: bash scripts/validate.sh

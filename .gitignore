@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+*.log
+*.tmp
+.in_use/
+backups/
+__pycache__/
+*.pyc
