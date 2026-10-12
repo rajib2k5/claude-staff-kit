@@ -1,0 +1,10 @@
+{
+  "name": "cert-safari-quiz",
+  "version": "0.1.0",
+  "description": "CCA-F practice quiz for Claude chat and Cowork: 100 verified scenario questions, confidence ratings, an explanation for every option, spaced repetition",
+  "author": {
+    "name": "Tony Turner",
+    "email": "tony.turner@evolvconsulting.com"
+  },
+  "keywords": ["certification", "cca-f", "study", "quiz"]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "threejs",
+  "version": "1.0.0",
+  "description": "Ten grounded skills for three.js (r185 / three@0.185.1): scene/canvas setup, 3D-on-web-pages, glTF/OBJ loading, materials/lighting/shadows, performance/instancing, interaction/picking, animation, post-processing/render targets, debugging, and WebGPU/TSL migration. Doc-mined from threejs.org's manual and docs 2026-08-06; every claim traces to a tagged source. Cross-references the sibling react-three-fiber plugin so neither duplicates the other.",
+  "author": {
+    "name": "Tony Turner"
+  },
+  "keywords": [
+    "three.js",
+    "threejs",
+    "webgl",
+    "webgpu",
+    "3d",
+    "gltf",
+    "scene-graph",
+    "shaders",
+    "tsl"
+  ]
+}
