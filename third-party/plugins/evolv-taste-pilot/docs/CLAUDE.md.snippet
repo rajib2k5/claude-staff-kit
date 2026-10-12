@@ -1,0 +1,36 @@
+
+## Front-end taste rules (taste-skill pilot)
+
+Three upstream skills are installed globally: `design-taste-frontend`,
+`redesign-existing-projects`, `image-to-code`. They contradict each other in at least six
+places and none of them knows about evolv's brand.
+
+**Before applying any of them, read `~/.claude/docs/evolv-taste-overlay.md`.** It is the
+arbitration document those skills lack. Its `EV-1`..`EV-9` rules are binding and override
+upstream wherever the two disagree.
+
+The three that come up most:
+
+- **EV-1 — `evolv-brand` wins on color and typography, always.** Six approved values only:
+  `#D15635` orange, `#2E3952` navy, `#D68B60` tan, `#D9D9D9` light grey, `#343434` charcoal,
+  `#FFFFFF` white. `#FAF8F5` paper and `#E4E0DA` hairline are sanctioned soft neutrals.
+  Headings Montserrat, body Nunito Sans, body text charcoal and never `#000000`. Ignore every
+  upstream palette, serif rotation pool, and font recommendation.
+- **EV-6 — the dial system is dropped.** Do not set `DESIGN_VARIANCE`, `MOTION_INTENSITY`, or
+  `VISUAL_DENSITY`. They are under-wired upstream and there is a competing four-dial variant.
+  Describe the intent in words instead.
+- **EV-8 — annotate every section** with `data-layout="<family>"` from the ten-family taxonomy
+  in the overlay: `full-bleed`, `split`, `asymmetric`, `bento`, `card-grid`, `editorial`,
+  `rail`, `stacked-list`, `overlap`, `centered-focal`. Mark the hero `data-hero="true"` with a
+  `data-hero-stack` wrapper on its text column. Unannotated pages fail the gate.
+
+Also drop upstream's cross-generation rotation rules (EV-7) — they need memory nothing
+persists, and the RNG they rely on seeds on prompt character count.
+
+When a repo has `tools/ship_gate.py`, run it before declaring front-end work done, and run
+`tools/render_probe.mjs` too if the surface is HTML. The rendered checks catch things the
+source checks structurally cannot — a headline with two `<br>` tags can still render in four
+lines.
+
+The em-dash ban is scoped to **user-visible UI strings only**. It does not apply to prose,
+documentation, commit messages, or reports.

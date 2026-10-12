@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# taste-pilot advisory pre-commit hook.
+#
+# ADVISORY BY DESIGN: this hook never blocks a commit. It prints findings and records
+# them, because the point of the pilot is to learn which rules are load-bearing - and a
+# gate that blocks before any rule has earned its place just teaches the team to reach
+# for --no-verify.
+#
+# Records every check (pass and fail) to .taste-pilot/findings.jsonl so tools/rollup.py
+# can compute an override rate against a real denominator.
+#
+# Bypass for one commit:  TASTE_PILOT_SKIP=1 git commit ...
+set -uo pipefail
+
+[ "${TASTE_PILOT_SKIP:-0}" = "1" ] && exit 0
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+TOOLS="${TASTE_PILOT_TOOLS:-$REPO_ROOT/tools}"
+OUT_DIR="$REPO_ROOT/.taste-pilot"
+LOG="$OUT_DIR/findings.jsonl"
+mkdir -p "$OUT_DIR"
+
+FILES=$(git diff --cached --name-only --diff-filter=d \
+  | grep -Ei '\.(html|htm|jsx|tsx)$' || true)
+[ -z "$FILES" ] && exit 0
+
+PY="${TASTE_PILOT_PYTHON:-python3}"
+NODE="${TASTE_PILOT_NODE:-node}"
+SHA="$(git rev-parse --short HEAD 2>/dev/null || echo initial)"
+WHO="$(git config user.email 2>/dev/null || echo unknown)"
+STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+BOLD=$'\033[1m'; DIM=$'\033[2m'; RESET=$'\033[0m'; ORANGE=$'\033[38;5;173m'
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+
+printf '\n%s%staste-pilot%s %sadvisory - nothing here blocks your commit%s\n' \
+  "$BOLD" "$ORANGE" "$RESET" "$DIM" "$RESET"
+
+TOTAL=0
+
+# run <label> <json-file> -> prints findings, adds to TOTAL
+record() {
+  local layer="$1" jsonf="$2" out count
+  out="$("$PY" "$TOOLS/_record.py" "$jsonf" "$layer" "$LOG" "$SHA" "$WHO" "$STAMP" \
+        2>"$TMP/count")"
+  [ -n "$out" ] && printf '%s\n' "$out"
+  count="$(sed -n 's/^FAILCOUNT=\([0-9]*\)$/\1/p' "$TMP/count" | tail -1)"
+  TOTAL=$((TOTAL + ${count:-0}))
+}
+
+for f in $FILES; do
+  [ -f "$f" ] || continue
+  printf '\n  %s%s%s\n' "$BOLD" "$f" "$RESET"
+
+  if [ -f "$TOOLS/ship_gate.py" ]; then
+    "$PY" "$TOOLS/ship_gate.py" "$f" --json > "$TMP/src.json" 2>"$TMP/src.err" || true
+    record source "$TMP/src.json"
+  fi
+
+  case "$f" in
+    *.html|*.htm)
+      if [ -f "$TOOLS/render_probe.mjs" ] && command -v "$NODE" >/dev/null 2>&1; then
+        "$NODE" "$TOOLS/render_probe.mjs" "$f" --json > "$TMP/rnd.json" 2>"$TMP/rnd.err" || true
+        # a skipped browser prints plain text, not JSON - surface it once, quietly
+        if head -c1 "$TMP/rnd.json" 2>/dev/null | grep -q '{'; then
+          record rendered "$TMP/rnd.json"
+        else
+          printf '  %s-%s rendered checks skipped (no browser). Source checks still ran.\n' \
+            "$DIM" "$RESET"
+        fi
+      fi
+      ;;
+  esac
+done
+
+if [ "$TOTAL" -eq 0 ]; then
+  printf '\n  no findings. committing.\n\n'
+else
+  printf '\n  %d finding(s) recorded to .taste-pilot/findings.jsonl\n' "$TOTAL"
+  printf '  %sIf a rule was wrong, say so - that is the pilot data:%s\n' "$DIM" "$RESET"
+  printf '    tools/override.sh <rule> "why it was wrong"\n\n'
+fi
+
+exit 0
