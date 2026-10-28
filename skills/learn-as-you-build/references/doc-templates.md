@@ -103,4 +103,4 @@ Learning mode: full
 - Milestone 03 (docs owed). Say "write the docs for milestone 3" to catch up.
 ```
 
-The `Learning mode:` line is the only line that `off` mode writes. When the user switches modes, update it. Update the Pairs and Explain-it-back columns from the results message. Keep a topic on the missed-topics list. When the user answers a new question on it correctly, remove it.
+The `Learning mode:` line is the only line that `off` mode writes. When the user switches modes, update it. Update the Pairs and Explain-it-back columns from the results message. Keep a topic on the missed-topics list. When the user answers a new question on it correctly, fill in Cleared. Do not re-ask a topic that has a Cleared date.
