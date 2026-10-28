@@ -6,6 +6,7 @@ description: Tune a slow or expensive Snowflake query using the Query Profile â€
 # Snowflake query tuning
 
 Read `~/.claude/rules/snowflake-standards.md` and `sql-standards.md`.
+If the Snowflake MCP server is unavailable, run every query with the `snowflake-sql` skill (`~/.claude/skills/snowflake-sql/sf.py`; the PAT comes from the environment variable named in its `config.json`, and it is read-only by default).
 
 **Never tune from intuition.** Get the Query Profile first. Almost every problem is one of three things,
 and the diagnostic order matters because the wrong lever costs money and fixes nothing.

@@ -4,6 +4,13 @@ All notable changes to staff-kit. Format follows Keep a Changelog; versions foll
 
 ## [Unreleased]
 
+### Added
+- `snowflake-sql` skill: a stdlib-only Snowflake SQL API client (`sf.py`, with `test_sf.py`) that authenticates with a PAT, is read-only by default, and refuses destructive SQL without `--destructive`. Its `config.json` is per machine and gitignored; copy `config.example.json`. The kit now has 37 skills.
+- `third-party/skills/graphify`: the graphify 0.9.93 skill (Apache-2.0, with its LICENSE and NOTICE). Not installed by `scripts/install.sh`.
+
+### Changed
+- `data-cost`, `data-snowflake-audit`, `data-snowflake-tune`, the `snowflake-architect` agent and the `/sf-audit` and `/sf-tune` commands now say to run queries through `snowflake-sql` when the Snowflake MCP server is unavailable.
+
 ## [1.1.0] - 2026-10-28
 
 ### Added

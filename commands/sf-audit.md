@@ -5,6 +5,8 @@ argument-hint: [optional focus: rbac | cost | warehouses | recovery]
 
 Invoke the `data-snowflake-audit` skill.
 
+If the Snowflake MCP server is unavailable, run every query with the `snowflake-sql` skill (`~/.claude/skills/snowflake-sql/sf.py`; the PAT comes from the environment variable named in its `config.json`, and it is read-only by default).
+
 Focus: $ARGUMENTS  (if empty, cover all four areas)
 
 Every finding must come from a query you **executed**, with the **window it covers** stated.
