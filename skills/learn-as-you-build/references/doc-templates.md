@@ -13,7 +13,7 @@ Status: <built | built and reviewed>. Reviewed by: <reviewer and date, or "not r
 
 ## What we built and why
 
-<Three to six sentences. What the milestone does. What the user can now do or see.>
+<Three to six sentences. What the milestone does. What the end user of the product can now do or see.>
 
 ## Why this design
 
