@@ -1,0 +1,5 @@
+# plugin: hookify
+
+Installed plugin. Skills it provides:
+
+- **writing-rules** — This skill should be used when the user asks to "create a hookify rule", "write a hook rule", "configure hookify", "add a hookify rule", or needs guidance on hookify rule syntax and patterns.

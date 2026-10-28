@@ -1,0 +1,353 @@
+{
+ "skill": "claude-rag-and-citations",
+ "gap_concepts": [
+  {
+   "label": "claim provenance via citations",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Pick citations over hand-written bibliographies when claim-level traceability to passages is needed."
+   ]
+  },
+  {
+   "label": "citations versus manual bibliography",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Pick citations over hand-written bibliographies when claim-level traceability to passages is needed."
+   ]
+  },
+  {
+   "label": "search result content blocks",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Select the feature giving cited attribution over a private knowledge base without external search.",
+    "Return retrieved passages with source metadata so replies cite exact passages without resending the corpus."
+   ]
+  },
+  {
+   "label": "RAG citation grounding",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Select the feature giving cited attribution over a private knowledge base without external search.",
+    "Return retrieved passages with source metadata so replies cite exact passages without resending the corpus."
+   ]
+  },
+  {
+   "label": "RAG chunking strategy",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Fix boundary-split retrieval misses by chunking on natural boundaries with overlap."
+   ]
+  },
+  {
+   "label": "retrieval failure diagnosis",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Fix boundary-split retrieval misses by chunking on natural boundaries with overlap."
+   ]
+  },
+  {
+   "label": "compliance-driven requirements mapping",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Map an auditor's traceability need to the citations capability."
+   ]
+  },
+  {
+   "label": "knowledge versus instructions placement",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Place reference documents in knowledge and behavioural rules in instructions."
+   ]
+  },
+  {
+   "label": "project instructions",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Place reference documents in knowledge and behavioural rules in instructions."
+   ]
+  },
+  {
+   "label": "reference material upload",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Place reference documents in knowledge and behavioural rules in instructions."
+   ]
+  },
+  {
+   "label": "shared project maintenance",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Handle the human side of replacing a source that shared-project users rely on."
+   ]
+  },
+  {
+   "label": "notifying members of changes",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Handle the human side of replacing a source that shared-project users rely on."
+   ]
+  },
+  {
+   "label": "knowledge source updates",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Handle the human side of replacing a source that shared-project users rely on."
+   ]
+  },
+  {
+   "label": "live connectors versus static uploads",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Choose a connector for frequently changing sources and uploads for fixed ones."
+   ]
+  },
+  {
+   "label": "source freshness",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Choose a connector for frequently changing sources and uploads for fixed ones."
+   ]
+  },
+  {
+   "label": "disable unused connectors",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Trim enabled integrations that a routine task does not require."
+   ]
+  },
+  {
+   "label": "lean configuration",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Trim enabled integrations that a routine task does not require."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Design human review workflows using stratified sampling, per-document-type and per-field accuracy analysis, and calibrated field-level confidence thresholds.",
+   "concepts": [
+    "stratified sampling",
+    "segment accuracy",
+    "confidence calibration",
+    "review routing"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Design a RAG pipeline with suitable chunking and indexing strategies.",
+   "concepts": [
+    "RAG",
+    "chunking",
+    "indexing"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Match retrieval strategies to data shape and query pattern.",
+   "concepts": [
+    "retrieval strategy",
+    "query pattern"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Document architectures and give implementation guidance.",
+   "concepts": [
+    "architecture documentation",
+    "handoff guidance"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Prompting and Task Execution",
+   "weight_pct": 14,
+   "task": "Adjust prompting style to task type: analysis, research, drafting or brainstorming.",
+   "concepts": [
+    "task-type adaptation",
+    "analysis/research/drafting/brainstorming"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Select the right Claude product feature, such as Projects, research mode, chat or Artifacts.",
+   "concepts": [
+    "feature selection",
+    "Projects vs chat vs Research"
+   ],
+   "features": [
+    "Projects",
+    "Research",
+    "Artifacts"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Workflow Integration and Solution Design",
+   "weight_pct": 16,
+   "task": "Use Claude for research, planning and process optimization.",
+   "concepts": [
+    "research",
+    "planning",
+    "process optimization"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Configure Claude Projects with instructions and knowledge sources.",
+   "concepts": [
+    "Project setup",
+    "instructions",
+    "knowledge"
+   ],
+   "features": [
+    "Projects"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Manage uploaded knowledge and connectors such as Google Drive and Gmail.",
+   "concepts": [
+    "connectors",
+    "uploaded knowledge"
+   ],
+   "features": [
+    "Connectors",
+    "Google Drive",
+    "Gmail"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Write effective system-level instructions.",
+   "concepts": [
+    "system instructions",
+    "Project instructions"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Maintain and update configurations, knowledge sources and instructions over time.",
+   "concepts": [
+    "maintenance",
+    "updating"
+   ],
+   "features": [
+    "Projects"
+   ],
+   "kind": "platform-ops"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "Citations and search results",
+   "feature": "Citations API",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+   "fact": "GA. Set citations: {enabled: true} on document blocks (all or none in one request); Claude returns citation entries pointing at exact passages. Location types: char_location (plain text), page_location (PDF), content_block_location (custom content). cited_text does not count toward output tokens. Only text citations are supported (no image citations). Incompatible with structured outputs (400). Source documents, not citation blocks, can be cached.",
+   "identifiers": [
+    "citations",
+    "enabled",
+    "char_location",
+    "page_location",
+    "content_block_location",
+    "cited_text"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "API version 2026-10-21 rejects a non-empty citations array on text blocks in user messages (400); the enabled setting on documents and search results is still accepted."
+  },
+  {
+   "topic": "Citations and search results",
+   "feature": "Search results content blocks",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+   "fact": "Block of type search_result with required source (URL or any stable id), title and content (array of text blocks) and optional citations {enabled}. Can be returned from a tool_result or placed top-level in user content; Claude then cites them with search_result_location citations. No beta header; supported on all active models. Citations setting must match across results in a request.",
+   "identifiers": [
+    "search_result",
+    "source",
+    "title",
+    "content",
+    "citations",
+    "search_result_location"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__retrieval-strategy-selection-full-context-embeddings-bm25-and-hybrid-search.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__contextual-retrieval-reranking-and-citable-search-results.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__rag-pipeline-design-chunking-embeddings-and-hybrid-indexing.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__documenting-an-ai-solution-architecture-for-engineering-teams.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__llm-limitations-hallucination-knowledge-gaps-context-limits-and-steerability.txt"
+ ],
+ "lesson_words": 22670
+}

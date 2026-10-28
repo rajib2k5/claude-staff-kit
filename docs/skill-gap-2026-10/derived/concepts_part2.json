@@ -1,0 +1,3029 @@
+[
+{
+"id": "concept_feature_to_task_matching",
+"label": "feature-to-task matching",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Artifacts",
+"Research mode"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Match multi-source research and collaborative editing needs to the right claude.ai capabilities."
+]
+},
+{
+"id": "concept_model_tier_selection",
+"label": "model tier selection",
+"certs": [
+"claude-certified-associate-foundations",
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization",
+"Product and Model Selection"
+],
+"features": [
+"Claude Opus 5.5",
+"Claude Sonnet 5.5",
+"Model tiers"
+],
+"kinds": [
+"claude-api",
+"platform-ops"
+],
+"competencies": [
+"Give high-volume simple jobs the quickest low-cost tier and reserve the deepest tier for truly hard analysis.",
+"Choose the model that balances capability and latency for broad agentic and coding workloads."
+]
+},
+{
+"id": "concept_throughput_versus_depth_tradeoff",
+"label": "throughput versus depth tradeoff",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Give high-volume simple jobs the quickest low-cost tier and reserve the deepest tier for truly hard analysis."
+]
+},
+{
+"id": "concept_usage_quota_impact",
+"label": "usage quota impact",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Give high-volume simple jobs the quickest low-cost tier and reserve the deepest tier for truly hard analysis."
+]
+},
+{
+"id": "concept_model_tier_characteristics",
+"label": "model tier characteristics",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Describe accurately how the tiers trade reasoning depth against speed and allowance."
+]
+},
+{
+"id": "concept_default_tier_suitability",
+"label": "default tier suitability",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Describe accurately how the tiers trade reasoning depth against speed and allowance."
+]
+},
+{
+"id": "concept_allowance_consumption",
+"label": "allowance consumption",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Describe accurately how the tiers trade reasoning depth against speed and allowance."
+]
+},
+{
+"id": "concept_define_quality_first",
+"label": "define quality first",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Sequence a tier decision as criteria, then a trial on the default, then escalation only if needed."
+]
+},
+{
+"id": "concept_sample_based_tier_validation",
+"label": "sample-based tier validation",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Sequence a tier decision as criteria, then a trial on the default, then escalation only if needed."
+]
+},
+{
+"id": "concept_escalate_tier_on_evidence",
+"label": "escalate tier on evidence",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Sequence a tier decision as criteria, then a trial on the default, then escalation only if needed."
+]
+},
+{
+"id": "concept_human_review_as_safety_net",
+"label": "human review as safety net",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Weigh whether a downstream human check exists when choosing how capable a tier a workload needs."
+]
+},
+{
+"id": "concept_risk_based_tier_choice",
+"label": "risk-based tier choice",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Weigh whether a downstream human check exists when choosing how capable a tier a workload needs."
+]
+},
+{
+"id": "concept_unchecked_workload_quality",
+"label": "unchecked workload quality",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Model tiers"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Weigh whether a downstream human check exists when choosing how capable a tier a workload needs."
+]
+},
+{
+"id": "concept_need_versus_solution_framing",
+"label": "need versus solution framing",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Use Claude to recover the underlying outcome behind solution-shaped requests and surface ambiguity."
+]
+},
+{
+"id": "concept_requirements_elicitation_with_ai",
+"label": "requirements elicitation with AI",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Use Claude to recover the underlying outcome behind solution-shaped requests and surface ambiguity."
+]
+},
+{
+"id": "concept_flagging_unclear_outcomes",
+"label": "flagging unclear outcomes",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Use Claude to recover the underlying outcome behind solution-shaped requests and surface ambiguity."
+]
+},
+{
+"id": "concept_vague_feedback_diagnosis",
+"label": "vague feedback diagnosis",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Collect specific failing cases before changing a pilot in response to nonspecific complaints."
+]
+},
+{
+"id": "concept_gather_concrete_failing_examples",
+"label": "gather concrete failing examples",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Collect specific failing cases before changing a pilot in response to nonspecific complaints.",
+"Turn vague complaints about omissions into diagnosable cases by naming specific misses."
+]
+},
+{
+"id": "concept_pilot_triage",
+"label": "pilot triage",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Collect specific failing cases before changing a pilot in response to nonspecific complaints."
+]
+},
+{
+"id": "concept_change_communication",
+"label": "change communication",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Announce an AI-assisted process by clarifying what changes, what stays human, and where review remains."
+]
+},
+{
+"id": "concept_human_and_ai_responsibility_split",
+"label": "human and AI responsibility split",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Announce an AI-assisted process by clarifying what changes, what stays human, and where review remains."
+]
+},
+{
+"id": "concept_review_checkpoints",
+"label": "review checkpoints",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Announce an AI-assisted process by clarifying what changes, what stays human, and where review remains."
+]
+},
+{
+"id": "concept_ai_assisted_research_planning",
+"label": "AI-assisted research planning",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [
+"Research mode"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Combine Claude's research output with source checking and human refinement for a decision-grade study."
+]
+},
+{
+"id": "concept_team_refinement_of_plans",
+"label": "team refinement of plans",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [
+"Research mode"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Combine Claude's research output with source checking and human refinement for a decision-grade study."
+]
+},
+{
+"id": "concept_stakeholder_buy_in_evidence",
+"label": "stakeholder buy-in evidence",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Select the evidence that convinces sceptical business audiences about an AI workflow."
+]
+},
+{
+"id": "concept_human_review_rationale",
+"label": "human review rationale",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Select the evidence that convinces sceptical business audiences about an AI workflow."
+]
+},
+{
+"id": "concept_measured_pilot_outcome",
+"label": "measured pilot outcome",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Select the evidence that convinces sceptical business audiences about an AI workflow."
+]
+},
+{
+"id": "concept_knowledge_versus_instructions_placement",
+"label": "knowledge versus instructions placement",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Project instructions",
+"Project knowledge",
+"Projects"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Place reference documents in knowledge and behavioural rules in instructions."
+]
+},
+{
+"id": "concept_project_instructions",
+"label": "project instructions",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Project instructions",
+"Project knowledge",
+"Projects"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Place reference documents in knowledge and behavioural rules in instructions."
+]
+},
+{
+"id": "concept_reference_material_upload",
+"label": "reference material upload",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Project instructions",
+"Project knowledge",
+"Projects"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Place reference documents in knowledge and behavioural rules in instructions."
+]
+},
+{
+"id": "concept_shared_project_maintenance",
+"label": "shared project maintenance",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Projects",
+"Team plan"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Handle the human side of replacing a source that shared-project users rely on."
+]
+},
+{
+"id": "concept_notifying_members_of_changes",
+"label": "notifying members of changes",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Projects",
+"Team plan"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Handle the human side of replacing a source that shared-project users rely on."
+]
+},
+{
+"id": "concept_knowledge_source_updates",
+"label": "knowledge source updates",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Projects",
+"Team plan"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Handle the human side of replacing a source that shared-project users rely on."
+]
+},
+{
+"id": "concept_live_connectors_versus_static_uploads",
+"label": "live connectors versus static uploads",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Google Drive connector",
+"Project knowledge"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Choose a connector for frequently changing sources and uploads for fixed ones."
+]
+},
+{
+"id": "concept_source_freshness",
+"label": "source freshness",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Google Drive connector",
+"Project knowledge"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Choose a connector for frequently changing sources and uploads for fixed ones."
+]
+},
+{
+"id": "concept_project_sharing_exposure",
+"label": "project sharing exposure",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Enterprise plan",
+"Project knowledge",
+"Projects"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Recognise that anything in shared project knowledge is reachable by everyone with access."
+]
+},
+{
+"id": "concept_sensitive_data_in_knowledge",
+"label": "sensitive data in knowledge",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Enterprise plan",
+"Project knowledge",
+"Projects"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Recognise that anything in shared project knowledge is reachable by everyone with access."
+]
+},
+{
+"id": "concept_least_necessary_data",
+"label": "least necessary data",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Enterprise plan",
+"Project knowledge",
+"Projects"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Recognise that anything in shared project knowledge is reachable by everyone with access."
+]
+},
+{
+"id": "concept_human_oversight_of_irreversible_actions",
+"label": "human oversight of irreversible actions",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Identify the responsible-use concern when an agent can act on production systems unchecked."
+]
+},
+{
+"id": "concept_autonomy_boundaries_for_agents",
+"label": "autonomy boundaries for agents",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Identify the responsible-use concern when an agent can act on production systems unchecked."
+]
+},
+{
+"id": "concept_owner_level_privacy_controls",
+"label": "owner-level privacy controls",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Response ratings",
+"Team plan admin settings"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Know which organisation-wide setting stops rating feedback from leaving the workspace."
+]
+},
+{
+"id": "concept_disabling_response_ratings",
+"label": "disabling response ratings",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Response ratings",
+"Team plan admin settings"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Know which organisation-wide setting stops rating feedback from leaving the workspace."
+]
+},
+{
+"id": "concept_incognito_mode_limits",
+"label": "incognito mode limits",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Incognito chats"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Explain that private-chat modes do not lift obligations around regulated data."
+]
+},
+{
+"id": "concept_regulated_data_policy",
+"label": "regulated data policy",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Incognito chats"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Explain that private-chat modes do not lift obligations around regulated data."
+]
+},
+{
+"id": "concept_ai_policy_compliance_check",
+"label": "AI policy compliance check",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Consult the firm's AI policy for the specific deliverable type before releasing client work."
+]
+},
+{
+"id": "concept_client_deliverable_requirements",
+"label": "client deliverable requirements",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Consult the firm's AI policy for the specific deliverable type before releasing client work."
+]
+},
+{
+"id": "concept_consequential_decisions_stay_human",
+"label": "consequential decisions stay human",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Keep allocation decisions affecting individuals with staff while using Claude only for drafting."
+]
+},
+{
+"id": "concept_separating_decision_from_drafting",
+"label": "separating decision from drafting",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Keep allocation decisions affecting individuals with staff while using Claude only for drafting."
+]
+},
+{
+"id": "concept_privacy_preserving_workflow_order",
+"label": "privacy-preserving workflow order",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Claude for Work"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Order steps for summarising personal free-text: permissions, redaction, review, then documentation."
+]
+},
+{
+"id": "concept_consent_and_policy_check",
+"label": "consent and policy check",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Claude for Work"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Order steps for summarising personal free-text: permissions, redaction, review, then documentation."
+]
+},
+{
+"id": "concept_data_minimisation",
+"label": "data minimisation",
+"certs": [
+"claude-certified-associate-foundations",
+"claude-developer-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use",
+"Security and Safety"
+],
+"features": [
+"Claude for Work"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Order steps for summarising personal free-text: permissions, redaction, review, then documentation.",
+"Reduce personal data exposure to third parties and in internal logs."
+]
+},
+{
+"id": "concept_documenting_redactions",
+"label": "documenting redactions",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Claude for Work"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Order steps for summarising personal free-text: permissions, redaction, review, then documentation."
+]
+},
+{
+"id": "concept_underspecified_prompt_root_cause",
+"label": "underspecified prompt root cause",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Fix inconsistent classification by specifying categories, format and decision rules, not sampling settings."
+]
+},
+{
+"id": "concept_explicit_categories_and_criteria",
+"label": "explicit categories and criteria",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Fix inconsistent classification by specifying categories, format and decision rules, not sampling settings."
+]
+},
+{
+"id": "concept_temperature_versus_clarity",
+"label": "temperature versus clarity",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Fix inconsistent classification by specifying categories, format and decision rules, not sampling settings."
+]
+},
+{
+"id": "concept_allowance_efficiency_habits",
+"label": "allowance efficiency habits",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Structure chats to conserve usage allowance without lowering output quality."
+]
+},
+{
+"id": "concept_front_loaded_context",
+"label": "front-loaded context",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Structure chats to conserve usage allowance without lowering output quality."
+]
+},
+{
+"id": "concept_fresh_chat_per_task",
+"label": "fresh chat per task",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Structure chats to conserve usage allowance without lowering output quality."
+]
+},
+{
+"id": "concept_disable_unused_connectors",
+"label": "disable unused connectors",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [
+"Connectors"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Trim enabled integrations that a routine task does not require."
+]
+},
+{
+"id": "concept_lean_configuration",
+"label": "lean configuration",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [
+"Connectors"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Trim enabled integrations that a routine task does not require."
+]
+},
+{
+"id": "concept_compare_output_against_logs",
+"label": "compare output against logs",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Troubleshooting and Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Turn vague complaints about omissions into diagnosable cases by naming specific misses."
+]
+},
+{
+"id": "concept_summary_only_return",
+"label": "summary-only return",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"AgentDefinition",
+"Claude Agent SDK: subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Offload bulky exploration to a subagent so only its summary enters the parent conversation."
+]
+},
+{
+"id": "concept_main_context_token_cost",
+"label": "main context token cost",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"AgentDefinition",
+"Claude Agent SDK: subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Offload bulky exploration to a subagent so only its summary enters the parent conversation."
+]
+},
+{
+"id": "concept_transcript_archival_before_compaction",
+"label": "transcript archival before compaction",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"CLAUDE.md",
+"Claude Agent SDK: hooks (PreCompact)",
+"Compaction"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Combine a pre-compaction hook with CLAUDE.md placement to preserve both history and formatting rules."
+]
+},
+{
+"id": "concept_rules_that_survive_compaction",
+"label": "rules that survive compaction",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"CLAUDE.md",
+"Claude Agent SDK: hooks (PreCompact)",
+"Compaction"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Combine a pre-compaction hook with CLAUDE.md placement to preserve both history and formatting rules."
+]
+},
+{
+"id": "concept_persistent_instruction_file",
+"label": "persistent instruction file",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"CLAUDE.md",
+"Claude Agent SDK: hooks (PreCompact)",
+"Compaction"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Combine a pre-compaction hook with CLAUDE.md placement to preserve both history and formatting rules."
+]
+},
+{
+"id": "concept_agent_framework_comparison",
+"label": "agent framework comparison",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"LangGraph",
+"OpenTelemetry",
+"Pydantic AI",
+"Strands Agents SDK"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Compare third-party agent frameworks on provider support, observability and workflow modelling."
+]
+},
+{
+"id": "concept_model_agnostic_frameworks",
+"label": "model-agnostic frameworks",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"LangGraph",
+"OpenTelemetry",
+"Pydantic AI",
+"Strands Agents SDK"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Compare third-party agent frameworks on provider support, observability and workflow modelling."
+]
+},
+{
+"id": "concept_graph_based_workflow_control",
+"label": "graph-based workflow control",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"LangGraph",
+"OpenTelemetry",
+"Pydantic AI",
+"Strands Agents SDK"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Compare third-party agent frameworks on provider support, observability and workflow modelling."
+]
+},
+{
+"id": "concept_opentelemetry_tracing",
+"label": "OpenTelemetry tracing",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"LangGraph",
+"OpenTelemetry",
+"Pydantic AI",
+"Strands Agents SDK"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Compare third-party agent frameworks on provider support, observability and workflow modelling."
+]
+},
+{
+"id": "concept_parallelization_by_voting",
+"label": "parallelization by voting",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Name the workflow pattern that repeats an identical task and takes the majority result."
+]
+},
+{
+"id": "concept_voting_versus_sectioning",
+"label": "voting versus sectioning",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Name the workflow pattern that repeats an identical task and takes the majority result."
+]
+},
+{
+"id": "concept_majority_verdict_confidence",
+"label": "majority-verdict confidence",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Name the workflow pattern that repeats an identical task and takes the majority result."
+]
+},
+{
+"id": "concept_cheap_model_for_high_volume_step",
+"label": "cheap model for high-volume step",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Claude Agent SDK: subagents",
+"Subagent model override"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Reduce cost by routing a simple frequent step to a smaller model through a dedicated subagent."
+]
+},
+{
+"id": "concept_per_subagent_model_assignment",
+"label": "per-subagent model assignment",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Claude Agent SDK: subagents",
+"Subagent model override"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Reduce cost by routing a simple frequent step to a smaller model through a dedicated subagent."
+]
+},
+{
+"id": "concept_stale_tool_result_clearing",
+"label": "stale tool result clearing",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"Compaction",
+"Context editing"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Select the platform features that summarise history and prune old tool outputs automatically."
+]
+},
+{
+"id": "concept_beta_feature_risk",
+"label": "beta feature risk",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Feature availability (Beta/GA)"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Explain why core production logic should not depend on a beta capability."
+]
+},
+{
+"id": "concept_beta_versus_ga_readiness",
+"label": "beta versus GA readiness",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Feature availability (Beta/GA)"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Explain why core production logic should not depend on a beta capability."
+]
+},
+{
+"id": "concept_feature_availability_table",
+"label": "feature availability table",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Feature availability (Beta/GA)"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Explain why core production logic should not depend on a beta capability."
+]
+},
+{
+"id": "concept_session_resume",
+"label": "session resume",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: query()",
+"Claude Agent SDK: resume option",
+"Claude Agent SDK: sessions"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Carry context across separate SDK calls by saving the session id and resuming it."
+]
+},
+{
+"id": "concept_capturing_session_id",
+"label": "capturing session id",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: query()",
+"Claude Agent SDK: resume option",
+"Claude Agent SDK: sessions"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Carry context across separate SDK calls by saving the session id and resuming it."
+]
+},
+{
+"id": "concept_init_system_message",
+"label": "init system message",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: query()",
+"Claude Agent SDK: resume option",
+"Claude Agent SDK: sessions"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Carry context across separate SDK calls by saving the session id and resuming it."
+]
+},
+{
+"id": "concept_built_in_shell_tool",
+"label": "built-in shell tool",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: Bash tool"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Identify the built-in tool that lets an agent run git commands."
+]
+},
+{
+"id": "concept_version_control_automation",
+"label": "version control automation",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: Bash tool"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Identify the built-in tool that lets an agent run git commands."
+]
+},
+{
+"id": "concept_stateless_sessions",
+"label": "stateless sessions",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: persistSession"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Configure throwaway SDK calls as memory-only so no session file is saved or resumable."
+]
+},
+{
+"id": "concept_disabling_session_persistence",
+"label": "disabling session persistence",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: persistSession"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Configure throwaway SDK calls as memory-only so no session file is saved or resumable."
+]
+},
+{
+"id": "concept_typescript_only_option",
+"label": "TypeScript-only option",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"Claude Agent SDK: persistSession"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Configure throwaway SDK calls as memory-only so no session file is saved or resumable."
+]
+},
+{
+"id": "concept_resumed_session_model_fallback",
+"label": "resumed session model fallback",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: --resume",
+"Model retirement"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict how a resumed Claude Code session picks a model when the original is gone."
+]
+},
+{
+"id": "concept_retired_model_handling",
+"label": "retired model handling",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: --resume",
+"Model retirement"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict how a resumed Claude Code session picks a model when the original is gone."
+]
+},
+{
+"id": "concept_model_precedence_order",
+"label": "model precedence order",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: --resume",
+"Model retirement"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict how a resumed Claude Code session picks a model when the original is gone."
+]
+},
+{
+"id": "concept_batch_size_limits",
+"label": "batch size limits",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Message Batches API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"State the operational limits of batch processing before adopting it for a scheduled job."
+]
+},
+{
+"id": "concept_batch_expiry_window",
+"label": "batch expiry window",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Message Batches API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"State the operational limits of batch processing before adopting it for a scheduled job."
+]
+},
+{
+"id": "concept_result_retention_period",
+"label": "result retention period",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Message Batches API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"State the operational limits of batch processing before adopting it for a scheduled job."
+]
+},
+{
+"id": "concept_nightly_batch_suitability",
+"label": "nightly batch suitability",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Message Batches API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"State the operational limits of batch processing before adopting it for a scheduled job."
+]
+},
+{
+"id": "concept_permission_rule_merging",
+"label": "permission rule merging",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: permissions.deny",
+"Claude Code: settings.json",
+"Claude Code: settings.local.json"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict the outcome when different settings scopes carry conflicting permission rules."
+]
+},
+{
+"id": "concept_deny_overrides_allow",
+"label": "deny overrides allow",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: permissions.deny",
+"Claude Code: settings.json",
+"Claude Code: settings.local.json"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict the outcome when different settings scopes carry conflicting permission rules."
+]
+},
+{
+"id": "concept_settings_scope_hierarchy",
+"label": "settings scope hierarchy",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: permissions.deny",
+"Claude Code: settings.json",
+"Claude Code: settings.local.json"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict the outcome when different settings scopes carry conflicting permission rules."
+]
+},
+{
+"id": "concept_local_settings_file",
+"label": "local settings file",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Claude Code"
+],
+"features": [
+"Claude Code: permissions.deny",
+"Claude Code: settings.json",
+"Claude Code: settings.local.json"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Predict the outcome when different settings scopes carry conflicting permission rules."
+]
+},
+{
+"id": "concept_plugin_packaging",
+"label": "plugin packaging",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Claude Agent SDK: plugins option",
+"Claude Code plugins",
+"Hooks",
+"MCP servers (.mcp.json)",
+"Skills"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Package a team's skills, subagent, hook and server definitions as one loadable plugin."
+]
+},
+{
+"id": "concept_reusable_capability_bundle",
+"label": "reusable capability bundle",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Claude Agent SDK: plugins option",
+"Claude Code plugins",
+"Hooks",
+"MCP servers (.mcp.json)",
+"Skills"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Package a team's skills, subagent, hook and server definitions as one loadable plugin."
+]
+},
+{
+"id": "concept_plugin_directory_layout",
+"label": "plugin directory layout",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Claude Agent SDK: plugins option",
+"Claude Code plugins",
+"Hooks",
+"MCP servers (.mcp.json)",
+"Skills"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Package a team's skills, subagent, hook and server definitions as one loadable plugin."
+]
+},
+{
+"id": "concept_speed_and_intelligence_balance",
+"label": "speed and intelligence balance",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Claude Opus 5.5",
+"Claude Sonnet 5.5"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Choose the model that balances capability and latency for broad agentic and coding workloads."
+]
+},
+{
+"id": "concept_current_model_lineup",
+"label": "current model lineup",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Claude Opus 5.5",
+"Claude Sonnet 5.5"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Choose the model that balances capability and latency for broad agentic and coding workloads."
+]
+},
+{
+"id": "concept_acceleration_limits",
+"label": "acceleration limits",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Claude API: 429 errors",
+"Claude API: rate limits"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Diagnose rate-limit errors caused by sudden traffic growth and plan smoother ramp-up."
+]
+},
+{
+"id": "concept_429_under_published_limits",
+"label": "429 under published limits",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Claude API: 429 errors",
+"Claude API: rate limits"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Diagnose rate-limit errors caused by sudden traffic growth and plan smoother ramp-up."
+]
+},
+{
+"id": "concept_gradual_traffic_ramp",
+"label": "gradual traffic ramp",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Claude API: 429 errors",
+"Claude API: rate limits"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Diagnose rate-limit errors caused by sudden traffic growth and plan smoother ramp-up."
+]
+},
+{
+"id": "concept_error_code_classification",
+"label": "error code classification",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Eval, Testing, and Debugging"
+],
+"features": [
+"Files API",
+"Messages API errors",
+"Streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Map HTTP error types to whether streaming or a larger output cap would help."
+]
+},
+{
+"id": "concept_oversized_payload_errors",
+"label": "oversized payload errors",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Eval, Testing, and Debugging"
+],
+"features": [
+"Files API",
+"Messages API errors",
+"Streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Map HTTP error types to whether streaming or a larger output cap would help."
+]
+},
+{
+"id": "concept_auth_and_conflict_errors",
+"label": "auth and conflict errors",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Eval, Testing, and Debugging"
+],
+"features": [
+"Files API",
+"Messages API errors",
+"Streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Map HTTP error types to whether streaming or a larger output cap would help."
+]
+},
+{
+"id": "concept_streaming_does_not_cure_everything",
+"label": "streaming does not cure everything",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Eval, Testing, and Debugging"
+],
+"features": [
+"Files API",
+"Messages API errors",
+"Streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Map HTTP error types to whether streaming or a larger output cap would help."
+]
+},
+{
+"id": "concept_pre_send_token_counting",
+"label": "pre-send token counting",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Token counting API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Measure prompt size ahead of submission to stay under a spend budget."
+]
+},
+{
+"id": "concept_budget_enforcement",
+"label": "budget enforcement",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Token counting API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Measure prompt size ahead of submission to stay under a spend budget."
+]
+},
+{
+"id": "concept_extended_thinking_streaming_events",
+"label": "extended thinking streaming events",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Extended thinking",
+"Messages API: streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Interpret the event sequence for a thinking block in a streamed reply."
+]
+},
+{
+"id": "concept_thinking_block_signature",
+"label": "thinking block signature",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Extended thinking",
+"Messages API: streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Interpret the event sequence for a thinking block in a streamed reply."
+]
+},
+{
+"id": "concept_content_block_lifecycle",
+"label": "content block lifecycle",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Applications and Integration"
+],
+"features": [
+"Extended thinking",
+"Messages API: streaming"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Interpret the event sequence for a thinking block in a streamed reply."
+]
+},
+{
+"id": "concept_autoregressive_generation",
+"label": "autoregressive generation",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Explain why output arrives incrementally in terms of token-by-token prediction."
+]
+},
+{
+"id": "concept_next_token_prediction",
+"label": "next-token prediction",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Explain why output arrives incrementally in terms of token-by-token prediction."
+]
+},
+{
+"id": "concept_prompt_caching_breakpoints",
+"label": "prompt caching breakpoints",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Prompt caching: cache_control"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Apply a cache marker to a repeated prompt prefix to lower input cost."
+]
+},
+{
+"id": "concept_stable_prefix_reuse",
+"label": "stable prefix reuse",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Prompt caching: cache_control"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Apply a cache marker to a repeated prompt prefix to lower input cost."
+]
+},
+{
+"id": "concept_ephemeral_cache_lifetime",
+"label": "ephemeral cache lifetime",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Model Selection and Optimization"
+],
+"features": [
+"Prompt caching: cache_control"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Apply a cache marker to a repeated prompt prefix to lower input cost."
+]
+},
+{
+"id": "concept_bulk_file_exploration",
+"label": "bulk file exploration",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"Claude Agent SDK: subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Keep large exploratory reads out of the main conversation by delegating them."
+]
+},
+{
+"id": "concept_prompt_clarity_testing",
+"label": "prompt clarity testing",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Detect ambiguity in a prompt by having a low-context person follow it literally."
+]
+},
+{
+"id": "concept_cold_reader_check",
+"label": "cold-reader check",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Detect ambiguity in a prompt by having a low-context person follow it literally."
+]
+},
+{
+"id": "concept_ambiguity_discovery",
+"label": "ambiguity discovery",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Detect ambiguity in a prompt by having a low-context person follow it literally."
+]
+},
+{
+"id": "concept_defensive_json_parsing",
+"label": "defensive JSON parsing",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"Messages API: stop_reason"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Distinguish a length cutoff from malformed output when parsing model JSON."
+]
+},
+{
+"id": "concept_stop_reason_inspection",
+"label": "stop reason inspection",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [
+"Messages API: stop_reason"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Distinguish a length cutoff from malformed output when parsing model JSON."
+]
+},
+{
+"id": "concept_tool_error_feedback_loop",
+"label": "tool error feedback loop",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Tool use: is_error",
+"Tool use: strict"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+]
+},
+{
+"id": "concept_is_error_tool_results",
+"label": "is_error tool results",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Tool use: is_error",
+"Tool use: strict"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+]
+},
+{
+"id": "concept_strict_tool_schemas",
+"label": "strict tool schemas",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Tool use: is_error",
+"Tool use: strict"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+]
+},
+{
+"id": "concept_tool_description_clarity",
+"label": "tool description clarity",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Tool use: is_error",
+"Tool use: strict"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+]
+},
+{
+"id": "concept_xml_document_tagging",
+"label": "XML document tagging",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Structure multi-document prompts with tags and metadata to prevent misattribution."
+]
+},
+{
+"id": "concept_source_attribution",
+"label": "source attribution",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Structure multi-document prompts with tags and metadata to prevent misattribution."
+]
+},
+{
+"id": "concept_prompt_section_boundaries",
+"label": "prompt section boundaries",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Prompt and Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Structure multi-document prompts with tags and metadata to prevent misattribution."
+]
+},
+{
+"id": "concept_subagent_nesting_depth",
+"label": "subagent nesting depth",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH",
+"Claude Code subagents",
+"disallowedTools"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Control and cap recursive subagent spawning through settings and tool lists."
+]
+},
+{
+"id": "concept_blocking_child_spawning",
+"label": "blocking child spawning",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH",
+"Claude Code subagents",
+"disallowedTools"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Control and cap recursive subagent spawning through settings and tool lists."
+]
+},
+{
+"id": "concept_subagent_tool_allowlist",
+"label": "subagent tool allowlist",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Agents and Workflows"
+],
+"features": [
+"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH",
+"Claude Code subagents",
+"disallowedTools"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Control and cap recursive subagent spawning through settings and tool lists."
+]
+},
+{
+"id": "concept_pii_redaction_before_vendor_transfer",
+"label": "PII redaction before vendor transfer",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Reduce personal data exposure to third parties and in internal logs."
+]
+},
+{
+"id": "concept_internal_log_hygiene",
+"label": "internal log hygiene",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Reduce personal data exposure to third parties and in internal logs."
+]
+},
+{
+"id": "concept_per_tenant_tool_scoping",
+"label": "per-tenant tool scoping",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Layer tenant scoping, input screening and server-side authorization around an agent that can transact."
+]
+},
+{
+"id": "concept_injection_screening_of_tool_results",
+"label": "injection screening of tool results",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Layer tenant scoping, input screening and server-side authorization around an agent that can transact."
+]
+},
+{
+"id": "concept_backend_authorization_for_actions",
+"label": "backend authorization for actions",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Layer tenant scoping, input screening and server-side authorization around an agent that can transact."
+]
+},
+{
+"id": "concept_multi_tenant_confidentiality",
+"label": "multi-tenant confidentiality",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Layer tenant scoping, input screening and server-side authorization around an agent that can transact."
+]
+},
+{
+"id": "concept_hipaa_feature_eligibility",
+"label": "HIPAA feature eligibility",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Code execution tool",
+"HIPAA-ready API organization",
+"Zero Data Retention"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Respond to a compliance-based rejection by dropping the ineligible feature."
+]
+},
+{
+"id": "concept_api_restriction_enforcement",
+"label": "API restriction enforcement",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Code execution tool",
+"HIPAA-ready API organization",
+"Zero Data Retention"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Respond to a compliance-based rejection by dropping the ineligible feature."
+]
+},
+{
+"id": "concept_remove_ineligible_tools",
+"label": "remove ineligible tools",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Code execution tool",
+"HIPAA-ready API organization",
+"Zero Data Retention"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Respond to a compliance-based rejection by dropping the ineligible feature."
+]
+},
+{
+"id": "concept_hook_decision_precedence",
+"label": "hook decision precedence",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Code hooks",
+"Claude Code: settings.local.json",
+"Managed policy settings"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"State how conflicting hook verdicts resolve and which scopes admins control."
+]
+},
+{
+"id": "concept_local_versus_shared_settings",
+"label": "local versus shared settings",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Code hooks",
+"Claude Code: settings.local.json",
+"Managed policy settings"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"State how conflicting hook verdicts resolve and which scopes admins control."
+]
+},
+{
+"id": "concept_managed_policy_settings",
+"label": "managed policy settings",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Code hooks",
+"Claude Code: settings.local.json",
+"Managed policy settings"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"State how conflicting hook verdicts resolve and which scopes admins control."
+]
+},
+{
+"id": "concept_hook_matcher_regex",
+"label": "hook matcher regex",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Code hooks: matcher"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Write a hook matcher that covers several tools via pattern syntax."
+]
+},
+{
+"id": "concept_tool_name_matching_rules",
+"label": "tool-name matching rules",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Code hooks: matcher"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Write a hook matcher that covers several tools via pattern syntax."
+]
+},
+{
+"id": "concept_unattended_ci_permissions",
+"label": "unattended CI permissions",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Agent SDK: allowed_tools",
+"Claude Agent SDK: canUseTool",
+"Claude Agent SDK: permission_mode"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Configure a headless agent so only approved tools run and everything else fails fast."
+]
+},
+{
+"id": "concept_automatic_denial_of_unlisted_tools",
+"label": "automatic denial of unlisted tools",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Agent SDK: allowed_tools",
+"Claude Agent SDK: canUseTool",
+"Claude Agent SDK: permission_mode"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Configure a headless agent so only approved tools run and everything else fails fast."
+]
+},
+{
+"id": "concept_fixed_tool_allowlist",
+"label": "fixed tool allowlist",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Security and Safety"
+],
+"features": [
+"Claude Agent SDK: allowed_tools",
+"Claude Agent SDK: canUseTool",
+"Claude Agent SDK: permission_mode"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Configure a headless agent so only approved tools run and everything else fails fast."
+]
+},
+{
+"id": "concept_custom_tool_for_internal_api",
+"label": "custom tool for internal API",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Claude Agent SDK: custom tools",
+"createSdkMcpServer"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Expose a proprietary service to an agent through a custom tool hosted in-process."
+]
+},
+{
+"id": "concept_in_process_mcp_server",
+"label": "in-process MCP server",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Claude Agent SDK: custom tools",
+"createSdkMcpServer"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Expose a proprietary service to an agent through a custom tool hosted in-process."
+]
+},
+{
+"id": "concept_built_in_tools_first",
+"label": "built-in tools first",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Claude Agent SDK: built-in tools"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Start from the SDK's shipped tools when the job involves only files, shell and search."
+]
+},
+{
+"id": "concept_avoid_unnecessary_custom_tooling",
+"label": "avoid unnecessary custom tooling",
+"certs": [
+"claude-developer-foundations"
+],
+"domains": [
+"Tools and MCPs"
+],
+"features": [
+"Claude Agent SDK: built-in tools"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Start from the SDK's shipped tools when the job involves only files, shell and search."
+]
+}
+]

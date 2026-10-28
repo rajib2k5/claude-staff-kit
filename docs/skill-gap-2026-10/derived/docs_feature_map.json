@@ -1,0 +1,1163 @@
+[
+  {
+    "topic": "Claude Code config",
+    "feature": "CLAUDE.md",
+    "doc_url": "https://code.claude.com/docs/en/memory",
+    "fact": "CLAUDE.md files are plain-markdown instructions loaded into context at session start. They are context, not enforced configuration, so a PreToolUse hook is the tool for hard blocks. Files from the directory tree above the working directory are concatenated (root first, working directory last), not overridden; files in subdirectories load on demand when Claude touches files there. Target under 200 lines per file; @path imports expand into context but do not cut its cost (max four hops). Block-level HTML comments are stripped before injection. Repos using AGENTS.md can have it read in place of CLAUDE.md.",
+    "identifiers": [
+      "CLAUDE.md",
+      "CLAUDE.local.md",
+      "AGENTS.md",
+      "@path/to/import",
+      ".claude/rules/",
+      "paths",
+      "claudeMdExcludes",
+      "/init",
+      "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "~/.claude/CLAUDE.md",
+    "doc_url": "https://code.claude.com/docs/en/memory",
+    "fact": "The user-level instructions file, applying to all your projects; it loads before project files so project text appears later in context. Other scopes: managed policy file (macOS /Library/Application Support/ClaudeCode/CLAUDE.md, Linux/WSL /etc/claude-code/CLAUDE.md), project ./CLAUDE.md or ./.claude/CLAUDE.md, and personal per-project ./CLAUDE.local.md. Imports in user-scope files load without the external-import approval dialog that project files trigger.",
+    "identifiers": [
+      "~/.claude/CLAUDE.md",
+      "./CLAUDE.md",
+      "./.claude/CLAUDE.md",
+      "./CLAUDE.local.md",
+      "/etc/claude-code/CLAUDE.md"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "Claude Code: settings.local.json",
+    "doc_url": "https://code.claude.com/docs/en/settings",
+    "fact": "Project-local personal settings file at .claude/settings.local.json. It outranks the shared .claude/settings.json and user ~/.claude/settings.json, and is outranked only by command-line --settings and managed settings. Claude Code writes 'don't ask again' approvals into it and adds it to the global git excludes; a hand-made copy must be gitignored manually. Since v2.1.211 in a git repo the file lives at the repository root. Its allow rules skip the workspace-trust step while the file is untracked.",
+    "identifiers": [
+      ".claude/settings.local.json",
+      ".claude/settings.json",
+      "~/.claude/settings.json",
+      "--settings",
+      "/status",
+      "/config"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Precedence order and file location are version-sensitive (location rule changed at v2.1.211); older study material may place the file in the start directory."
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "Claude Code permission modes",
+    "doc_url": "https://code.claude.com/docs/en/permission-modes",
+    "fact": "Six modes: default (alias manual), acceptEdits, plan, auto, dontAsk, bypassPermissions. Set with --permission-mode, Shift+Tab (except dontAsk, flag/config only), or permissions.defaultMode. Start-mode precedence: flag, then defaultMode in settings (project-level auto and bypassPermissions values ignored), then built-in default. Built-in default is auto for interactive terminal/VS Code on v2.1.283+ and default for claude -p and the Agent SDK.",
+    "identifiers": [
+      "default",
+      "manual",
+      "acceptEdits",
+      "plan",
+      "auto",
+      "dontAsk",
+      "bypassPermissions",
+      "--permission-mode",
+      "permissions.defaultMode",
+      "permissions.disableBypassPermissionsMode",
+      "permissions.disableAutoMode"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Interactive default became auto (v2.1.283+) and -p/SDK runs with no mode set start in Manual and deny calls needing approval (v2.1.302). Older material says default prompts everywhere or that -p is permissive."
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "Claude Code plan mode",
+    "doc_url": "https://code.claude.com/docs/en/permission-modes",
+    "fact": "Plan mode lets Claude explore and propose without editing source until you approve the plan. With auto mode available and useAutoModeDuringPlan on (default), a classifier reviews shell commands during planning. A PreToolUse hook allow does not approve edits in plan mode. In interactive terminal sessions with bypass permissions available, planning is not enforced. Enter via --permission-mode plan, Shift+Tab, or /plan.",
+    "identifiers": [
+      "plan",
+      "--permission-mode plan",
+      "/plan",
+      "ExitPlanMode",
+      "useAutoModeDuringPlan"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "bypassPermissions",
+    "doc_url": "https://code.claude.com/docs/en/permission-modes",
+    "fact": "Skips prompts and most safety checks, including writes to protected paths such as .git and .claude. Deny rules and explicit ask rules still apply, and allow rules have no effect. It still prompts or denies for critical-path rm/rmdir, AskUserQuestion, and requiresUserInteraction MCP tools. You cannot switch into it mid-session unless the session started with it enabled; it is refused as root on Linux/macOS outside a sandbox and ignored from project/local settings defaultMode. Org kill switch: permissions.disableBypassPermissionsMode set to disable.",
+    "identifiers": [
+      "bypassPermissions",
+      "--dangerously-skip-permissions",
+      "skipDangerousModePermissionPrompt",
+      "permissions.disableBypassPermissionsMode"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Before v2.1.257 bypassPermissions took effect from any settings file; now it does not take effect from project or local settings."
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "dontAsk mode",
+    "doc_url": "https://code.claude.com/docs/en/permission-modes",
+    "fact": "Auto-denies every call that would otherwise prompt; reads in working directories, read-only Bash, and anything matching permissions.allow still run. AskUserQuestion, org-ask connector tools, and requiresUserInteraction MCP tools are denied even if allowed. Not in the Shift+Tab cycle (flag or config only). Intended for CI and locked-down scripts.",
+    "identifiers": [
+      "dontAsk",
+      "--permission-mode dontAsk",
+      "--allowedTools",
+      "requiresUserInteraction",
+      "AskUserQuestion"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "disallowedTools",
+    "doc_url": "https://code.claude.com/docs/en/cli-reference",
+    "fact": "Deny-rule flag (--disallowedTools or --disallowed-tools). A bare tool name removes the tool from Claude's context entirely; a scoped rule such as Bash(rm *) keeps the tool and denies only matching calls as written. Deny rules from any scope beat allow rules, and a managed deny cannot be lifted by --allowedTools. The same name appears as disallowedTools in subagent frontmatter and SDK options.",
+    "identifiers": [
+      "--disallowedTools",
+      "--disallowed-tools",
+      "disallowedTools",
+      "Bash(rm *)"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "allowedTools",
+    "doc_url": "https://code.claude.com/docs/en/permissions",
+    "fact": "Allow-rule list (--allowedTools / --allowed-tools, or allowed_tools/allowedTools in the SDK). It auto-approves the listed tools but does not restrict the others; use --tools to restrict availability. Evaluation order in Claude Code is deny, then ask, then allow, first match wins, with no specificity override. In bypassPermissions mode allowed_tools does not constrain anything.",
+    "identifiers": [
+      "--allowedTools",
+      "--allowed-tools",
+      "--tools",
+      "permissions.allow",
+      "permissions.deny",
+      "permissions.ask"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Hooks",
+    "feature": "Claude Code hooks: PreToolUse",
+    "doc_url": "https://code.claude.com/docs/en/hooks",
+    "fact": "Runs before a tool call. Input on stdin carries hook_event_name, tool_name, tool_input, tool_use_id plus common fields (session_id, cwd, permission_mode). Output goes in stdout JSON under hookSpecificOutput with hookEventName PreToolUse. Exit 2 blocks the call and stderr becomes the reason, even if JSON said allow; other non-zero codes are non-blocking errors. A hook allow does not bypass deny or ask rules. Hook handler types: command, http, mcp_tool, prompt, agent (experimental).",
+    "identifiers": [
+      "PreToolUse",
+      "hookSpecificOutput",
+      "hookEventName",
+      "tool_name",
+      "tool_input",
+      "tool_use_id",
+      "matcher",
+      "command",
+      "http",
+      "mcp_tool",
+      "prompt",
+      "agent"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Hook event list has grown (PostToolBatch, PermissionDenied, PreModelSwitch, etc.); older material lists far fewer events."
+  },
+  {
+    "topic": "Hooks",
+    "feature": "permissionDecision",
+    "doc_url": "https://code.claude.com/docs/en/hooks",
+    "fact": "PreToolUse field inside hookSpecificOutput. Values: allow, deny, ask, defer. permissionDecisionReason is shown to Claude (and the user on deny/ask). PermissionRequest hooks use a different shape, hookSpecificOutput.decision.behavior with allow or deny.",
+    "identifiers": [
+      "permissionDecision",
+      "permissionDecisionReason",
+      "allow",
+      "deny",
+      "ask",
+      "defer",
+      "decision.behavior"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "The 'defer' value is not in older descriptions that list only allow/deny/ask. Whether the old top-level approve/block form for PreToolUse is deprecated: not verified (page excerpt silent)."
+  },
+  {
+    "topic": "Hooks",
+    "feature": "updatedInput",
+    "doc_url": "https://code.claude.com/docs/en/hooks",
+    "fact": "A PreToolUse hook can rewrite the tool's arguments by returning updatedInput directly under hookSpecificOutput; it replaces the arguments before the tool runs. In plan mode Claude Code still applies a returned updatedInput even though a hook allow does not approve edits.",
+    "identifiers": [
+      "updatedInput",
+      "additionalContext"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Skills and plugins",
+    "feature": "Skills frontmatter: allowed-tools",
+    "doc_url": "https://code.claude.com/docs/en/skills",
+    "fact": "allowed-tools lists tools usable without prompting while the skill's turn is active; it does not restrict other tools (disallowed-tools removes tools from the pool instead). Other frontmatter fields: name, description, when_to_use, argument-hint, arguments, disable-model-invocation, user-invocable, model, effort, context (fork), agent, background, hooks, paths, shell. Unrecognised fields are ignored silently. Outside Claude Code only name, description, license, compatibility, metadata and allowed-tools are accepted by the Agent Skills spec.",
+    "identifiers": [
+      "allowed-tools",
+      "disallowed-tools",
+      "name",
+      "description",
+      "when_to_use",
+      "argument-hint",
+      "arguments",
+      "user-invocable",
+      "context",
+      "agent",
+      "paths",
+      "SKILL.md",
+      "$ARGUMENTS"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Custom commands (.claude/commands/) have been merged into skills; a skill beats a same-named command file."
+  },
+  {
+    "topic": "Skills and plugins",
+    "feature": "Skills frontmatter: disable-model-invocation",
+    "doc_url": "https://code.claude.com/docs/en/skills",
+    "fact": "Set to true so only the user can invoke the skill (via /name); Claude will not load it automatically, and its description is not added to the per-turn listing. Default false. The opposite switch, user-invocable: false, hides the skill from the / menu so only Claude invokes it. Listing text (description plus when_to_use) is truncated at 1,536 characters; keep SKILL.md under 500 lines.",
+    "identifiers": [
+      "disable-model-invocation",
+      "user-invocable",
+      "context: fork"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Skills and plugins",
+    "feature": "Plugins (plugin.json, marketplaces)",
+    "doc_url": "https://code.claude.com/docs/en/plugins",
+    "fact": "A plugin bundles skills, agents, hooks, MCP servers (and optionally a JS hooks module, making it a mod) installed as one unit. Manifest at .claude-plugin/plugin.json; a marketplace is a repo with .claude-plugin/marketplace.json. Install via /plugin or claude plugin; develop locally with --plugin-dir. Install scopes: user, project (committed .claude/settings.json), local. Plugin skills are namespaced as /plugin:skill. Orgs can allowlist/block marketplaces via managed settings.",
+    "identifiers": [
+      ".claude-plugin/plugin.json",
+      ".claude-plugin/marketplace.json",
+      "--plugin-dir",
+      "/plugin",
+      "hooks/hooks.json",
+      ".mcp.json",
+      "claude-plugins-official"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "The 'mods' concept (plugin with a JS hooks module) is recent and likely absent from older material."
+  },
+  {
+    "topic": "Subagents",
+    "feature": "Agent tool",
+    "doc_url": "https://code.claude.com/docs/en/sub-agents",
+    "fact": "The tool that spawns subagents is named Agent; it was renamed from Task in v2.1.63 and old Task(...) references still work as aliases. In SDK streams tool_use blocks say Agent while the system:init tools list may still say Task, so match both. Restrict spawnable types with Agent(agent_type) in tools (only for an agent running as main thread via claude --agent). A subagent can spawn further subagents up to depth 3 by default (CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH); 20 concurrent by default (CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).",
+    "identifiers": [
+      "Agent",
+      "Task",
+      "Agent(agent_type)",
+      "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH",
+      "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS",
+      "subagent_type",
+      "claude --agent"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Task to Agent rename (v2.1.63) and nested-subagent support; older material says subagents cannot spawn subagents."
+  },
+  {
+    "topic": "Subagents",
+    "feature": "Subagent files and frontmatter",
+    "doc_url": "https://code.claude.com/docs/en/sub-agents",
+    "fact": "Markdown with YAML frontmatter; body is the system prompt. Only name and description required. Fields: tools, disallowedTools, model (sonnet, opus, haiku, fable, full ID, inherit), permissionMode, maxTurns, skills, mcpServers, hooks, memory (user/project/local), background, omitClaudeMd, effort, isolation (worktree), color, initialPrompt. Priority on name clash: managed, --agents flag, .claude/agents/, ~/.claude/agents/, plugin agents/. Each subagent starts with fresh context; only its final message returns to the parent. Built-ins: Explore, Plan, general-purpose.",
+    "identifiers": [
+      "name",
+      "description",
+      "tools",
+      "disallowedTools",
+      "model",
+      "permissionMode",
+      "maxTurns",
+      "skills",
+      "mcpServers",
+      "hooks",
+      "memory",
+      "omitClaudeMd",
+      "isolation",
+      "--agents",
+      ".claude/agents/",
+      "~/.claude/agents/",
+      "Explore",
+      "Plan",
+      "general-purpose"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "Agent SDK subagents",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/subagents",
+    "fact": "Define subagents with the agents option on query() (AgentDefinition: description and prompt required; tools, disallowedTools, model, skills, memory, mcpServers, maxTurns, background, effort, permissionMode optional), or via .claude/agents files; programmatic ones win on name clash. Include Agent in allowedTools. Subagent messages carry parent_tool_use_id. Parent sees only the subagent's final message. Cap runaway fan-out with the two env vars plus maxBudgetUsd/max_budget_usd. Without a subagent_type, the built-in general-purpose agent is used.",
+    "identifiers": [
+      "agents",
+      "AgentDefinition",
+      "allowedTools",
+      "Agent",
+      "parent_tool_use_id",
+      "subagent_type",
+      "maxBudgetUsd",
+      "max_budget_usd",
+      "CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS",
+      "Agent(fork)"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "Claude Agent SDK: subagents",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/subagents",
+    "fact": "Same page as above. Subagent spawned by the main agent runs in the background by default (Agent tool result status async_launched) unless Claude waits or background is set; a completed subagent's result text includes agentId, used with resume to continue it. Explore and Plan are one-shot and return no agentId. In-subagent permissions: plan/acceptEdits/auto/bypassPermissions inherit from the main session, but bypassPermissions is never applied to a subagent (v2.1.267+).",
+    "identifiers": [
+      "async_launched",
+      "agentId",
+      "resume",
+      "permissionMode",
+      "agent_id"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Background-by-default subagents and fork subagents (v2.1.302) are recent behaviours."
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "Agent SDK session resume",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+    "fact": "Capture session_id from the result message (also on the init system message in TypeScript), pass it as resume to continue that session with full context. continue (TS continue: true / Python continue_conversation=True) picks the most recent session in the directory. Fork a session with forkSession / fork_session to branch history under a new ID. Sessions persist the conversation, not the filesystem; stored under ~/.claude/projects/<encoded-cwd>/*.jsonl and resumable on the same machine, or across hosts via a session store adapter. Python ClaudeSDKClient tracks the session automatically.",
+    "identifiers": [
+      "resume",
+      "continue",
+      "continue_conversation",
+      "forkSession",
+      "fork_session",
+      "session_id",
+      "persistSession",
+      "sessionStore",
+      "session_store",
+      "ClaudeSDKClient",
+      "CLAUDE_CONFIG_DIR",
+      "error_max_turns",
+      "error_max_budget_usd"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "Agent SDK listSessions",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+    "fact": "Enumerates sessions on disk: listSessions() in TypeScript, list_sessions() in Python. Companion helpers: getSessionInfo/renameSession/tagSession (TS) and get_session_info/rename_session/tag_session (Python). Use for session pickers and cleanup.",
+    "identifiers": [
+      "listSessions",
+      "list_sessions",
+      "getSessionInfo",
+      "renameSession",
+      "tagSession"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "Agent SDK getSessionMessages",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+    "fact": "Reads a session's stored messages: getSessionMessages() in TypeScript, get_session_messages() in Python. Useful for transcript viewers.",
+    "identifiers": [
+      "getSessionMessages",
+      "get_session_messages"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "file checkpointing",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+    "fact": "The sessions page states sessions persist the conversation only and points to file checkpointing to snapshot and revert files the agent changed; forked agents' edits are real and shared. Option names and API of file checkpointing itself: not verified (its own page was not fetched).",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "total_cost_usd",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+    "fact": "Field on the SDK result message (success and error results alike): the cumulative estimated cost of the query() call, including subagent requests. It is a client-side estimate from a bundled price table, not billing data; use the Usage and Cost API or Console for billing. A resumed session's result already includes earlier spend, so read the latest result rather than summing. In Python the field is optional.",
+    "identifiers": [
+      "total_cost_usd",
+      "costUSD",
+      "result",
+      "SDKResultMessage",
+      "ResultMessage"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Resumed-session accounting changed at v2.1.277 (earlier, totals restarted at zero)."
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "modelUsage",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+    "fact": "Result-message map of model name to per-model token counts and cost (model_usage in Python); includes subagent requests, unlike the top-level usage field, which counts only the main loop. Entries carry costUSD, inputTokens, outputTokens, cacheReadInputTokens, cacheCreationInputTokens, plus costBasis (list, managed, unknown; v2.1.246+). Per-step assistant-message output_tokens is a placeholder; read output totals from the result. Dedupe per-step usage by message id for parallel tool calls.",
+    "identifiers": [
+      "modelUsage",
+      "model_usage",
+      "costUSD",
+      "inputTokens",
+      "outputTokens",
+      "cacheReadInputTokens",
+      "cacheCreationInputTokens",
+      "costBasis",
+      "usage"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Agent SDK",
+    "feature": "AskUserQuestion tool",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/permissions",
+    "fact": "A built-in tool Claude uses to ask clarifying questions; in the SDK it always falls through to the canUseTool callback even if an allow rule matches, and is denied in dontAsk mode. It is removed entirely when --permission-prompts none is used. Handling details live on the user-input page (not fetched).",
+    "identifiers": [
+      "AskUserQuestion",
+      "canUseTool",
+      "--permission-prompts none"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Headless / CLI",
+    "feature": "Claude Code",
+    "doc_url": "https://code.claude.com/docs/en/headless",
+    "fact": "Anthropic's agentic coding tool; the same agent loop and tools are exposed as the Agent SDK and the claude -p CLI. Detailed product-overview page was not fetched; only facts from the CLI, settings and SDK pages are recorded in other entries.",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Headless / CLI",
+    "feature": "claude -p",
+    "doc_url": "https://code.claude.com/docs/en/headless",
+    "fact": "-p/--print runs non-interactively and exits (0 on success, non-zero on failure). Pipe data via stdin (capped at 10MB). --bare skips auto-discovery of hooks, skills, plugins, MCP servers, auto memory and CLAUDE.md for reproducible scripted runs and needs ANTHROPIC_API_KEY (no OAuth); the docs say it will become the default for -p. Continue with -c/--continue or --resume <session_id>. --max-turns and --max-budget-usd are print-mode only; --no-session-persistence is print-mode only. SIGTERM exits 143.",
+    "identifiers": [
+      "-p",
+      "--print",
+      "--bare",
+      "--continue",
+      "--resume",
+      "--max-turns",
+      "--max-budget-usd",
+      "--no-session-persistence",
+      "--append-system-prompt",
+      "--system-prompt",
+      "--permission-prompts none"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Since v2.1.302 a -p run with no permission mode starts in Manual (denies calls needing approval); --bare is slated to become the -p default."
+  },
+  {
+    "topic": "Headless / CLI",
+    "feature": "--output-format json",
+    "doc_url": "https://code.claude.com/docs/en/headless",
+    "fact": "--output-format accepts text (default), json, stream-json. json returns one object with the text in result, plus session_id, usage and total_cost_usd with a per-model cost breakdown. stream-json emits newline-delimited events and needs --verbose (and --include-partial-messages for token deltas); the last line is a result message; system/init lists tools, mcp_servers, plugins; system/api_retry reports retries; denials appear as permission_denials. --input-format accepts text or stream-json.",
+    "identifiers": [
+      "--output-format",
+      "text",
+      "json",
+      "stream-json",
+      "result",
+      "session_id",
+      "total_cost_usd",
+      "--verbose",
+      "--include-partial-messages",
+      "--input-format",
+      "system/init",
+      "system/api_retry",
+      "permission_denials",
+      "mcp_server_errors",
+      "plugin_errors"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Headless / CLI",
+    "feature": "--json-schema",
+    "doc_url": "https://code.claude.com/docs/en/headless",
+    "fact": "Print-mode flag; combine with --output-format json to get schema-validated output in the structured_output field of the JSON response. If the run ends without valid structured output (for example a refusal) the field is absent, so check for it before use. An invalid schema exits with an error; the format keyword is accepted but only annotation, not enforced.",
+    "identifiers": [
+      "--json-schema",
+      "structured_output",
+      "--output-format json"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "MCP (Claude Code and API)",
+    "feature": ".mcp.json",
+    "doc_url": "https://code.claude.com/docs/en/mcp",
+    "fact": "Project-scope MCP config at the repo root, key mcpServers. Entry fields: type (http, stdio, sse, ws, streamable-http alias), url/headers (remote), command/args/env (stdio), timeout, oauth, headersHelper. An entry with url but no type is rejected; no type means stdio. Env expansion ${VAR} and ${VAR:-default} works in command, args, env, url, headers. Scopes: local (default, in ~/.claude.json), project (.mcp.json, needs approval), user; precedence local, project, user, plugin, claude.ai connectors with no field merging.",
+    "identifiers": [
+      ".mcp.json",
+      "mcpServers",
+      "type",
+      "url",
+      "headers",
+      "command",
+      "args",
+      "env",
+      "timeout",
+      "oauth",
+      "headersHelper",
+      "${VAR:-default}",
+      "claude mcp add",
+      "--scope",
+      "--transport",
+      "claude mcp reset-project-choices"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "sse transport is deprecated in favour of http; Claude Code tries HTTP then falls back to SSE (v2.1.265+)."
+  },
+  {
+    "topic": "MCP (Claude Code and API)",
+    "feature": "MCP HTTP server auth headers",
+    "doc_url": "https://code.claude.com/docs/en/mcp",
+    "fact": "Three routes: static --header/-H on claude mcp add (or headers in .mcp.json), OAuth 2.0 via /mcp or claude mcp login (with --callback-port, oauth.scopes), and headersHelper, a command printing a JSON object of string headers (10-second timeout, runs per connection, no caching, re-run once after 401/403). ANTHROPIC_API_KEY-style credential variables are not expanded in remote url/headers. Tool names follow mcp__<server>__<tool>; plugin servers use mcp__plugin_<plugin>_<server>__<tool>.",
+    "identifiers": [
+      "--header",
+      "headersHelper",
+      "claude mcp login",
+      "claude mcp logout",
+      "--callback-port",
+      "oauth.scopes",
+      "mcp__<server>__<tool>",
+      "CLAUDE_CODE_MCP_SERVER_NAME",
+      "CLAUDE_CODE_MCP_SERVER_URL"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "MCP (Claude Code and API)",
+    "feature": "MCP connector (Messages API)",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+    "fact": "Beta feature that lets the Messages API connect to remote MCP servers without a client. Requires beta header mcp-client-2025-11-20; the 2025-04-04 version is deprecated. Config has two parts: mcp_servers (type url, url, name, authorization_token) and an mcp_toolset entry in tools referencing it (allowlist/denylist via default_config and configs, defer_loading settable there). Only MCP tool calls are supported; server must be publicly reachable over HTTP (Streamable HTTP or SSE); local stdio cannot connect. Response blocks: mcp_tool_use, mcp_tool_result. Not ZDR eligible.",
+    "identifiers": [
+      "mcp-client-2025-11-20",
+      "mcp-client-2025-04-04",
+      "mcp_servers",
+      "mcp_toolset",
+      "authorization_token",
+      "default_config",
+      "configs",
+      "mcp_tool_use",
+      "mcp_tool_result"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Old mcp-client-2025-04-04 shape (allowed_tools inside mcp_servers) is deprecated."
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "Messages API tool use",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+    "fact": "Client tools (your own, plus bash/text_editor/memory/computer use) run in your app: Claude returns stop_reason tool_use with tool_use blocks, you reply with a tool_result block carrying the matching tool_use_id. Server tools (web_search, web_fetch, code_execution, tool_search) run on Anthropic's side. A custom tool is name, description, input_schema; strict: true guarantees schema-valid inputs. Tool definitions and tool blocks all count as input tokens, plus a per-model tool-use system prompt overhead (e.g. 286 tokens on Opus 5.5 with auto/none).",
+    "identifiers": [
+      "tool_use",
+      "tool_result",
+      "tool_use_id",
+      "input_schema",
+      "strict",
+      "tools",
+      "web_search_20260209",
+      "server_tool_use"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "tool_choice",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+    "fact": "Request field controlling tool calling. Default {type: auto} lets Claude decide; values auto, none, any and tool appear in the docs (the pricing table keys on auto/none versus any/tool). auto accepts disable_parallel_tool_use: true to cap Claude at one tool call per turn. Exact semantics of any and tool and their interaction with thinking: not verified (define-tools page not fetched).",
+    "identifiers": [
+      "tool_choice",
+      "auto",
+      "any",
+      "tool",
+      "none",
+      "disable_parallel_tool_use"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "tool_choice: tool",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+    "fact": "The tool value is listed as a tool_choice option (it, like any, costs more tool-use system-prompt tokens than auto/none). That it forces one named tool is not stated on the fetched page: not verified.",
+    "identifiers": [
+      "tool_choice",
+      "tool"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "tool_choice: auto",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+    "fact": "Default. Claude decides per turn whether to call a tool or answer directly. Can be steered with system-prompt wording; combine with disable_parallel_tool_use: true for at most one tool call per turn.",
+    "identifiers": [
+      "tool_choice",
+      "auto",
+      "disable_parallel_tool_use"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "stop_reason",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+    "fact": "Seven values: end_turn, max_tokens, stop_sequence, tool_use, pause_turn (server-tool loop hit its default 10-iteration limit; resend the assistant content to continue), refusal (HTTP 200, read stop_details, can retry on a fallback model), model_context_window_exceeded (response filled the context window; treat as truncated). A client tool_use never yields pause_turn.",
+    "identifiers": [
+      "stop_reason",
+      "end_turn",
+      "max_tokens",
+      "stop_sequence",
+      "tool_use",
+      "pause_turn",
+      "refusal",
+      "model_context_window_exceeded",
+      "stop_details"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "refusal and model_context_window_exceeded are newer values; older lists name only the first four."
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "max_tokens",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+    "fact": "Request parameter capping output tokens; hitting it ends the response with stop_reason max_tokens, so raise it or continue the response. Sync output max is 128K tokens on the current models; Batches API can reach 300k with beta header output-300k-2026-03-24. Each batched request needs max_tokens of at least 1.",
+    "identifiers": [
+      "max_tokens",
+      "output-300k-2026-03-24"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "Tool search tool",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+    "fact": "Server-side tool letting Claude discover tools on demand. Two variants: tool_search_tool_regex_20251119 (Claude writes Python regex, 200-char cap) and tool_search_tool_bm25_20251119 (natural language, 500-char cap). Put the full definition of every tool in tools; mark the ones to hide with defer_loading: true; at least one tool (not the search tool) must stay non-deferred, else 400. Up to 10,000 deferred tools; 5 results by default (limit 1-10,000). Preserves prompt caching; a deferred tool cannot carry cache_control. Not metered separately.",
+    "identifiers": [
+      "tool_search_tool_regex_20251119",
+      "tool_search_tool_bm25_20251119",
+      "defer_loading",
+      "tool_reference",
+      "tool_search_tool_result",
+      "server_tool_use"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "tool_reference blocks",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+    "fact": "Blocks of type tool_reference returned inside the search result pointing at discovered tools by tool_name; the API expands them to full definitions server-side. Custom client-side search can also return tool_reference blocks inside a normal tool_result, and each must have a matching definition in top-level tools. Never return a tool_result for a srvtoolu_ id.",
+    "identifiers": [
+      "tool_reference",
+      "tool_name",
+      "tool_search_tool_search_result",
+      "tool_references"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "JSON-encoded tool results",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+    "fact": "The overview shows tool_result content as a plain string or content blocks. A specific recommendation about JSON-encoding tool results: not verified.",
+    "identifiers": [
+      "tool_result"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "Server-side fallback",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+    "fact": "The stop-reason page says a refusal can be retried on a fallback model and links a refusals-and-fallback page (not fetched). Claude Code separately has --fallback-model / fallbackModel for overloaded or retired models. What 'server-side fallback' specifically denotes: not verified.",
+    "identifiers": [
+      "refusal",
+      "--fallback-model",
+      "fallbackModel"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Structured outputs",
+    "feature": "structured outputs JSON schema",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+    "fact": "GA. JSON outputs go in output_config.format with type json_schema; constrained decoding guarantees valid, schema-conformant output (strict tool use via strict: true is the sibling feature; both can be combined). Objects need additionalProperties: false. Unsupported: recursive schemas, numeric and string-length constraints, external $ref, minItems beyond 0/1. Refusals (stop_reason refusal) and max_tokens truncation can yield output that does not match. Incompatible with citations (400) and message prefilling. SDK helpers: client.messages.parse with output_format (Pydantic), zodOutputFormat() (Zod).",
+    "identifiers": [
+      "output_config.format",
+      "json_schema",
+      "strict",
+      "additionalProperties",
+      "output_format",
+      "stop_reason",
+      "client.messages.parse",
+      "zodOutputFormat",
+      "structured-outputs-2025-11-13"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "The old output_format parameter and beta header structured-outputs-2025-11-13 are deprecated; the parameter moved to output_config.format and no header is needed."
+  },
+  {
+    "topic": "Prompt caching, batches, token counting",
+    "feature": "Prompt caching",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+    "fact": "Cache prompt prefixes via cache_control. Automatic caching: one top-level cache_control that moves its breakpoint forward. Explicit breakpoints on blocks: up to 4 per request; lookback window 20 blocks. TTL 5 minutes default, 1 hour at 2x base input write price. Reads cost a fraction of base (Opus 5.5 $0.20 vs $4 base per MTok; Sonnet 5.5 $0.10 vs $2). Minimum cacheable prompt is 512 tokens on Fable 5.1/Opus 5.5/Sonnet 5.5/Haiku 5.5, 1,024 on Opus 4.8 and Sonnet 5/4.6, 4,096 on Opus 4.6/4.5 and Haiku 4.5; shorter prompts silently skip caching. Check cache_read_input_tokens and cache_creation_input_tokens (both 0 means not cached); input_tokens counts only tokens after the last breakpoint. Caches are isolated per workspace on the Claude API.",
+    "identifiers": [
+      "cache_control",
+      "ephemeral",
+      "ttl",
+      "5m",
+      "1h",
+      "cache_read_input_tokens",
+      "cache_creation_input_tokens",
+      "input_tokens"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Minimum cacheable length differs sharply by model generation; older tables show 1,024/2,048 for everything."
+  },
+  {
+    "topic": "Prompt caching, batches, token counting",
+    "feature": "cache_control",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+    "fact": "Marker object, shape {type: ephemeral, ttl: 5m|1h}, placed on a content block (explicit breakpoint) or at the request top level (automatic caching). Put it on the last block whose prefix is identical across requests; marking content that changes every request pays cache writes and never reads. With 4 explicit breakpoints already, a top-level one returns 400. Changing any earlier block invalidates later cache entries.",
+    "identifiers": [
+      "cache_control",
+      "type",
+      "ephemeral",
+      "ttl"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Prompt caching, batches, token counting",
+    "feature": "Message Batches API",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+    "fact": "Asynchronous bulk Messages at a 50% discount. POST /v1/messages/batches with requests each carrying custom_id (1-64 chars, alphanumeric/hyphen/underscore) and params. Limits: 100,000 requests or 256 MB per batch; most finish within 1 hour, expire after 24 hours; results downloadable for 29 days via results_url. processing_status goes in_progress to ended; request_counts has succeeded, errored, canceled, expired. Results can return in any order, so match by custom_id. Prompt-cache hits are best-effort.",
+    "identifiers": [
+      "/v1/messages/batches",
+      "custom_id",
+      "processing_status",
+      "in_progress",
+      "ended",
+      "request_counts",
+      "results_url"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Prompt caching, batches, token counting",
+    "feature": "Token counting",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/token-counting",
+    "fact": "POST /v1/messages/count_tokens takes the same inputs as message creation (system, tools, images, PDFs, thinking) and returns input_tokens. The count is an estimate and can differ slightly from actual usage. Free to use but rate limited per usage tier.",
+    "identifiers": [
+      "/v1/messages/count_tokens",
+      "input_tokens"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Context management",
+    "feature": "Context editing",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+    "fact": "Server-side clearing of old context, beta header context-management-2025-06-27. Two strategies: clear_tool_uses_20250919 (clear oldest tool results) and clear_thinking_20251015 (manage earlier thinking blocks). The docs call server-side compaction the primary strategy for long conversations and context editing the fine-grained option. Clearing invalidates cached prefixes, so use clear_at_least to make it worthwhile.",
+    "identifiers": [
+      "context-management-2025-06-27",
+      "clear_tool_uses_20250919",
+      "clear_thinking_20251015",
+      "clear_at_least"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Context management",
+    "feature": "clear_tool_uses_20250919",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+    "fact": "Strategy type for tool-result clearing, used as {type: clear_tool_uses_20250919} inside context_management.edits. Defaults: trigger 100,000 input tokens (or tool_uses), keep 3 most recent tool use/result pairs, exclude_tools none, clear_tool_inputs false (only results are cleared, calls stay). Cleared results are replaced by placeholder text.",
+    "identifiers": [
+      "clear_tool_uses_20250919",
+      "trigger",
+      "keep",
+      "clear_at_least",
+      "exclude_tools",
+      "clear_tool_inputs"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Context management",
+    "feature": "context_management",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+    "fact": "Top-level request parameter holding an edits array of strategies, sent with beta header context-management-2025-06-27 (client.beta.messages in SDKs).",
+    "identifiers": [
+      "context_management",
+      "edits",
+      "anthropic-beta"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Context management",
+    "feature": "Compaction",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+    "fact": "Server-side summarisation that replaces older turns with a summary. Two API forms: compaction on demand (you request a summary and put the returned block first in messages; beta header compact-2026-09-04 and a top-level compaction parameter) and compaction at a token threshold (API triggers it inside ordinary requests when input tokens reach your trigger; no background run). Client-side compaction in the tool runner was removed in API version 2026-10-21 (migration guide). Claude Code's own /compact and auto-compaction: not verified here.",
+    "identifiers": [
+      "compact-2026-09-04",
+      "compaction",
+      "compaction block"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Compaction is a September 2026 API addition (header compact-2026-09-04) and the tool-runner client-side compaction was removed 2026-10-21; older material describes only context editing or client-side summarising."
+  },
+  {
+    "topic": "Context management",
+    "feature": "Memory tool",
+    "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+    "fact": "Client-side tool: add {type: memory_20250818, name: memory}; Claude issues file commands against a /memories directory and your code executes them and returns tool_result. Commands: view, create, str_replace, insert, delete, rename. Your handler must reject paths outside /memories (path traversal), and you own storage, size and expiry. Pairs with context editing/compaction for long-running agents.",
+    "identifiers": [
+      "memory_20250818",
+      "memory",
+      "/memories",
+      "view",
+      "create",
+      "str_replace",
+      "insert",
+      "delete",
+      "rename"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Citations and search results",
+    "feature": "Citations API",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+    "fact": "GA. Set citations: {enabled: true} on document blocks (all or none in one request); Claude returns citation entries pointing at exact passages. Location types: char_location (plain text), page_location (PDF), content_block_location (custom content). cited_text does not count toward output tokens. Only text citations are supported (no image citations). Incompatible with structured outputs (400). Source documents, not citation blocks, can be cached.",
+    "identifiers": [
+      "citations",
+      "enabled",
+      "char_location",
+      "page_location",
+      "content_block_location",
+      "cited_text"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "API version 2026-10-21 rejects a non-empty citations array on text blocks in user messages (400); the enabled setting on documents and search results is still accepted."
+  },
+  {
+    "topic": "Citations and search results",
+    "feature": "Search results content blocks",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+    "fact": "Block of type search_result with required source (URL or any stable id), title and content (array of text blocks) and optional citations {enabled}. Can be returned from a tool_result or placed top-level in user content; Claude then cites them with search_result_location citations. No beta header; supported on all active models. Citations setting must match across results in a request.",
+    "identifiers": [
+      "search_result",
+      "source",
+      "title",
+      "content",
+      "citations",
+      "search_result_location"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Models and deprecations",
+    "feature": "Model tiers",
+    "doc_url": "https://platform.claude.com/docs/en/models/overview",
+    "fact": "Current lineup per the overview page: Claude Fable 5.1 (claude-fable-5-1; demanding reasoning, long-horizon agentic work, $10/$50 per MTok), Claude Opus 5.5 (claude-opus-5-5; agentic coding and knowledge work, $4/$20), Claude Sonnet 5.5 (claude-sonnet-5-5; speed/intelligence balance, $2/$10), Claude Haiku 5.5 (claude-haiku-5-5; high-volume low-latency, from $0.10/$0.50). All: 1M context, 128K max output, adaptive thinking, knowledge cutoff Jun 2026. Default effort: high (Fable, Sonnet) or medium (Opus 5.5, Haiku 5.5). Mythos models appear on other pages as limited-availability. Legacy still available: claude-fable-5, claude-opus-5, claude-opus-4-8, claude-opus-4-7, claude-opus-4-6, claude-opus-4-5-20251101, claude-sonnet-5, claude-sonnet-4-6, claude-haiku-4-5-20251001.",
+    "identifiers": [
+      "claude-fable-5-1",
+      "claude-opus-5-5",
+      "claude-sonnet-5-5",
+      "claude-haiku-5-5",
+      "claude-fable-5",
+      "claude-opus-5",
+      "claude-opus-4-8",
+      "claude-opus-4-7",
+      "claude-opus-4-6",
+      "claude-opus-4-5-20251101",
+      "claude-sonnet-5",
+      "claude-sonnet-4-6",
+      "claude-haiku-4-5-20251001"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "A fourth top tier (Fable) and the 5.5 generation exist; exam items built around 4.x Opus/Sonnet/Haiku name legacy models. Dateless IDs from the 4.6 generation on are themselves pinned snapshots."
+  },
+  {
+    "topic": "Models and deprecations",
+    "feature": "Claude Haiku 4.5",
+    "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+    "fact": "Legacy but Active; ID claude-haiku-4-5-20251001. Earliest possible retirement on the Anthropic-operated platforms: not sooner than October 15, 2026 (no deprecation notice yet in the table). Recommended replacement target in older deprecations was this model; Haiku 5.5 (claude-haiku-5-5) is the current Haiku. Minimum cacheable prompt 4,096 tokens.",
+    "identifiers": [
+      "claude-haiku-4-5-20251001",
+      "claude-haiku-5-5"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Retirement floor of Oct 15, 2026 is already passed as of 2026-10-28 while the table still shows Active; watch for a deprecation notice."
+  },
+  {
+    "topic": "Models and deprecations",
+    "feature": "Claude Opus 4.8",
+    "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+    "fact": "Legacy but Active; ID claude-opus-4-8; not sooner than May 28, 2027. It is now the replacement target named for retired Opus 4 / 4.1 / Opus 3 in the deprecations history. 1,024-token minimum for caching; supports tool search and structured outputs.",
+    "identifiers": [
+      "claude-opus-4-8"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Newer Opus (5, 5.5) exist; questions treating Opus 4.8 as newest are stale."
+  },
+  {
+    "topic": "Models and deprecations",
+    "feature": "model deprecations",
+    "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+    "fact": "Lifecycle states: Active, Legacy, Deprecated, Retired. At least 60 days notice for publicly released models. Deprecated now: claude-sonnet-4-5-20250929 (deprecated 2026-09-30, retires 2026-11-30, replacement claude-sonnet-5-5); claude-mythos-preview deprecated 2026-06-09. Retired: claude-opus-4-1-20250805 (2026-08-05), claude-opus-4-20250514 and claude-sonnet-4-20250514 (2026-06-15), claude-3-7-sonnet-20250219 and claude-3-5-haiku-20241022 (2026-02-19), claude-3-haiku-20240307 (2026-04-20). Parameter deprecation: temperature, top_p, top_k removed in API version 2026-10-21 (400 even at default). Bedrock and Google-managed set their own dates.",
+    "identifiers": [
+      "claude-sonnet-4-5-20250929",
+      "claude-mythos-preview",
+      "claude-opus-4-1-20250805",
+      "claude-opus-4-20250514",
+      "claude-sonnet-4-20250514",
+      "claude-3-7-sonnet-20250219",
+      "claude-3-5-haiku-20241022",
+      "claude-3-haiku-20240307",
+      "temperature",
+      "top_p",
+      "top_k",
+      "2026-10-21"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Sonnet 4.5 retires 2026-11-30 (30 days from today); sampling-parameter removal landed 2026-10-21."
+  },
+  {
+    "topic": "Models and deprecations",
+    "feature": "effort parameter",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/effort",
+    "fact": "Set via output_config.effort. Level names seen in the Claude Code docs: low, medium, high, xhigh, max (the effort page excerpt read here showed medium and max explicitly). Default is high on most models; Opus 5.5 and Haiku 5.5 default to medium (per this page; the models overview shows Fable 5.1 and Sonnet 5.5 as high). Passing the model's default is identical to omitting it. max is available on the Fable/Mythos models and Opus 5.5/5/4.8 among others. Thinking is adaptive on current models; manual budget_tokens extended thinking is not accepted on later models.",
+    "identifiers": [
+      "output_config.effort",
+      "low",
+      "medium",
+      "high",
+      "max",
+      "xhigh"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "Extended thinking with budget_tokens is deprecated on Opus 4.6/Sonnet 4.6 and rejected on later models; effort plus adaptive thinking replaces it."
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Usage and Cost Admin API",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/usage-cost-api",
+    "fact": "Organization-level reporting for Claude Console accounts: GET /v1/organizations/usage_report/messages (token usage; buckets 1m, 1h, 1d; filter/group by api key, workspace, model, service tier, context window, data residency, speed) and GET /v1/organizations/cost_report (USD as decimal strings in cents; excludes Priority Tier, which you read from the usage endpoint by service_tier). Needs an Admin API key (sk-ant-admin01-...), org:admin OAuth token, or unscoped key; workspace keys fail; unavailable to individual accounts. Claude Enterprise uses the Analytics API; per-user Claude Code cost uses the Claude Code Analytics API.",
+    "identifiers": [
+      "/v1/organizations/usage_report/messages",
+      "/v1/organizations/cost_report",
+      "bucket_width",
+      "group_by[]",
+      "starting_at",
+      "ending_at",
+      "service_tiers[]",
+      "sk-ant-admin01",
+      "org:admin"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": "API version 2026-10-21 renames several Admin API response fields (e.g. workspace_id on API keys becomes scope)."
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "server-managed settings",
+    "doc_url": "https://code.claude.com/docs/en/server-managed-settings",
+    "fact": "Org Owners set Claude Code policy in claude.ai Organization settings > Claude Code > Managed settings; clients fetch at startup and poll hourly. Needs Claude for Teams or Enterprise, Owner/Primary Owner role, and network access to api.anthropic.com. Managed settings sit at the top of the precedence stack and a lower scope cannot override them (a few restrictive keys are exceptions). A managed-mcp.json cannot be delivered this way; use allowedMcpServers/deniedMcpServers keys. Endpoint-managed alternatives: MDM/OS policy or a managed-settings.json file.",
+    "identifiers": [
+      "managed-settings.json",
+      "allowedMcpServers",
+      "deniedMcpServers",
+      "managed-mcp.json",
+      "/status",
+      "requiredMinimumVersion"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Claude for Teams",
+    "doc_url": "https://code.claude.com/docs/en/server-managed-settings",
+    "fact": "Plan on which server-managed settings are available (together with Enterprise). Other Teams plan details: not verified.",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Claude for Enterprise",
+    "doc_url": "https://code.claude.com/docs/en/server-managed-settings",
+    "fact": "Plan on which server-managed settings are available (together with Teams); Enterprise cost/usage reporting goes through the Claude Enterprise Analytics API rather than the Admin API. Other plan details: not verified.",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "CLAUDE_CODE_ENABLE_TELEMETRY",
+    "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+    "fact": "Set to 1 to turn on OpenTelemetry export; required for any telemetry. Exporter variables set in a repository's .claude/settings.json or settings.local.json are ignored, so only user, managed or shell settings can enable or route telemetry. Prompt text is not logged unless OTEL_LOG_USER_PROMPTS=1.",
+    "identifiers": [
+      "CLAUDE_CODE_ENABLE_TELEMETRY",
+      "OTEL_LOG_USER_PROMPTS",
+      "OTEL_LOG_ASSISTANT_RESPONSES"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "OpenTelemetry exporters",
+    "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+    "fact": "Claude Code exports metrics (time series), events via the logs/events protocol, and beta traces. Exporter choices: otlp, prometheus (metrics only), console, none. Protocols for otlp: grpc, http/json, http/protobuf; no default protocol, so you must set one. Metrics include claude_code.session.count, claude_code.cost.usage, claude_code.token.usage, claude_code.lines_of_code.count, claude_code.commit.count, claude_code.pull_request.count, claude_code.code_edit_tool.decision, claude_code.active_time.total. Setting a generic endpoint in managed settings strips developer-set per-signal endpoints.",
+    "identifiers": [
+      "OTEL_METRICS_EXPORTER",
+      "OTEL_LOGS_EXPORTER",
+      "OTEL_TRACES_EXPORTER",
+      "OTEL_EXPORTER_OTLP_PROTOCOL",
+      "OTEL_EXPORTER_OTLP_ENDPOINT",
+      "OTEL_EXPORTER_OTLP_HEADERS",
+      "OTEL_METRIC_EXPORT_INTERVAL",
+      "claude_code.cost.usage",
+      "claude_code.token.usage",
+      "claude_code.session.count"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "OTEL_METRICS_EXPORTER",
+    "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+    "fact": "Selects metrics exporters, comma-separated: otlp, prometheus, console, none (none disables). Logs use OTEL_LOGS_EXPORTER (otlp, console, none). Export interval OTEL_METRIC_EXPORT_INTERVAL defaults to 60000 ms. Selectors follow ordinary per-key precedence, so set them in managed settings to lock them.",
+    "identifiers": [
+      "OTEL_METRICS_EXPORTER",
+      "otlp",
+      "prometheus",
+      "console",
+      "none",
+      "OTEL_METRIC_EXPORT_INTERVAL"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Claude Code usage dashboard",
+    "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+    "fact": "No page describing a built-in 'usage dashboard' was fetched; the telemetry page only discusses building your own dashboards from OTel data, and the Admin API FAQ points to the Claude Code Analytics API for per-user cost. Specific product dashboard behaviour: not verified.",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Projects",
+    "doc_url": null,
+    "fact": "Claude Code docs mention 'projects' only in passing (cloud threads in a project do not apply repo settings). The claude.ai Projects feature itself: not verified.",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Project knowledge",
+    "doc_url": null,
+    "fact": "claude.ai project knowledge: not verified (page not fetched).",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Admin and enterprise",
+    "feature": "Research mode",
+    "doc_url": null,
+    "fact": "claude.ai Research mode: not verified (page not fetched).",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "few-shot prompting",
+    "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "fact": "Prompting best-practices page linked from models overview but not fetched: not verified.",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "system prompt policy",
+    "doc_url": null,
+    "fact": "No page fetched that defines a 'system prompt policy' feature: not verified. (Facts on system prompt flags such as --system-prompt and --append-system-prompt are in the headless/CLI entries.)",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Messages API tool use",
+    "feature": "prompt templates",
+    "doc_url": null,
+    "fact": "Not verified (no page fetched).",
+    "identifiers": [],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  },
+  {
+    "topic": "Claude Code config",
+    "feature": "Claude Code Glob tool",
+    "doc_url": "https://code.claude.com/docs/en/agent-sdk/permissions",
+    "fact": "Glob is a built-in tool name accepted in allowedTools and subagent tools (e.g. read-only sets Read, Grep, Glob). Behaviour, limits and permission semantics of Glob itself: not verified (tools-reference page not fetched).",
+    "identifiers": [
+      "Glob",
+      "Read",
+      "Grep"
+    ],
+    "retrieved": "2026-10-28",
+    "exam_era_risk": null
+  }
+]

@@ -1,0 +1,1020 @@
+{
+ "skill": "claude-prompt-engineering",
+ "gap_concepts": [
+  {
+   "label": "multi-pass code review",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Split a large review into per-file passes plus an interaction pass to avoid diluted attention.",
+    "Add an integration pass that reconciles conflicting per-file recommendations using the shared data flow."
+   ]
+  },
+  {
+   "label": "attention dilution",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Split a large review into per-file passes plus an interaction pass to avoid diluted attention."
+   ]
+  },
+  {
+   "label": "cross-file integration pass",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Add an integration pass that reconciles conflicting per-file recommendations using the shared data flow."
+   ]
+  },
+  {
+   "label": "explicit review criteria",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Rewrite a vague review instruction into concrete flag-only-when conditions to raise precision."
+   ]
+  },
+  {
+   "label": "false-positive reduction",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Rewrite a vague review instruction into concrete flag-only-when conditions to raise precision.",
+    "Add labeled accept and reject examples of a pattern to teach the reviewer the boundary."
+   ]
+  },
+  {
+   "label": "validation-retry loops",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Retry a failed extraction by sending the source, the bad output and a message naming the missing field."
+   ]
+  },
+  {
+   "label": "targeted retry feedback",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Retry a failed extraction by sending the source, the bad output and a message naming the missing field."
+   ]
+  },
+  {
+   "label": "few-shot examples",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Add labeled accept and reject examples of a pattern to teach the reviewer the boundary."
+   ]
+  },
+  {
+   "label": "prompt templates and placeholders",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Separate fixed instructions from variable input using a templated prompt."
+   ]
+  },
+  {
+   "label": "prompt reuse",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Separate fixed instructions from variable input using a templated prompt."
+   ]
+  },
+  {
+   "label": "prompt chaining",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Split generate, review and refine into separate calls so the middle step can be logged."
+   ]
+  },
+  {
+   "label": "inspectable intermediate steps",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Split generate, review and refine into separate calls so the middle step can be logged."
+   ]
+  },
+  {
+   "label": "quote-first grounding",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Have the model extract verbatim passages before analysis to ground long-document review."
+   ]
+  },
+  {
+   "label": "hallucination reduction",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Have the model extract verbatim passages before analysis to ground long-document review."
+   ]
+  },
+  {
+   "label": "ordered step lists",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Format sequential instructions so the execution order cannot be misread."
+   ]
+  },
+  {
+   "label": "sequence ambiguity",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Format sequential instructions so the execution order cannot be misread."
+   ]
+  },
+  {
+   "label": "prompt structure",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Format sequential instructions so the execution order cannot be misread."
+   ]
+  },
+  {
+   "label": "staged task guidance",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Pick the prompt that spells out the stages and ingredients of a persuasive deliverable rather than leaving it open-ended."
+   ]
+  },
+  {
+   "label": "audience and tone specification",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Pick the prompt that spells out the stages and ingredients of a persuasive deliverable rather than leaving it open-ended."
+   ]
+  },
+  {
+   "label": "marketing content prompting",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Pick the prompt that spells out the stages and ingredients of a persuasive deliverable rather than leaving it open-ended."
+   ]
+  },
+  {
+   "label": "revision regressions",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Explain why iterating without recorded requirements lets earlier fixes be silently undone."
+   ]
+  },
+  {
+   "label": "iteration drift",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Explain why iterating without recorded requirements lets earlier fixes be silently undone."
+   ]
+  },
+  {
+   "label": "task decomposition signals",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Judge when one large request should be split into sequential stages."
+   ]
+  },
+  {
+   "label": "multiple deliverables per request",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Judge when one large request should be split into sequential stages."
+   ]
+  },
+  {
+   "label": "dependent stages",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Judge when one large request should be split into sequential stages."
+   ]
+  },
+  {
+   "label": "targeted follow-up refinement",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Write a follow-up instruction that repairs one quality dimension without degrading another."
+   ]
+  },
+  {
+   "label": "readability adjustment",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Write a follow-up instruction that repairs one quality dimension without degrading another."
+   ]
+  },
+  {
+   "label": "preserving accuracy",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Write a follow-up instruction that repairs one quality dimension without degrading another."
+   ]
+  },
+  {
+   "label": "underspecified prompt root cause",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Fix inconsistent classification by specifying categories, format and decision rules, not sampling settings."
+   ]
+  },
+  {
+   "label": "explicit categories and criteria",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Fix inconsistent classification by specifying categories, format and decision rules, not sampling settings."
+   ]
+  },
+  {
+   "label": "temperature versus clarity",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Fix inconsistent classification by specifying categories, format and decision rules, not sampling settings."
+   ]
+  },
+  {
+   "label": "autoregressive generation",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Explain why output arrives incrementally in terms of token-by-token prediction."
+   ]
+  },
+  {
+   "label": "next-token prediction",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Explain why output arrives incrementally in terms of token-by-token prediction."
+   ]
+  },
+  {
+   "label": "prompt clarity testing",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Detect ambiguity in a prompt by having a low-context person follow it literally."
+   ]
+  },
+  {
+   "label": "cold-reader check",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Detect ambiguity in a prompt by having a low-context person follow it literally."
+   ]
+  },
+  {
+   "label": "ambiguity discovery",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Detect ambiguity in a prompt by having a low-context person follow it literally."
+   ]
+  },
+  {
+   "label": "defensive JSON parsing",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Distinguish a length cutoff from malformed output when parsing model JSON."
+   ]
+  },
+  {
+   "label": "stop reason inspection",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Distinguish a length cutoff from malformed output when parsing model JSON."
+   ]
+  },
+  {
+   "label": "XML document tagging",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Structure multi-document prompts with tags and metadata to prevent misattribution."
+   ]
+  },
+  {
+   "label": "source attribution",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Structure multi-document prompts with tags and metadata to prevent misattribution."
+   ]
+  },
+  {
+   "label": "prompt section boundaries",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Structure multi-document prompts with tags and metadata to prevent misattribution."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Enforce multi-step workflow ordering and escalation handoffs with programmatic prerequisites rather than prompt wording, and compile structured handoff summaries for human agents.",
+   "concepts": [
+    "programmatic enforcement",
+    "prerequisite gates",
+    "structured handoff",
+    "multi-concern requests"
+   ],
+   "features": [
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Choose between fixed prompt chains and adaptive decomposition for a workflow, including per-file review passes plus a cross-file integration pass.",
+   "concepts": [
+    "prompt chaining",
+    "adaptive decomposition",
+    "attention dilution",
+    "prioritized plan"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Write tool descriptions and boundaries (inputs, examples, edge cases, when-not-to-use) that disambiguate similar tools, and rename or split overlapping tools.",
+   "concepts": [
+    "tool descriptions",
+    "tool selection",
+    "overlap and misrouting",
+    "system prompt keyword effects"
+   ],
+   "features": [
+    "tool descriptions"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Organize CLAUDE.md across user, project and directory levels, modularize with imports and a rules directory, and diagnose why a teammate is not receiving instructions.",
+   "concepts": [
+    "CLAUDE.md hierarchy",
+    "@import",
+    "rules directory",
+    "user-level not shared"
+   ],
+   "features": [
+    "CLAUDE.md",
+    "@import",
+    ".claude/rules/",
+    "/memory"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Run Claude Code in CI non-interactively with structured JSON output, project context via CLAUDE.md, independent review sessions, and de-duplication against prior findings.",
+   "concepts": [
+    "non-interactive CI",
+    "structured findings",
+    "independent reviewer",
+    "avoid duplicate comments"
+   ],
+   "features": [
+    "-p / --print",
+    "--output-format json",
+    "--json-schema"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Write explicit categorical review criteria with severity definitions instead of vague or confidence-based instructions to cut false positives and preserve developer trust.",
+   "concepts": [
+    "explicit criteria",
+    "false positives",
+    "severity examples",
+    "disable noisy categories"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Use a small set of targeted few-shot examples to stabilize format, show ambiguous-case reasoning, separate acceptable patterns from real issues, and reduce extraction hallucination.",
+   "concepts": [
+    "few-shot",
+    "ambiguous cases",
+    "output format",
+    "generalization"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Enforce schema-compliant output via tool use with JSON schemas, choose the right tool_choice mode, and design nullable fields and enum escape values to prevent fabrication.",
+   "concepts": [
+    "tool_use extraction",
+    "tool_choice",
+    "nullable fields",
+    "other+detail enum"
+   ],
+   "features": [
+    "tool_use",
+    "tool_choice",
+    "JSON Schema"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Build validation-retry loops that feed specific errors back to the model, recognize when retries cannot help because data is missing, and add self-check fields such as calculated vs stated totals.",
+   "concepts": [
+    "retry with error feedback",
+    "semantic vs syntax errors",
+    "detected_pattern",
+    "conflict_detected"
+   ],
+   "features": [
+    "Pydantic"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Select between synchronous and batch processing by latency tolerance, handle batch failures by correlation id, and size submission windows against an SLA.",
+   "concepts": [
+    "Message Batches",
+    "50% discount",
+    "24h window",
+    "custom_id",
+    "SLA windowing"
+   ],
+   "features": [
+    "Message Batches API",
+    "custom_id"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Design multi-instance and multi-pass reviews: independent reviewer without generator reasoning, per-file passes plus integration pass, and confidence reporting for routing.",
+   "concepts": [
+    "self-review limits",
+    "independent instance",
+    "multi-pass",
+    "confidence routing"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Select a Claude model by weighing capability, latency and cost tradeoffs.",
+   "concepts": [
+    "model selection",
+    "tradeoffs"
+   ],
+   "features": [
+    "Claude models"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Design system prompts, templates and guardrails.",
+   "concepts": [
+    "system prompts",
+    "templates",
+    "guardrails"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Apply zero-shot, few-shot and chain-of-thought prompting appropriately.",
+   "concepts": [
+    "zero-shot",
+    "few-shot",
+    "chain-of-thought"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Optimize context windows and token usage.",
+   "concepts": [
+    "context window",
+    "token budget"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Reuse prompts via caching, modular prompts and Skills.",
+   "concepts": [
+    "prompt caching",
+    "modular prompts",
+    "Skills"
+   ],
+   "features": [
+    "prompt caching",
+    "Agent Skills"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Diagnose system faults such as prompt failure, hallucination and model mismatch.",
+   "concepts": [
+    "diagnosis",
+    "hallucination",
+    "model mismatch"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Prompting and Task Execution",
+   "weight_pct": 14,
+   "task": "Write effective prompts for business and technical tasks.",
+   "concepts": [
+    "prompt writing",
+    "business tasks"
+   ],
+   "features": [
+    "claude.ai"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Prompting and Task Execution",
+   "weight_pct": 14,
+   "task": "Break complex requests into structured sub-steps.",
+   "concepts": [
+    "task decomposition",
+    "structured requests"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Prompting and Task Execution",
+   "weight_pct": 14,
+   "task": "Iterate on prompts to raise output quality.",
+   "concepts": [
+    "prompt iteration",
+    "quality"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Prompting and Task Execution",
+   "weight_pct": 14,
+   "task": "Adjust prompting style to task type: analysis, research, drafting or brainstorming.",
+   "concepts": [
+    "task-type adaptation",
+    "analysis/research/drafting/brainstorming"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Configure Claude Projects with instructions and knowledge sources.",
+   "concepts": [
+    "Project setup",
+    "instructions",
+    "knowledge"
+   ],
+   "features": [
+    "Projects"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Write effective system-level instructions.",
+   "concepts": [
+    "system instructions",
+    "Project instructions"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Configuration and Knowledge Management",
+   "weight_pct": 12,
+   "task": "Maintain and update configurations, knowledge sources and instructions over time.",
+   "concepts": [
+    "maintenance",
+    "updating"
+   ],
+   "features": [
+    "Projects"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Troubleshooting and Optimization",
+   "weight_pct": 10,
+   "task": "Diagnose and fix underperforming prompts or poor outputs.",
+   "concepts": [
+    "prompt troubleshooting",
+    "poor output diagnosis"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Apply software engineering foundations: REST, JSON, async programming, version control, SDLC integration, code review and refactoring.",
+   "concepts": [
+    "REST",
+    "JSON",
+    "async",
+    "code review",
+    "refactoring"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Design Claude applications with attention to how instructions are interpreted across interfaces, content boundaries, schema design, session hygiene and plugin management.",
+   "concepts": [
+    "cross-interface behavior",
+    "schema design",
+    "session hygiene",
+    "plugins"
+   ],
+   "features": [
+    "Claude Code",
+    "claude.ai",
+    "Claude API",
+    "plugins"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Manage configuration: CLAUDE.md, settings.json, model version pinning, prompt versioning and plugin dependencies.",
+   "concepts": [
+    "config management",
+    "version pinning",
+    "prompt versioning"
+   ],
+   "features": [
+    "CLAUDE.md",
+    "settings.json",
+    "plugins"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Claude Code",
+   "weight_pct": 3.1,
+   "task": "Operate Claude Code core pieces (rules, skills, commands, agents, agent memory) and features such as sessions, slash commands, headless and streaming modes and auto mode, plus repo initialization and settings.json.",
+   "concepts": [
+    "Claude Code components",
+    "headless mode",
+    "CLAUDE.md hierarchy",
+    "settings"
+   ],
+   "features": [
+    "Claude Code",
+    "CLAUDE.md",
+    "settings.json",
+    "slash commands",
+    "Agent Skills",
+    "auto mode"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Explain LLM fundamentals (tokens, context window, sampling, non-determinism), model modes (fast mode, extended and adaptive thinking, effort levels) and zero/single/multi-shot prompting.",
+   "concepts": [
+    "tokens",
+    "sampling",
+    "thinking modes",
+    "effort levels",
+    "multi-shot"
+   ],
+   "features": [
+    "extended thinking",
+    "adaptive thinking",
+    "effort levels",
+    "fast mode"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Control context with window management, drift and bloat prevention (tool-output pruning, compaction) and isolation via subagents or multi-step workflows.",
+   "concepts": [
+    "context window",
+    "compaction",
+    "tool output pruning",
+    "context isolation"
+   ],
+   "features": [
+    "compaction",
+    "subagents"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Engineer prompts with clear instructions, few-shot examples, system-vs-user placement, output constraints, iterative refinement and input sanitization.",
+   "concepts": [
+    "instruction clarity",
+    "few-shot",
+    "system vs user",
+    "input sanitization"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Produce, validate and consume Claude output using structured output, response validation, defensive parsing and skepticism toward confident answers.",
+   "concepts": [
+    "structured output",
+    "defensive parsing",
+    "response validation"
+   ],
+   "features": [
+    "structured outputs"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Security and Safety",
+   "weight_pct": 8.1,
+   "task": "Apply AI application security: prompt-injection and jailbreak defense, untrusted input handling, leakage and PII protection, and authn/authz integrity.",
+   "concepts": [
+    "prompt injection",
+    "untrusted input",
+    "PII",
+    "data leakage"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Tools and MCPs",
+   "weight_pct": 10.6,
+   "task": "Develop MCP servers: author, deploy and integrate them, exposing resources, tools and prompts over stdio or sockets.",
+   "concepts": [
+    "MCP server authoring",
+    "resources/tools/prompts",
+    "stdio"
+   ],
+   "features": [
+    "MCP"
+   ],
+   "kind": "mcp"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "Structured outputs",
+   "feature": "structured outputs JSON schema",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+   "fact": "GA. JSON outputs go in output_config.format with type json_schema; constrained decoding guarantees valid, schema-conformant output (strict tool use via strict: true is the sibling feature; both can be combined). Objects need additionalProperties: false. Unsupported: recursive schemas, numeric and string-length constraints, external $ref, minItems beyond 0/1. Refusals (stop_reason refusal) and max_tokens truncation can yield output that does not match. Incompatible with citations (400) and message prefilling. SDK helpers: client.messages.parse with output_format (Pydantic), zodOutputFormat() (Zod).",
+   "identifiers": [
+    "output_config.format",
+    "json_schema",
+    "strict",
+    "additionalProperties",
+    "output_format",
+    "stop_reason",
+    "client.messages.parse",
+    "zodOutputFormat",
+    "structured-outputs-2025-11-13"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "The old output_format parameter and beta header structured-outputs-2025-11-13 are deprecated; the parameter moved to output_config.format and no header is needed."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "Model tiers",
+   "doc_url": "https://platform.claude.com/docs/en/models/overview",
+   "fact": "Current lineup per the overview page: Claude Fable 5.1 (claude-fable-5-1; demanding reasoning, long-horizon agentic work, $10/$50 per MTok), Claude Opus 5.5 (claude-opus-5-5; agentic coding and knowledge work, $4/$20), Claude Sonnet 5.5 (claude-sonnet-5-5; speed/intelligence balance, $2/$10), Claude Haiku 5.5 (claude-haiku-5-5; high-volume low-latency, from $0.10/$0.50). All: 1M context, 128K max output, adaptive thinking, knowledge cutoff Jun 2026. Default effort: high (Fable, Sonnet) or medium (Opus 5.5, Haiku 5.5). Mythos models appear on other pages as limited-availability. Legacy still available: claude-fable-5, claude-opus-5, claude-opus-4-8, claude-opus-4-7, claude-opus-4-6, claude-opus-4-5-20251101, claude-sonnet-5, claude-sonnet-4-6, claude-haiku-4-5-20251001.",
+   "identifiers": [
+    "claude-fable-5-1",
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-fable-5",
+    "claude-opus-5",
+    "claude-opus-4-8",
+    "claude-opus-4-7",
+    "claude-opus-4-6",
+    "claude-opus-4-5-20251101",
+    "claude-sonnet-5",
+    "claude-sonnet-4-6",
+    "claude-haiku-4-5-20251001"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "A fourth top tier (Fable) and the 5.5 generation exist; exam items built around 4.x Opus/Sonnet/Haiku name legacy models. Dateless IDs from the 4.6 generation on are themselves pinned snapshots."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "Claude Haiku 4.5",
+   "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "fact": "Legacy but Active; ID claude-haiku-4-5-20251001. Earliest possible retirement on the Anthropic-operated platforms: not sooner than October 15, 2026 (no deprecation notice yet in the table). Recommended replacement target in older deprecations was this model; Haiku 5.5 (claude-haiku-5-5) is the current Haiku. Minimum cacheable prompt 4,096 tokens.",
+   "identifiers": [
+    "claude-haiku-4-5-20251001",
+    "claude-haiku-5-5"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Retirement floor of Oct 15, 2026 is already passed as of 2026-10-28 while the table still shows Active; watch for a deprecation notice."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "Claude Opus 4.8",
+   "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "fact": "Legacy but Active; ID claude-opus-4-8; not sooner than May 28, 2027. It is now the replacement target named for retired Opus 4 / 4.1 / Opus 3 in the deprecations history. 1,024-token minimum for caching; supports tool search and structured outputs.",
+   "identifiers": [
+    "claude-opus-4-8"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Newer Opus (5, 5.5) exist; questions treating Opus 4.8 as newest are stale."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "model deprecations",
+   "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "fact": "Lifecycle states: Active, Legacy, Deprecated, Retired. At least 60 days notice for publicly released models. Deprecated now: claude-sonnet-4-5-20250929 (deprecated 2026-09-30, retires 2026-11-30, replacement claude-sonnet-5-5); claude-mythos-preview deprecated 2026-06-09. Retired: claude-opus-4-1-20250805 (2026-08-05), claude-opus-4-20250514 and claude-sonnet-4-20250514 (2026-06-15), claude-3-7-sonnet-20250219 and claude-3-5-haiku-20241022 (2026-02-19), claude-3-haiku-20240307 (2026-04-20). Parameter deprecation: temperature, top_p, top_k removed in API version 2026-10-21 (400 even at default). Bedrock and Google-managed set their own dates.",
+   "identifiers": [
+    "claude-sonnet-4-5-20250929",
+    "claude-mythos-preview",
+    "claude-opus-4-1-20250805",
+    "claude-opus-4-20250514",
+    "claude-sonnet-4-20250514",
+    "claude-3-7-sonnet-20250219",
+    "claude-3-5-haiku-20241022",
+    "claude-3-haiku-20240307",
+    "temperature",
+    "top_p",
+    "top_k",
+    "2026-10-21"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Sonnet 4.5 retires 2026-11-30 (30 days from today); sampling-parameter removal landed 2026-10-21."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "effort parameter",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/effort",
+   "fact": "Set via output_config.effort. Level names seen in the Claude Code docs: low, medium, high, xhigh, max (the effort page excerpt read here showed medium and max explicitly). Default is high on most models; Opus 5.5 and Haiku 5.5 default to medium (per this page; the models overview shows Fable 5.1 and Sonnet 5.5 as high). Passing the model's default is identical to omitting it. max is available on the Fable/Mythos models and Opus 5.5/5/4.8 among others. Thinking is adaptive on current models; manual budget_tokens extended thinking is not accepted on later models.",
+   "identifiers": [
+    "output_config.effort",
+    "low",
+    "medium",
+    "high",
+    "max",
+    "xhigh"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Extended thinking with budget_tokens is deprecated on Opus 4.6/Sonnet 4.6 and rejected on later models; effort plus adaptive thinking replaces it."
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__guardrails-for-claude-apps-jailbreaks-prompt-injection-hallucinations-and-prompt-leaks.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__prompt-caching-and-modular-prompt-layout.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__prompt-level-guardrails-jailbreaks-prompt-injection-hallucinations-and-refusals.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__system-prompts-and-reusable-prompt-templates-for-claude.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__explicit-review-criteria-vs-vague-instructions-in-claude-prompts.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__structured-outputs-and-strict-tool-use-for-reliable-json.txt"
+ ],
+ "lesson_words": 24688
+}
