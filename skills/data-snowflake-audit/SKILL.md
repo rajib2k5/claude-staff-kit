@@ -6,6 +6,7 @@ description: Audit a Snowflake account for RBAC hygiene, warehouse topology, cre
 # Snowflake account audit
 
 Read `~/.claude/rules/snowflake-standards.md`.
+If the Snowflake MCP server is unavailable, run every query with the `snowflake-sql` skill (`~/.claude/skills/snowflake-sql/sf.py`; the PAT comes from the environment variable named in its `config.json`, and it is read-only by default).
 
 Every finding must come from a query you executed, with the **window it covers** stated. Note that
 `ACCOUNT_USAGE` has up to 45 minutes of latency and 365 days of retention, while `INFORMATION_SCHEMA` is

@@ -6,6 +6,7 @@ description: Investigate and reduce warehouse or cloud spend — establish unit 
 # Cost investigation
 
 Read `~/.claude/rules/performance-and-cost.md` and `snowflake-standards.md`.
+If the Snowflake MCP server is unavailable, run every query with the `snowflake-sql` skill (`~/.claude/skills/snowflake-sql/sf.py`; the PAT comes from the environment variable named in its `config.json`, and it is read-only by default).
 
 The output is a number a decision-maker will act on, which makes accuracy the whole job. An optimistic
 saving that does not materialise costs more credibility than finding nothing.
