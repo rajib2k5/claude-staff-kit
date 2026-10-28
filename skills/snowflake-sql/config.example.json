@@ -1,0 +1,14 @@
+{
+  "default_profile": "default",
+  "profiles": {
+    "default": {
+      "account_url": "https://<org>-<account>.snowflakecomputing.com",
+      "token_var": "SNOWFLAKE_PAT",
+      "role": null,
+      "warehouse": null,
+      "database": null,
+      "schema": null,
+      "protected_schemas": []
+    }
+  }
+}

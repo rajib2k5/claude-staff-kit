@@ -11,3 +11,6 @@ __pycache__/
 .cache/
 # graphify intermediate files (regenerable)
 docs/skill-gap-2026-10/graphify-out/.graphify_*
+
+# Per-machine Snowflake account and project profiles; skills/snowflake-sql/config.example.json is the template
+skills/snowflake-sql/config.json
