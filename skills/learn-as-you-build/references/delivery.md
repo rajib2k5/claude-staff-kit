@@ -15,6 +15,7 @@ When the host offers an inline interactive widget tool, use it. An example is a 
      2. Lesson 1, question 1, lesson 2, question 2, and so on.
      3. The explain-it-back screen.
    - Instant feedback. After the user picks an option, lock the pick and show the explanation of every option. Mark the right one and the chosen one.
+   - A **Skip** button on each question. It records `Q2: skipped` in the results.
    - A **Review lesson** button after a miss. It opens that lesson. A **Back** button there returns to the same screen with the pick still locked. The widget does not ask the question again now.
    - The path of the full doc at the end of every lesson.
    - One text box for each explain-it-back question. No feedback shows here. Grading waits.
@@ -31,6 +32,7 @@ R1: C right
 Q1: B right
 Q2: A wrong, reviewed lesson 2
 Q3: C right
+Q4: skipped
 EXPLAIN-IT-BACK
 1. <the user's text>
 2. <the user's text>
@@ -38,7 +40,7 @@ EXPLAIN-IT-BACK
 
 Lines that start with R are re-asks of missed topics. When no topic was re-asked, leave them out.
 
-When this message arrives, grade the explain-it-back answers (see `quiz-item-template.md`). Then write the scores and missed topics to `LEARNING_LOG.md`. A right R line clears its topic. Then wait for "continue".
+When this message arrives, grade the explain-it-back answers (see `quiz-item-template.md`). Then write the scores and missed topics to `LEARNING_LOG.md`. A right R line clears its topic. A skipped line adds its topic to the missed-topics list. In `full` mode, then wait for "continue". In `lite` mode, keep working.
 
 ## Format 2: plain markdown in chat
 
@@ -89,7 +91,7 @@ B. <option>
 C. <option>
 D. <option>
 
-Reply with a letter. Reply "skip question" to skip this one question. Say "skip the quiz" to skip the rest of the quiz for this milestone.
+Reply with a letter. Reply "skip question" to skip this one question. A skipped question gets no grade. Its topic goes to the missed-topics list. Say "skip the quiz" to skip the rest of the quiz for this milestone.
 ```
 
 **Message 2: the user replies "B". You send the explanation of every option**

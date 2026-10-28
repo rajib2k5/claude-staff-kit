@@ -83,7 +83,7 @@ Ask 5 to 8, after the last pair. Each one is a question that an interviewer asks
 Grader's notes (keep them out of the message to the user): Lesson: <the lesson this question maps to>. Points: <two or three points a good answer covers, each with the `file:line` that backs it>
 ```
 
-Mix the types. Ask for one data-flow walk, one trade-off ("why this over that"), one failure case, and one "what breaks first if the load grows" question. Link the load question to the "Why this design" row it extends. Every explain-it-back question maps to a lesson.
+Mix the types. Ask for one data-flow walk, one trade-off ("why this over that"), one failure case, and one "what breaks first if the load grows" question. Make one lesson from the "Why this design" table. Map the load question to that lesson. Every explain-it-back question maps to a lesson.
 
 ## Grading format
 

@@ -32,24 +32,25 @@ The user can switch at any time with a short phrase. Match the intent, not the e
 | "learning: lite", "keep it light" | `lite` | "Mode is now lite: no pause, a short recap and up to 3 pairs, docs still written. Say 'learning: deferred' to skip the quizzes." |
 | "I'm on a deadline", "quiz me later", "no learning checkpoints", "learning: deferred" | `deferred` | "Mode is now deferred: no quizzes, docs still written. Say 'learning: off' to skip the docs too." |
 | "learning: off", "stop the lessons" | `off` | "Mode is now off: no quizzes, no docs. Say 'learning: deferred' to get the docs back." |
-| "skip this one", "skip the quiz" | `deferred` for the current milestone only | "Skipped the quiz for milestone N. Say 'learning: deferred' to skip all of them." |
+| "skip the quiz" | No quiz for this milestone. The mode does not change. | "Skipped the quiz for milestone N. Say 'learning: deferred' to skip all of them." |
 
-Switch at once. Every confirmation states the scope and what still happens. Record a lasting switch in `LEARNING_LOG.md`. A one-milestone skip is not lasting: add that milestone to the owed list.
+Switch at once. Every confirmation states the scope and what still happens. Record a lasting switch in `LEARNING_LOG.md`. A one-milestone skip is not lasting: add that milestone to the owed list. In `off` mode, a skip writes nothing.
 
 ### Set a default
 
-Put one line in the project: `Learning mode: deferred`. It can live in the CLAUDE.md of the project or in `LEARNING_LOG.md`. If the sources disagree, the latest message from the user wins. If no message decides, the less intrusive mode wins (`off`, then `deferred`, then `lite`, then `full`). Say which mode you use in one line. When you write the mode line to CLAUDE.md, write the same line to `LEARNING_LOG.md`.
+Put one line in the project: `Learning mode: deferred`. It can live in the CLAUDE.md of the project or in `LEARNING_LOG.md`. If the sources disagree, the latest message from the user wins. If no message decides, the less intrusive mode wins (`off`, then `deferred`, then `lite`, then `full`). Say which mode you use in one line. When you write the mode line to CLAUDE.md, write the same line to `LEARNING_LOG.md`. If CLAUDE.md holds a less intrusive line than the user's switch, say in one line that CLAUDE.md wins next session, and offer to change it.
 
-In a shared repo, ask before you create `LEARNING_LOG.md`. Offer to add it to `.gitignore`. One developer's mode must not change the mode for others.
+In a shared repo, add `LEARNING_LOG.md` to `.git/info/exclude` before you create it. That file stays on this machine. Say so in one line. One developer's mode must not change the mode for others. When you ask the mode question in a shared repo, also ask whether the milestone docs belong in the repo. If not, write them under `.learning/` and add that path to `.git/info/exclude` too.
 
 ### Rules for every mode
 
-- **Ask once.** When the skill starts on a project with no mode set, ask which mode to use. Recommend `full` for a learning project. Record the answer as the `Learning mode:` line. Respect it and do not ask again. If the user does not answer, write `Learning mode: deferred` to `LEARNING_LOG.md` and say so in one line. Then keep working. In a shared repo, use `deferred` for this session only and do not create the file.
+- **Ask once.** When the skill starts on a project with no mode set, ask which mode to use. Recommend `full` for a learning project. Record the answer as the `Learning mode:` line. Respect it and do not ask again. If the user does not answer, write `Learning mode: deferred` to `LEARNING_LOG.md` and say so in one line. Then keep working.
 - **Ask only before a build.** Ask the mode question only before you build. A request to explain existing code is not a build. Answer it, and do not ask.
 - **When unsure, use `deferred`.** If no mode is set and the user is in a hurry, use `deferred`. Say so in one line.
 - **Never block urgent work.** A hotfix, an incident, or "just ship it" never waits for a checkpoint. If a checkpoint is open, mark it owed in the log and do the work. Doc writing never delays urgent work. Log "docs owed" and continue.
-- **Catch up on request.** "Quiz me on milestone 2" runs that checkpoint, in any mode. In `off` mode, ask which files or feature that milestone covers, then build the checkpoint from the code. In the other modes, build it from the milestone docs. If the walkthrough doc does not exist, say so and offer to write it from the code.
-- **A one-off skip is one milestone.** After "skip this one" or "skip the quiz", the next milestone follows the mode again.
+- **Catch up on request.** "Quiz me on milestone 2" runs that checkpoint, in any mode. In `off` mode, ask which files or feature that milestone covers, then build the checkpoint from the code. In `off` mode, the catch-up writes nothing. Do not log misses. End each lesson with its `file:line`, not a doc link. In the other modes, build it from the milestone docs. If the walkthrough doc does not exist, say so and offer to write it from the code.
+- **A one-off skip is one milestone.** After "skip the quiz", the next milestone follows the mode again.
+- **A skipped question.** A skipped question gets no grade. Its topic goes to the missed-topics list.
 
 ## The loop
 
