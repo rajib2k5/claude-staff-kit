@@ -5,6 +5,8 @@ argument-hint: [query, query_id, or model name]
 
 Invoke the `data-snowflake-tune` skill.
 
+If the Snowflake MCP server is unavailable, run every query with the `snowflake-sql` skill (`~/.claude/skills/snowflake-sql/sf.py`; the PAT comes from the environment variable named in its `config.json`, and it is read-only by default).
+
 Target: $ARGUMENTS
 
 Diagnose **in this order** — the order matters because the wrong lever costs money and fixes nothing:
