@@ -1,0 +1,724 @@
+{
+ "skill": "claude-tool-and-mcp-design",
+ "gap_concepts": [
+  {
+   "label": "tool granularity",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Split a multi-behavior tool into focused tools so the model picks the right behavior reliably."
+   ]
+  },
+  {
+   "label": "single-purpose tools",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Split a multi-behavior tool into focused tools so the model picks the right behavior reliably."
+   ]
+  },
+  {
+   "label": "environment variable expansion",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Share an MCP server config through the repo while keeping personal tokens in each user's environment."
+   ]
+  },
+  {
+   "label": "tool description quality",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Diagnose misuse of a tool as a documentation gap in its description and input schema."
+   ]
+  },
+  {
+   "label": "input schema documentation",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Diagnose misuse of a tool as a documentation gap in its description and input schema."
+   ]
+  },
+  {
+   "label": "MCP server debugging",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Diagnose a connected MCP server exposing zero tools by reconnecting then reading debug logs."
+   ]
+  },
+  {
+   "label": "tool error feedback loop",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+   ]
+  },
+  {
+   "label": "is_error tool results",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+   ]
+  },
+  {
+   "label": "strict tool schemas",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+   ]
+  },
+  {
+   "label": "tool description clarity",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Recover from missing tool arguments through error results, schema enforcement and better descriptions."
+   ]
+  },
+  {
+   "label": "in-process MCP server",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Expose a proprietary service to an agent through a custom tool hosted in-process."
+   ]
+  },
+  {
+   "label": "built-in tools first",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Start from the SDK's shipped tools when the job involves only files, shell and search."
+   ]
+  },
+  {
+   "label": "avoid unnecessary custom tooling",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Start from the SDK's shipped tools when the job involves only files, shell and search."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Build an agentic loop that keeps iterating while the stop reason signals a tool request and ends when the model signals it is done, feeding tool results back each turn.",
+   "concepts": [
+    "agentic loop",
+    "stop_reason",
+    "tool results in history",
+    "model-driven control"
+   ],
+   "features": [
+    "Claude API",
+    "stop_reason"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Use SDK hooks to normalize tool results before the model sees them and to intercept outgoing tool calls that violate business rules, redirecting to an alternative workflow.",
+   "concepts": [
+    "PostToolUse normalization",
+    "call interception",
+    "deterministic vs probabilistic compliance"
+   ],
+   "features": [
+    "PostToolUse hook",
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Manage session state by resuming named sessions, forking from a shared baseline, and deciding between resume and a fresh session seeded with a summary when tool results are stale.",
+   "concepts": [
+    "session resumption",
+    "fork_session",
+    "stale tool results",
+    "informing about file changes"
+   ],
+   "features": [
+    "--resume",
+    "fork_session"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Write tool descriptions and boundaries (inputs, examples, edge cases, when-not-to-use) that disambiguate similar tools, and rename or split overlapping tools.",
+   "concepts": [
+    "tool descriptions",
+    "tool selection",
+    "overlap and misrouting",
+    "system prompt keyword effects"
+   ],
+   "features": [
+    "tool descriptions"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Return structured MCP tool errors that distinguish transient, validation, business and permission failures with retryability metadata, and separate access failures from valid empty results.",
+   "concepts": [
+    "isError",
+    "error categories",
+    "retryable vs non-retryable",
+    "local recovery"
+   ],
+   "features": [
+    "MCP isError flag"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Give each agent a scoped tool set, avoid tool overload, and use tool_choice (auto, any, forced) to control whether and which tool is called.",
+   "concepts": [
+    "scoped tools",
+    "tool overload",
+    "tool_choice",
+    "constrained alternatives"
+   ],
+   "features": [
+    "tool_choice"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Integrate MCP servers with Claude Code using project-scoped and user-scoped configuration, environment-variable expansion for secrets, and resources for content catalogs.",
+   "concepts": [
+    "MCP scoping",
+    "env var expansion",
+    "MCP resources",
+    "community vs custom servers"
+   ],
+   "features": [
+    ".mcp.json",
+    "~/.claude.json",
+    "MCP resources"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Pick the right built-in tool (Grep, Glob, Read, Write, Edit, Bash) for each job and build codebase understanding incrementally, with Read+Write as the fallback when Edit anchors are not unique.",
+   "concepts": [
+    "Grep vs Glob",
+    "Edit uniqueness",
+    "incremental exploration",
+    "tracing wrappers"
+   ],
+   "features": [
+    "Read",
+    "Write",
+    "Edit",
+    "Bash",
+    "Grep",
+    "Glob"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Create team slash commands and skills with the right scope and frontmatter (forked context, tool restrictions, argument hints), and choose skills versus always-loaded CLAUDE.md.",
+   "concepts": [
+    "project vs user commands",
+    "SKILL.md frontmatter",
+    "context fork",
+    "skills vs CLAUDE.md"
+   ],
+   "features": [
+    ".claude/commands/",
+    ".claude/skills/",
+    "context: fork",
+    "allowed-tools",
+    "argument-hint"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Enforce schema-compliant output via tool use with JSON schemas, choose the right tool_choice mode, and design nullable fields and enum escape values to prevent fabrication.",
+   "concepts": [
+    "tool_use extraction",
+    "tool_choice",
+    "nullable fields",
+    "other+detail enum"
+   ],
+   "features": [
+    "tool_use",
+    "tool_choice",
+    "JSON Schema"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Preserve critical facts in long interactions by keeping a persistent case-facts block, trimming verbose tool output, and ordering inputs to counter lost-in-the-middle effects.",
+   "concepts": [
+    "progressive summarization risk",
+    "case facts",
+    "lost in the middle",
+    "tool output trimming"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Assess an agent or tool configuration for capability bloat and excess permissions.",
+   "concepts": [
+    "capability bloat",
+    "least privilege"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Choose the integration mechanism (MCP, API/CLI, agent-to-agent) for a situation.",
+   "concepts": [
+    "protocol selection",
+    "MCP vs API vs agent-to-agent"
+   ],
+   "features": [
+    "MCP"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Monitor system performance with logging and observability tooling.",
+   "concepts": [
+    "logging",
+    "observability"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Developer Productivity & Operational Enablement",
+   "weight_pct": 7,
+   "task": "Configure Claude tools and environments such as Claude Code for teams.",
+   "concepts": [
+    "team configuration",
+    "environment setup"
+   ],
+   "features": [
+    "Claude Code"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Developer Productivity & Operational Enablement",
+   "weight_pct": 7,
+   "task": "Improve developer workflows with AI-assisted tooling.",
+   "concepts": [
+    "developer workflow",
+    "AI-assisted tooling"
+   ],
+   "features": [
+    "Claude Code"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Agents and Workflows",
+   "weight_pct": 14.7,
+   "task": "Apply common agent patterns (tool-use loops, subagents, memory, context management) and agentic frameworks such as Strands, LangGraph and PydanticAI.",
+   "concepts": [
+    "agent patterns",
+    "memory",
+    "agent frameworks"
+   ],
+   "features": [
+    "Strands",
+    "LangGraph",
+    "PydanticAI"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Use Claude API mechanics: messages, tools, streaming, vision, thinking, caching, third-party vendor access, batch use and the realtime-vs-batch tradeoff.",
+   "concepts": [
+    "Messages API",
+    "streaming and vision",
+    "thinking",
+    "caching",
+    "batch vs realtime"
+   ],
+   "features": [
+    "Messages API",
+    "Message Batches API",
+    "prompt caching",
+    "extended thinking"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Control context with window management, drift and bloat prevention (tool-output pruning, compaction) and isolation via subagents or multi-step workflows.",
+   "concepts": [
+    "context window",
+    "compaction",
+    "tool output pruning",
+    "context isolation"
+   ],
+   "features": [
+    "compaction",
+    "subagents"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Tools and MCPs",
+   "weight_pct": 10.6,
+   "task": "Implement tools well: function calling, tool descriptions, error handling, dispatch in an agentic harness, client-side vs server-side tools, approval patterns and tool set construction.",
+   "concepts": [
+    "tool use",
+    "client vs server tools",
+    "approval patterns"
+   ],
+   "features": [
+    "tool use",
+    "function calling"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Tools and MCPs",
+   "weight_pct": 10.6,
+   "task": "Develop MCP servers: author, deploy and integrate them, exposing resources, tools and prompts over stdio or sockets.",
+   "concepts": [
+    "MCP server authoring",
+    "resources/tools/prompts",
+    "stdio"
+   ],
+   "features": [
+    "MCP"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Tools and MCPs",
+   "weight_pct": 10.6,
+   "task": "Weigh built-in tools, custom tools, Skills and MCPs to choose the right extension mechanism.",
+   "concepts": [
+    "extension tradeoffs",
+    "Skills vs MCP"
+   ],
+   "features": [
+    "Agent Skills",
+    "MCP"
+   ],
+   "kind": "mcp"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "MCP (Claude Code and API)",
+   "feature": ".mcp.json",
+   "doc_url": "https://code.claude.com/docs/en/mcp",
+   "fact": "Project-scope MCP config at the repo root, key mcpServers. Entry fields: type (http, stdio, sse, ws, streamable-http alias), url/headers (remote), command/args/env (stdio), timeout, oauth, headersHelper. An entry with url but no type is rejected; no type means stdio. Env expansion ${VAR} and ${VAR:-default} works in command, args, env, url, headers. Scopes: local (default, in ~/.claude.json), project (.mcp.json, needs approval), user; precedence local, project, user, plugin, claude.ai connectors with no field merging.",
+   "identifiers": [
+    ".mcp.json",
+    "mcpServers",
+    "type",
+    "url",
+    "headers",
+    "command",
+    "args",
+    "env",
+    "timeout",
+    "oauth",
+    "headersHelper",
+    "${VAR:-default}",
+    "claude mcp add",
+    "--scope",
+    "--transport",
+    "claude mcp reset-project-choices"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "sse transport is deprecated in favour of http; Claude Code tries HTTP then falls back to SSE (v2.1.265+)."
+  },
+  {
+   "topic": "MCP (Claude Code and API)",
+   "feature": "MCP HTTP server auth headers",
+   "doc_url": "https://code.claude.com/docs/en/mcp",
+   "fact": "Three routes: static --header/-H on claude mcp add (or headers in .mcp.json), OAuth 2.0 via /mcp or claude mcp login (with --callback-port, oauth.scopes), and headersHelper, a command printing a JSON object of string headers (10-second timeout, runs per connection, no caching, re-run once after 401/403). ANTHROPIC_API_KEY-style credential variables are not expanded in remote url/headers. Tool names follow mcp__<server>__<tool>; plugin servers use mcp__plugin_<plugin>_<server>__<tool>.",
+   "identifiers": [
+    "--header",
+    "headersHelper",
+    "claude mcp login",
+    "claude mcp logout",
+    "--callback-port",
+    "oauth.scopes",
+    "mcp__<server>__<tool>",
+    "CLAUDE_CODE_MCP_SERVER_NAME",
+    "CLAUDE_CODE_MCP_SERVER_URL"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "MCP (Claude Code and API)",
+   "feature": "MCP connector (Messages API)",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+   "fact": "Beta feature that lets the Messages API connect to remote MCP servers without a client. Requires beta header mcp-client-2025-11-20; the 2025-04-04 version is deprecated. Config has two parts: mcp_servers (type url, url, name, authorization_token) and an mcp_toolset entry in tools referencing it (allowlist/denylist via default_config and configs, defer_loading settable there). Only MCP tool calls are supported; server must be publicly reachable over HTTP (Streamable HTTP or SSE); local stdio cannot connect. Response blocks: mcp_tool_use, mcp_tool_result. Not ZDR eligible.",
+   "identifiers": [
+    "mcp-client-2025-11-20",
+    "mcp-client-2025-04-04",
+    "mcp_servers",
+    "mcp_toolset",
+    "authorization_token",
+    "default_config",
+    "configs",
+    "mcp_tool_use",
+    "mcp_tool_result"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Old mcp-client-2025-04-04 shape (allowed_tools inside mcp_servers) is deprecated."
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "Messages API tool use",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "Client tools (your own, plus bash/text_editor/memory/computer use) run in your app: Claude returns stop_reason tool_use with tool_use blocks, you reply with a tool_result block carrying the matching tool_use_id. Server tools (web_search, web_fetch, code_execution, tool_search) run on Anthropic's side. A custom tool is name, description, input_schema; strict: true guarantees schema-valid inputs. Tool definitions and tool blocks all count as input tokens, plus a per-model tool-use system prompt overhead (e.g. 286 tokens on Opus 5.5 with auto/none).",
+   "identifiers": [
+    "tool_use",
+    "tool_result",
+    "tool_use_id",
+    "input_schema",
+    "strict",
+    "tools",
+    "web_search_20260209",
+    "server_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_choice",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "Request field controlling tool calling. Default {type: auto} lets Claude decide; values auto, none, any and tool appear in the docs (the pricing table keys on auto/none versus any/tool). auto accepts disable_parallel_tool_use: true to cap Claude at one tool call per turn. Exact semantics of any and tool and their interaction with thinking: not verified (define-tools page not fetched).",
+   "identifiers": [
+    "tool_choice",
+    "auto",
+    "any",
+    "tool",
+    "none",
+    "disable_parallel_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_choice: tool",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "The tool value is listed as a tool_choice option (it, like any, costs more tool-use system-prompt tokens than auto/none). That it forces one named tool is not stated on the fetched page: not verified.",
+   "identifiers": [
+    "tool_choice",
+    "tool"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_choice: auto",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "Default. Claude decides per turn whether to call a tool or answer directly. Can be steered with system-prompt wording; combine with disable_parallel_tool_use: true for at most one tool call per turn.",
+   "identifiers": [
+    "tool_choice",
+    "auto",
+    "disable_parallel_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "stop_reason",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "fact": "Seven values: end_turn, max_tokens, stop_sequence, tool_use, pause_turn (server-tool loop hit its default 10-iteration limit; resend the assistant content to continue), refusal (HTTP 200, read stop_details, can retry on a fallback model), model_context_window_exceeded (response filled the context window; treat as truncated). A client tool_use never yields pause_turn.",
+   "identifiers": [
+    "stop_reason",
+    "end_turn",
+    "max_tokens",
+    "stop_sequence",
+    "tool_use",
+    "pause_turn",
+    "refusal",
+    "model_context_window_exceeded",
+    "stop_details"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "refusal and model_context_window_exceeded are newer values; older lists name only the first four."
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "max_tokens",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "fact": "Request parameter capping output tokens; hitting it ends the response with stop_reason max_tokens, so raise it or continue the response. Sync output max is 128K tokens on the current models; Batches API can reach 300k with beta header output-300k-2026-03-24. Each batched request needs max_tokens of at least 1.",
+   "identifiers": [
+    "max_tokens",
+    "output-300k-2026-03-24"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "Tool search tool",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+   "fact": "Server-side tool letting Claude discover tools on demand. Two variants: tool_search_tool_regex_20251119 (Claude writes Python regex, 200-char cap) and tool_search_tool_bm25_20251119 (natural language, 500-char cap). Put the full definition of every tool in tools; mark the ones to hide with defer_loading: true; at least one tool (not the search tool) must stay non-deferred, else 400. Up to 10,000 deferred tools; 5 results by default (limit 1-10,000). Preserves prompt caching; a deferred tool cannot carry cache_control. Not metered separately.",
+   "identifiers": [
+    "tool_search_tool_regex_20251119",
+    "tool_search_tool_bm25_20251119",
+    "defer_loading",
+    "tool_reference",
+    "tool_search_tool_result",
+    "server_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_reference blocks",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+   "fact": "Blocks of type tool_reference returned inside the search result pointing at discovered tools by tool_name; the API expands them to full definitions server-side. Custom client-side search can also return tool_reference blocks inside a normal tool_result, and each must have a matching definition in top-level tools. Never return a tool_result for a srvtoolu_ id.",
+   "identifiers": [
+    "tool_reference",
+    "tool_name",
+    "tool_search_tool_search_result",
+    "tool_references"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "JSON-encoded tool results",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "The overview shows tool_result content as a plain string or content blocks. A specific recommendation about JSON-encoding tool results: not verified.",
+   "identifiers": [
+    "tool_result"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "Server-side fallback",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "fact": "The stop-reason page says a refusal can be retried on a fallback model and links a refusals-and-fallback page (not fetched). Claude Code separately has --fallback-model / fallbackModel for overloaded or retired models. What 'server-side fallback' specifically denotes: not verified.",
+   "identifiers": [
+    "refusal",
+    "--fallback-model",
+    "fallbackModel"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "few-shot prompting",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+   "fact": "Prompting best-practices page linked from models overview but not fetched: not verified.",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "system prompt policy",
+   "doc_url": null,
+   "fact": "No page fetched that defines a 'system prompt policy' feature: not verified. (Facts on system prompt flags such as --system-prompt and --append-system-prompt are in the headless/CLI entries.)",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "prompt templates",
+   "doc_url": null,
+   "fact": "Not verified (no page fetched).",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__choosing-between-mcp-direct-tool-use-and-subagents.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__tool-search-vs-loading-every-tool-definition-up-front.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__extraction-tools-and-tool-choice-forcing-structured-output.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__mcp-tool-errors-iserror-vs-protocol-errors.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__mcp-tools-descriptions-and-resources-in-agent-workflows.txt"
+ ],
+ "lesson_words": 24512
+}

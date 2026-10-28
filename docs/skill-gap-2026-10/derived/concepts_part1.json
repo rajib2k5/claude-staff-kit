@@ -1,0 +1,2980 @@
+[
+{
+"id": "concept_hub_and_spoke_coordination",
+"label": "hub-and-spoke coordination",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Put shared fault-handling and observability rules in the coordinator so workers only report outcomes."
+]
+},
+{
+"id": "concept_centralized_error_policy",
+"label": "centralized error policy",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Put shared fault-handling and observability rules in the coordinator so workers only report outcomes."
+]
+},
+{
+"id": "concept_agentic_loop_mechanics",
+"label": "agentic loop mechanics",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Messages API tool use",
+"stop_reason"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Continue a manual tool loop by returning a matching tool_result in a user turn with the history intact."
+]
+},
+{
+"id": "concept_tool_result_message_pairing",
+"label": "tool_result message pairing",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Messages API tool use",
+"stop_reason"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Continue a manual tool loop by returning a matching tool_result in a user turn with the history intact."
+]
+},
+{
+"id": "concept_stop_reason_handling",
+"label": "stop_reason handling",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"max_tokens",
+"stop_reason"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Branch explicitly on every stop reason so a cut-off response is not treated as a finished one."
+]
+},
+{
+"id": "concept_truncated_output_detection",
+"label": "truncated output detection",
+"certs": [
+"claude-certified-architect-foundations",
+"claude-developer-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration",
+"Prompt and Context Engineering"
+],
+"features": [
+"Messages API: stop_reason",
+"max_tokens",
+"stop_reason"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Branch explicitly on every stop reason so a cut-off response is not treated as a finished one.",
+"Distinguish a length cutoff from malformed output when parsing model JSON."
+]
+},
+{
+"id": "concept_explicit_context_passing_to_subagents",
+"label": "explicit context passing to subagents",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Hand findings to a downstream subagent inside its prompt because subagents do not share the coordinator's memory."
+]
+},
+{
+"id": "concept_subagent_context_isolation",
+"label": "subagent context isolation",
+"certs": [
+"claude-certified-architect-foundations",
+"claude-developer-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration",
+"Prompt and Context Engineering"
+],
+"features": [
+"Agent SDK subagents",
+"AgentDefinition",
+"Claude Agent SDK: subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Hand findings to a downstream subagent inside its prompt because subagents do not share the coordinator's memory.",
+"Offload bulky exploration to a subagent so only its summary enters the parent conversation."
+]
+},
+{
+"id": "concept_goal_over_procedure_subagent_prompts",
+"label": "goal-over-procedure subagent prompts",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Write subagent briefs that state the goal and quality bar rather than a rigid step list."
+]
+},
+{
+"id": "concept_subagent_task_briefing",
+"label": "subagent task briefing",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Write subagent briefs that state the goal and quality bar rather than a rigid step list."
+]
+},
+{
+"id": "concept_deterministic_hook_enforcement",
+"label": "deterministic hook enforcement",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Claude Code hooks: PreToolUse",
+"permissionDecision",
+"updatedInput"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Use a hook to overwrite a tool argument with a trusted value from session state instead of trusting model output."
+]
+},
+{
+"id": "concept_pretooluse_input_rewriting",
+"label": "PreToolUse input rewriting",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Claude Code hooks: PreToolUse",
+"permissionDecision",
+"updatedInput"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Use a hook to overwrite a tool argument with a trusted value from session state instead of trusting model output."
+]
+},
+{
+"id": "concept_structured_escalation_handoff",
+"label": "structured escalation handoff",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Design a handoff record with required fields so a human with no chat history can act on it."
+]
+},
+{
+"id": "concept_human_handoff_context",
+"label": "human handoff context",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Design a handoff record with required fields so a human with no chat history can act on it."
+]
+},
+{
+"id": "concept_session_resume_limits",
+"label": "session resume limits",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK session resume",
+"file checkpointing"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Explain that resuming restores conversation but not file contents, so rollback needs checkpointing."
+]
+},
+{
+"id": "concept_file_checkpointing",
+"label": "file checkpointing",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK session resume",
+"file checkpointing"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Explain that resuming restores conversation but not file contents, so rollback needs checkpointing."
+]
+},
+{
+"id": "concept_multi_pass_code_review",
+"label": "multi-pass code review",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Split a large review into per-file passes plus an interaction pass to avoid diluted attention.",
+"Add an integration pass that reconciles conflicting per-file recommendations using the shared data flow."
+]
+},
+{
+"id": "concept_attention_dilution",
+"label": "attention dilution",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Split a large review into per-file passes plus an interaction pass to avoid diluted attention."
+]
+},
+{
+"id": "concept_sdk_session_management",
+"label": "SDK session management",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK getSessionMessages",
+"Agent SDK listSessions"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Pick the SDK calls that enumerate stored sessions and read one transcript programmatically."
+]
+},
+{
+"id": "concept_session_persistence_apis",
+"label": "session persistence APIs",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D1 Agentic Architecture & Orchestration"
+],
+"features": [
+"Agent SDK getSessionMessages",
+"Agent SDK listSessions"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Pick the SDK calls that enumerate stored sessions and read one transcript programmatically."
+]
+},
+{
+"id": "concept_tool_choice_modes",
+"label": "tool_choice modes",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration",
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [
+"tool_choice",
+"tool_choice: auto",
+"tool_choice: tool"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Force a specific tool on turn one then relax to automatic selection for later turns.",
+"Force a named tool for guaranteed structured output and know it limits text before the call."
+]
+},
+{
+"id": "concept_forced_first_tool_call",
+"label": "forced first tool call",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [
+"tool_choice",
+"tool_choice: auto",
+"tool_choice: tool"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Force a specific tool on turn one then relax to automatic selection for later turns."
+]
+},
+{
+"id": "concept_tool_granularity",
+"label": "tool granularity",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Split a multi-behavior tool into focused tools so the model picks the right behavior reliably."
+]
+},
+{
+"id": "concept_single_purpose_tools",
+"label": "single-purpose tools",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Split a multi-behavior tool into focused tools so the model picks the right behavior reliably."
+]
+},
+{
+"id": "concept_mcp_project_scope_config",
+"label": "MCP project-scope config",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [
+".mcp.json",
+"MCP HTTP server auth headers"
+],
+"kinds": [
+"mcp"
+],
+"competencies": [
+"Share an MCP server config through the repo while keeping personal tokens in each user's environment."
+]
+},
+{
+"id": "concept_environment_variable_expansion",
+"label": "environment variable expansion",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [
+".mcp.json",
+"MCP HTTP server auth headers"
+],
+"kinds": [
+"mcp"
+],
+"competencies": [
+"Share an MCP server config through the repo while keeping personal tokens in each user's environment."
+]
+},
+{
+"id": "concept_built_in_tool_selection",
+"label": "built-in tool selection",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [
+"Claude Code Glob tool"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Choose the file-pattern search tool when only paths, not content, are required."
+]
+},
+{
+"id": "concept_glob_versus_grep_distinction",
+"label": "Glob versus Grep distinction",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [
+"Claude Code Glob tool"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Choose the file-pattern search tool when only paths, not content, are required."
+]
+},
+{
+"id": "concept_partial_failure_handling",
+"label": "partial-failure handling",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Treat a partial result with a known blocker differently from a silent crash when coordinating parallel workers."
+]
+},
+{
+"id": "concept_structured_error_propagation",
+"label": "structured error propagation",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Treat a partial result with a known blocker differently from a silent crash when coordinating parallel workers.",
+"Keep transient retries inside the subagent and report only the final outcome upward."
+]
+},
+{
+"id": "concept_tool_description_quality",
+"label": "tool description quality",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [],
+"kinds": [
+"mcp"
+],
+"competencies": [
+"Diagnose misuse of a tool as a documentation gap in its description and input schema."
+]
+},
+{
+"id": "concept_input_schema_documentation",
+"label": "input schema documentation",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D2 Tool Design & MCP Integration"
+],
+"features": [],
+"kinds": [
+"mcp"
+],
+"competencies": [
+"Diagnose misuse of a tool as a documentation gap in its description and input schema."
+]
+},
+{
+"id": "concept_subagent_local_recovery",
+"label": "subagent local recovery",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Keep transient retries inside the subagent and report only the final outcome upward."
+]
+},
+{
+"id": "concept_plan_mode_exploration",
+"label": "plan mode exploration",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"Claude Code plan mode"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Use read-only planning to compare undecided design options before any code is written."
+]
+},
+{
+"id": "concept_design_option_comparison",
+"label": "design option comparison",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"Claude Code plan mode"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Use read-only planning to compare undecided design options before any code is written."
+]
+},
+{
+"id": "concept_headless_cli_structured_output",
+"label": "headless CLI structured output",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"--json-schema",
+"--output-format json",
+"claude -p"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Invoke the CLI non-interactively with a schema so a CI step gets machine-parseable output."
+]
+},
+{
+"id": "concept_ci_integration_of_claude",
+"label": "CI integration of Claude",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"--json-schema",
+"--output-format json",
+"claude -p"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Invoke the CLI non-interactively with a schema so a CI step gets machine-parseable output."
+]
+},
+{
+"id": "concept_headless_cli_json_metadata",
+"label": "headless CLI JSON metadata",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"--output-format json",
+"claude -p",
+"modelUsage",
+"total_cost_usd"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Read cost and per-model usage from the JSON result object without extra flags."
+]
+},
+{
+"id": "concept_cost_tracking_from_cli",
+"label": "cost tracking from CLI",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"--output-format json",
+"claude -p",
+"modelUsage",
+"total_cost_usd"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Read cost and per-model usage from the JSON result object without extra flags."
+]
+},
+{
+"id": "concept_skill_tool_restrictions",
+"label": "skill tool restrictions",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"Skills frontmatter: allowed-tools",
+"disallowedTools"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Know that allowed-tools only pre-approves tools and a separate deny setting is needed to remove one."
+]
+},
+{
+"id": "concept_permission_versus_availability",
+"label": "permission versus availability",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"Skills frontmatter: allowed-tools",
+"disallowedTools"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Know that allowed-tools only pre-approves tools and a separate deny setting is needed to remove one."
+]
+},
+{
+"id": "concept_test_first_iteration",
+"label": "test-first iteration",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"Claude Code"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Open an implementation task by having tests written first to cut correction cycles."
+]
+},
+{
+"id": "concept_correction_cycle_reduction",
+"label": "correction cycle reduction",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"Claude Code"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Open an implementation task by having tests written first to cut correction cycles."
+]
+},
+{
+"id": "concept_interview_driven_specification",
+"label": "interview-driven specification",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"AskUserQuestion tool"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Have the model question the user to surface unknown design concerns before building."
+]
+},
+{
+"id": "concept_requirements_elicitation",
+"label": "requirements elicitation",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"AskUserQuestion tool"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Have the model question the user to surface unknown design concerns before building."
+]
+},
+{
+"id": "concept_claude_md_scope_hierarchy",
+"label": "CLAUDE.md scope hierarchy",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"CLAUDE.md",
+"~/.claude/CLAUDE.md"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Trace why team conventions fail to reach a fresh clone when they live only in user-level memory."
+]
+},
+{
+"id": "concept_team_convention_sharing",
+"label": "team convention sharing",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D3 Claude Code Configuration & Workflows"
+],
+"features": [
+"CLAUDE.md",
+"~/.claude/CLAUDE.md"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Trace why team conventions fail to reach a fresh clone when they live only in user-level memory."
+]
+},
+{
+"id": "concept_cross_file_integration_pass",
+"label": "cross-file integration pass",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Add an integration pass that reconciles conflicting per-file recommendations using the shared data flow."
+]
+},
+{
+"id": "concept_schema_enforced_extraction",
+"label": "schema-enforced extraction",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [
+"tool_choice",
+"tool_choice: tool"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Force a named tool for guaranteed structured output and know it limits text before the call."
+]
+},
+{
+"id": "concept_explicit_review_criteria",
+"label": "explicit review criteria",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Rewrite a vague review instruction into concrete flag-only-when conditions to raise precision."
+]
+},
+{
+"id": "concept_false_positive_reduction",
+"label": "false-positive reduction",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [
+"few-shot prompting"
+],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Rewrite a vague review instruction into concrete flag-only-when conditions to raise precision.",
+"Add labeled accept and reject examples of a pattern to teach the reviewer the boundary."
+]
+},
+{
+"id": "concept_validation_retry_loops",
+"label": "validation-retry loops",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [
+"structured outputs JSON schema"
+],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Retry a failed extraction by sending the source, the bad output and a message naming the missing field."
+]
+},
+{
+"id": "concept_targeted_retry_feedback",
+"label": "targeted retry feedback",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [
+"structured outputs JSON schema"
+],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Retry a failed extraction by sending the source, the bad output and a message naming the missing field."
+]
+},
+{
+"id": "concept_few_shot_examples",
+"label": "few-shot examples",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D4 Prompt Engineering & Structured Output"
+],
+"features": [
+"few-shot prompting"
+],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Add labeled accept and reject examples of a pattern to teach the reviewer the boundary."
+]
+},
+{
+"id": "concept_escalation_criteria",
+"label": "escalation criteria",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Decide escalation on policy coverage and capability, not on how many steps a task has.",
+"Honor an explicit user demand for a human immediately, per the stated rule."
+]
+},
+{
+"id": "concept_policy_driven_autonomy",
+"label": "policy-driven autonomy",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Decide escalation on policy coverage and capability, not on how many steps a task has."
+]
+},
+{
+"id": "concept_segment_level_accuracy_review",
+"label": "segment-level accuracy review",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Route to human review only the slice of data where measured accuracy is low."
+]
+},
+{
+"id": "concept_human_review_routing",
+"label": "human review routing",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Route to human review only the slice of data where measured accuracy is low.",
+"Send documents with internally contradictory values to a human regardless of model confidence."
+]
+},
+{
+"id": "concept_conflicting_source_detection",
+"label": "conflicting source detection",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Send documents with internally contradictory values to a human regardless of model confidence."
+]
+},
+{
+"id": "concept_claim_provenance_via_citations",
+"label": "claim provenance via citations",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [
+"Citations API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Pick citations over hand-written bibliographies when claim-level traceability to passages is needed."
+]
+},
+{
+"id": "concept_citations_versus_manual_bibliography",
+"label": "citations versus manual bibliography",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [
+"Citations API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Pick citations over hand-written bibliographies when claim-level traceability to passages is needed."
+]
+},
+{
+"id": "concept_error_type_distinction",
+"label": "error type distinction",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [
+"Agent SDK subagents"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Report an access failure as retryable and an empty valid answer as success."
+]
+},
+{
+"id": "concept_explicit_human_request_handling",
+"label": "explicit human request handling",
+"certs": [
+"claude-certified-architect-foundations"
+],
+"domains": [
+"D5 Context Management & Reliability"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Honor an explicit user demand for a human immediately, per the stated rule."
+]
+},
+{
+"id": "concept_search_result_content_blocks",
+"label": "search result content blocks",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Citations API",
+"Search results content blocks"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Select the feature giving cited attribution over a private knowledge base without external search.",
+"Return retrieved passages with source metadata so replies cite exact passages without resending the corpus."
+]
+},
+{
+"id": "concept_rag_citation_grounding",
+"label": "RAG citation grounding",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration",
+"D6 Stakeholder Communication & Lifecycle Management"
+],
+"features": [
+"Citations API",
+"Search results content blocks"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Select the feature giving cited attribution over a private knowledge base without external search.",
+"Return retrieved passages with source metadata so replies cite exact passages without resending the corpus."
+]
+},
+{
+"id": "concept_context_editing",
+"label": "context editing",
+"certs": [
+"claude-architect-professional",
+"claude-developer-foundations"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering",
+"Prompt and Context Engineering"
+],
+"features": [
+"Compaction",
+"Context editing",
+"Memory tool",
+"clear_tool_uses_20250919",
+"context_management"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Combine automatic stale-result clearing with durable cross-session storage for a long-running agent.",
+"Configure trigger, keep count and exclusions for automatic tool-result clearing."
+]
+},
+{
+"id": "concept_cross_session_memory",
+"label": "cross-session memory",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [
+"Compaction",
+"Context editing",
+"Memory tool"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Combine automatic stale-result clearing with durable cross-session storage for a long-running agent.",
+"Combine summarization, clearing and persistence to run sessions past the window limit."
+]
+},
+{
+"id": "concept_orchestrator_workers_vs_sectioning",
+"label": "orchestrator-workers vs sectioning",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D1 Solution Design & Architecture"
+],
+"features": [
+"Agent SDK subagents",
+"Agent tool"
+],
+"kinds": [
+"agent-sdk",
+"general-architecture"
+],
+"competencies": [
+"Distinguish runtime-determined subtasks from predefined parallel sections.",
+"Decompose an audit into focused subagents each with its own tools and scope."
+]
+},
+{
+"id": "concept_workflow_pattern_selection",
+"label": "workflow pattern selection",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D1 Solution Design & Architecture"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Distinguish runtime-determined subtasks from predefined parallel sections.",
+"Match an open-ended multi-file change to the dynamic delegation pattern."
+]
+},
+{
+"id": "concept_specialist_subagent_decomposition",
+"label": "specialist subagent decomposition",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D1 Solution Design & Architecture"
+],
+"features": [
+"Agent SDK subagents",
+"Agent tool"
+],
+"kinds": [
+"agent-sdk"
+],
+"competencies": [
+"Decompose an audit into focused subagents each with its own tools and scope."
+]
+},
+{
+"id": "concept_latency_and_availability_sla_design",
+"label": "latency and availability SLA design",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Claude Haiku 4.5",
+"Server-side fallback"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Pick platform levers that protect a latency and uptime commitment."
+]
+},
+{
+"id": "concept_model_fallback",
+"label": "model fallback",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Claude Haiku 4.5",
+"Server-side fallback"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Pick platform levers that protect a latency and uptime commitment."
+]
+},
+{
+"id": "concept_prompt_caching_for_static_context",
+"label": "prompt caching for static context",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering",
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [
+"Prompt caching",
+"cache_control"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Cache unchanging reference material to cut repeated token cost and keep turns fast.",
+"Advise caching a large static prompt and tool prefix to reduce cost and latency."
+]
+},
+{
+"id": "concept_cost_and_latency_efficiency",
+"label": "cost and latency efficiency",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [
+"Prompt caching"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Cache unchanging reference material to cut repeated token cost and keep turns fast."
+]
+},
+{
+"id": "concept_prompt_injection_hardening",
+"label": "prompt injection hardening",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D5 Governance, Safety & Risk Management"
+],
+"features": [
+"JSON-encoded tool results",
+"system prompt policy"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Layer defenses so instructions hidden in tool-returned text are not obeyed."
+]
+},
+{
+"id": "concept_untrusted_tool_output",
+"label": "untrusted tool output",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D5 Governance, Safety & Risk Management"
+],
+"features": [
+"JSON-encoded tool results",
+"system prompt policy"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Layer defenses so instructions hidden in tool-returned text are not obeyed."
+]
+},
+{
+"id": "concept_prompt_templates_and_placeholders",
+"label": "prompt templates and placeholders",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [
+"prompt templates"
+],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Separate fixed instructions from variable input using a templated prompt."
+]
+},
+{
+"id": "concept_prompt_reuse",
+"label": "prompt reuse",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [
+"prompt templates"
+],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Separate fixed instructions from variable input using a templated prompt."
+]
+},
+{
+"id": "concept_tool_result_clearing_config",
+"label": "tool result clearing config",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [
+"Context editing",
+"clear_tool_uses_20250919",
+"context_management"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Configure trigger, keep count and exclusions for automatic tool-result clearing."
+]
+},
+{
+"id": "concept_prompt_chaining",
+"label": "prompt chaining",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Split generate, review and refine into separate calls so the middle step can be logged."
+]
+},
+{
+"id": "concept_inspectable_intermediate_steps",
+"label": "inspectable intermediate steps",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Split generate, review and refine into separate calls so the middle step can be logged."
+]
+},
+{
+"id": "concept_custom_tool_search",
+"label": "custom tool search",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Tool search tool",
+"tool_reference blocks"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Implement embedding-based tool discovery that returns tool references to Claude."
+]
+},
+{
+"id": "concept_progressive_tool_discovery",
+"label": "progressive tool discovery",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Tool search tool",
+"tool_reference blocks"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Implement embedding-based tool discovery that returns tool references to Claude."
+]
+},
+{
+"id": "concept_rag_chunking_strategy",
+"label": "RAG chunking strategy",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Fix boundary-split retrieval misses by chunking on natural boundaries with overlap."
+]
+},
+{
+"id": "concept_retrieval_failure_diagnosis",
+"label": "retrieval failure diagnosis",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Fix boundary-split retrieval misses by chunking on natural boundaries with overlap."
+]
+},
+{
+"id": "concept_capability_surface_reduction",
+"label": "capability surface reduction",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Skills frontmatter: disable-model-invocation"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Restrict side-effecting skills to explicit user invocation."
+]
+},
+{
+"id": "concept_skill_invocation_control",
+"label": "skill invocation control",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Skills frontmatter: disable-model-invocation"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Restrict side-effecting skills to explicit user invocation."
+]
+},
+{
+"id": "concept_least_privilege_skills",
+"label": "least-privilege skills",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Skills frontmatter: disable-model-invocation"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Restrict side-effecting skills to explicit user invocation."
+]
+},
+{
+"id": "concept_smart_success_criteria",
+"label": "SMART success criteria",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Turn a vague quality goal into a measurable, sampled, thresholded criterion."
+]
+},
+{
+"id": "concept_evaluation_design",
+"label": "evaluation design",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Turn a vague quality goal into a measurable, sampled, thresholded criterion.",
+"Confirm a prompt winner on data kept aside from all tuning rounds to avoid overfitting."
+]
+},
+{
+"id": "concept_measurable_quality_targets",
+"label": "measurable quality targets",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Turn a vague quality goal into a measurable, sampled, thresholded criterion."
+]
+},
+{
+"id": "concept_claude_code_telemetry_export",
+"label": "Claude Code telemetry export",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"CLAUDE_CODE_ENABLE_TELEMETRY",
+"OTEL_METRICS_EXPORTER",
+"OpenTelemetry exporters"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Diagnose silent telemetry by noticing that enabling it does not choose an exporter."
+]
+},
+{
+"id": "concept_observability_setup_defaults",
+"label": "observability setup defaults",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"CLAUDE_CODE_ENABLE_TELEMETRY",
+"OTEL_METRICS_EXPORTER",
+"OpenTelemetry exporters"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Diagnose silent telemetry by noticing that enabling it does not choose an exporter."
+]
+},
+{
+"id": "concept_server_side_compaction",
+"label": "server-side compaction",
+"certs": [
+"claude-architect-professional",
+"claude-developer-foundations"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering",
+"Prompt and Context Engineering"
+],
+"features": [
+"Compaction",
+"Context editing",
+"Memory tool"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Combine summarization, clearing and persistence to run sessions past the window limit.",
+"Select the platform features that summarise history and prune old tool outputs automatically."
+]
+},
+{
+"id": "concept_effort_parameter_tuning",
+"label": "effort parameter tuning",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [
+"Claude Opus 4.8",
+"effort parameter"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Lower effort on easy turns to save tokens while keeping depth for hard ones.",
+"Frame effort as a cost, latency and intelligence dial within one model before switching models."
+]
+},
+{
+"id": "concept_cost_latency_tuning",
+"label": "cost-latency tuning",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering",
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [
+"Prompt caching",
+"cache_control",
+"effort parameter"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Lower effort on easy turns to save tokens while keeping depth for hard ones.",
+"Advise caching a large static prompt and tool prefix to reduce cost and latency."
+]
+},
+{
+"id": "concept_realistic_success_criteria",
+"label": "realistic success criteria",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Spot an unattainable absolute target and restate it as a grounded, achievable one."
+]
+},
+{
+"id": "concept_feasible_performance_targets",
+"label": "feasible performance targets",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Spot an unattainable absolute target and restate it as a grounded, achievable one."
+]
+},
+{
+"id": "concept_held_out_test_set",
+"label": "held-out test set",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Confirm a prompt winner on data kept aside from all tuning rounds to avoid overfitting."
+]
+},
+{
+"id": "concept_overfitting_to_dev_set",
+"label": "overfitting to dev set",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Confirm a prompt winner on data kept aside from all tuning rounds to avoid overfitting."
+]
+},
+{
+"id": "concept_model_capability_mismatch_evidence",
+"label": "model-capability mismatch evidence",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [
+"Claude Haiku 4.5",
+"Claude Opus 4.8"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Identify evidence that a task needs a stronger model rather than better prompts."
+]
+},
+{
+"id": "concept_model_selection_trade_offs",
+"label": "model selection trade-offs",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering",
+"D4 Evaluation, Testing & Optimization",
+"D6 Stakeholder Communication & Lifecycle Management"
+],
+"features": [
+"Claude Haiku 4.5",
+"Claude Opus 4.8",
+"effort parameter"
+],
+"kinds": [
+"claude-api",
+"general-architecture"
+],
+"competencies": [
+"Identify evidence that a task needs a stronger model rather than better prompts.",
+"Name capability, speed and budget as the factors to settle before recommending a model."
+]
+},
+{
+"id": "concept_quote_first_grounding",
+"label": "quote-first grounding",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Have the model extract verbatim passages before analysis to ground long-document review."
+]
+},
+{
+"id": "concept_hallucination_reduction",
+"label": "hallucination reduction",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D2 Claude Models, Prompting & Context Engineering"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Have the model extract verbatim passages before analysis to ground long-document review."
+]
+},
+{
+"id": "concept_hook_based_approval_enforcement",
+"label": "hook-based approval enforcement",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Claude Code hooks: PreToolUse",
+"allowedTools",
+"bypassPermissions",
+"permissionDecision"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Force human approval for one sensitive tool regardless of session permission mode."
+]
+},
+{
+"id": "concept_permission_modes",
+"label": "permission modes",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D3 Integration"
+],
+"features": [
+"Claude Code hooks: PreToolUse",
+"allowedTools",
+"bypassPermissions",
+"permissionDecision"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Force human approval for one sensitive tool regardless of session permission mode."
+]
+},
+{
+"id": "concept_bias_and_fairness_evaluation",
+"label": "bias and fairness evaluation",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D5 Governance, Safety & Risk Management"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Choose concrete pre-launch controls for bias, explainability and recourse."
+]
+},
+{
+"id": "concept_transparency_controls",
+"label": "transparency controls",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D5 Governance, Safety & Risk Management"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Choose concrete pre-launch controls for bias, explainability and recourse."
+]
+},
+{
+"id": "concept_discovery_session_criteria",
+"label": "discovery session criteria",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D6 Stakeholder Communication & Lifecycle Management"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Name capability, speed and budget as the factors to settle before recommending a model."
+]
+},
+{
+"id": "concept_compliance_driven_requirements_mapping",
+"label": "compliance-driven requirements mapping",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D6 Stakeholder Communication & Lifecycle Management"
+],
+"features": [
+"Citations API"
+],
+"kinds": [
+"claude-api"
+],
+"competencies": [
+"Map an auditor's traceability need to the citations capability."
+]
+},
+{
+"id": "concept_model_deprecation_planning",
+"label": "model deprecation planning",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D6 Stakeholder Communication & Lifecycle Management"
+],
+"features": [
+"model deprecations"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Set accurate migration expectations when a model is retired on the direct API."
+]
+},
+{
+"id": "concept_stakeholder_expectation_setting",
+"label": "stakeholder expectation setting",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D6 Stakeholder Communication & Lifecycle Management"
+],
+"features": [
+"model deprecations"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Set accurate migration expectations when a model is retired on the direct API."
+]
+},
+{
+"id": "concept_cost_attribution_monitoring",
+"label": "cost attribution monitoring",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [
+"Usage and Cost Admin API"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Attribute spend growth to workspace and model through the admin usage endpoint."
+]
+},
+{
+"id": "concept_spend_growth_diagnosis",
+"label": "spend growth diagnosis",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D4 Evaluation, Testing & Optimization"
+],
+"features": [
+"Usage and Cost Admin API"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Attribute spend growth to workspace and model through the admin usage endpoint."
+]
+},
+{
+"id": "concept_claude_code_enterprise_rollout",
+"label": "Claude Code enterprise rollout",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"Claude Code usage dashboard",
+"Claude for Enterprise",
+"Claude for Teams",
+"server-managed settings"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Match rollout needs such as unmanaged devices and spend visibility to the right admin mechanisms."
+]
+},
+{
+"id": "concept_server_managed_settings",
+"label": "server-managed settings",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"Claude Code usage dashboard",
+"Claude for Enterprise",
+"Claude for Teams",
+"server-managed settings"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Match rollout needs such as unmanaged devices and spend visibility to the right admin mechanisms."
+]
+},
+{
+"id": "concept_ci_permission_modes",
+"label": "CI permission modes",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"Claude Code permission modes",
+"claude -p",
+"dontAsk mode"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Choose the non-interactive mode that denies anything not explicitly allowed."
+]
+},
+{
+"id": "concept_unattended_pipeline_safety",
+"label": "unattended pipeline safety",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"Claude Code permission modes",
+"claude -p",
+"dontAsk mode"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Choose the non-interactive mode that denies anything not explicitly allowed."
+]
+},
+{
+"id": "concept_autocompact_thrashing_recovery",
+"label": "autocompact thrashing recovery",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"Claude Code auto-compaction",
+"subagents"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Recover from repeated compaction by reading large files in pieces or delegating them."
+]
+},
+{
+"id": "concept_context_size_management",
+"label": "context size management",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"Claude Code auto-compaction",
+"subagents"
+],
+"kinds": [
+"claude-code"
+],
+"competencies": [
+"Recover from repeated compaction by reading large files in pieces or delegating them."
+]
+},
+{
+"id": "concept_mcp_server_debugging",
+"label": "MCP server debugging",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"/mcp",
+"claude --debug mcp"
+],
+"kinds": [
+"mcp"
+],
+"competencies": [
+"Diagnose a connected MCP server exposing zero tools by reconnecting then reading debug logs."
+]
+},
+{
+"id": "concept_systematic_failure_diagnosis",
+"label": "systematic failure diagnosis",
+"certs": [
+"claude-architect-professional"
+],
+"domains": [
+"D7 Developer Productivity & Operational Enablement"
+],
+"features": [
+"/mcp",
+"claude --debug mcp"
+],
+"kinds": [
+"mcp"
+],
+"competencies": [
+"Diagnose a connected MCP server exposing zero tools by reconnecting then reading debug logs."
+]
+},
+{
+"id": "concept_ordered_step_lists",
+"label": "ordered step lists",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Format sequential instructions so the execution order cannot be misread."
+]
+},
+{
+"id": "concept_sequence_ambiguity",
+"label": "sequence ambiguity",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Format sequential instructions so the execution order cannot be misread."
+]
+},
+{
+"id": "concept_prompt_structure",
+"label": "prompt structure",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Format sequential instructions so the execution order cannot be misread."
+]
+},
+{
+"id": "concept_staged_task_guidance",
+"label": "staged task guidance",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Pick the prompt that spells out the stages and ingredients of a persuasive deliverable rather than leaving it open-ended."
+]
+},
+{
+"id": "concept_audience_and_tone_specification",
+"label": "audience and tone specification",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Pick the prompt that spells out the stages and ingredients of a persuasive deliverable rather than leaving it open-ended."
+]
+},
+{
+"id": "concept_marketing_content_prompting",
+"label": "marketing content prompting",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Pick the prompt that spells out the stages and ingredients of a persuasive deliverable rather than leaving it open-ended."
+]
+},
+{
+"id": "concept_written_acceptance_criteria",
+"label": "written acceptance criteria",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Explain why iterating without recorded requirements lets earlier fixes be silently undone."
+]
+},
+{
+"id": "concept_revision_regressions",
+"label": "revision regressions",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Explain why iterating without recorded requirements lets earlier fixes be silently undone."
+]
+},
+{
+"id": "concept_iteration_drift",
+"label": "iteration drift",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Explain why iterating without recorded requirements lets earlier fixes be silently undone."
+]
+},
+{
+"id": "concept_task_decomposition_signals",
+"label": "task decomposition signals",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Judge when one large request should be split into sequential stages."
+]
+},
+{
+"id": "concept_multiple_deliverables_per_request",
+"label": "multiple deliverables per request",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Judge when one large request should be split into sequential stages."
+]
+},
+{
+"id": "concept_dependent_stages",
+"label": "dependent stages",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Judge when one large request should be split into sequential stages."
+]
+},
+{
+"id": "concept_targeted_follow_up_refinement",
+"label": "targeted follow-up refinement",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Write a follow-up instruction that repairs one quality dimension without degrading another."
+]
+},
+{
+"id": "concept_readability_adjustment",
+"label": "readability adjustment",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Write a follow-up instruction that repairs one quality dimension without degrading another."
+]
+},
+{
+"id": "concept_preserving_accuracy",
+"label": "preserving accuracy",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Prompting and Task Execution"
+],
+"features": [],
+"kinds": [
+"prompting"
+],
+"competencies": [
+"Write a follow-up instruction that repairs one quality dimension without degrading another."
+]
+},
+{
+"id": "concept_relevance_versus_accuracy",
+"label": "relevance versus accuracy",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Separate correctness from responsiveness when judging whether an answer meets the ask."
+]
+},
+{
+"id": "concept_answering_the_actual_question",
+"label": "answering the actual question",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Separate correctness from responsiveness when judging whether an answer meets the ask."
+]
+},
+{
+"id": "concept_output_assessment",
+"label": "output assessment",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Separate correctness from responsiveness when judging whether an answer meets the ask."
+]
+},
+{
+"id": "concept_quotation_verification",
+"label": "quotation verification",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Validate a claimed verbatim quote by locating it in the original document."
+]
+},
+{
+"id": "concept_source_checking",
+"label": "source checking",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Validate a claimed verbatim quote by locating it in the original document."
+]
+},
+{
+"id": "concept_fabricated_attribution",
+"label": "fabricated attribution",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Validate a claimed verbatim quote by locating it in the original document."
+]
+},
+{
+"id": "concept_scope_agreement_before_synthesis",
+"label": "scope agreement before synthesis",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Settle the comparison's rows and columns before merging scattered answers into one deliverable."
+]
+},
+{
+"id": "concept_consolidating_separate_outputs",
+"label": "consolidating separate outputs",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Settle the comparison's rows and columns before merging scattered answers into one deliverable."
+]
+},
+{
+"id": "concept_comparison_matrix_design",
+"label": "comparison matrix design",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Workflow Integration and Solution Design"
+],
+"features": [],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Settle the comparison's rows and columns before merging scattered answers into one deliverable."
+]
+},
+{
+"id": "concept_citation_verification_against_sources",
+"label": "citation verification against sources",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation",
+"Workflow Integration and Solution Design"
+],
+"features": [
+"Research mode",
+"Web search"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Trace each cited figure back to its source page before anything goes public.",
+"Combine Claude's research output with source checking and human refinement for a decision-grade study."
+]
+},
+{
+"id": "concept_pre_publication_fact_check",
+"label": "pre-publication fact check",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [
+"Web search"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Trace each cited figure back to its source page before anything goes public."
+]
+},
+{
+"id": "concept_web_search_sourcing",
+"label": "web search sourcing",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Output Evaluation and Validation"
+],
+"features": [
+"Web search"
+],
+"kinds": [
+"general-architecture"
+],
+"competencies": [
+"Trace each cited figure back to its source page before anything goes public."
+]
+},
+{
+"id": "concept_reporting_problematic_responses",
+"label": "reporting problematic responses",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Thumbs-down feedback"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Use the built-in rating control to flag a faulty answer in addition to correcting your own copy."
+]
+},
+{
+"id": "concept_feedback_controls",
+"label": "feedback controls",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Governance, Risk, and Responsible Use"
+],
+"features": [
+"Thumbs-down feedback"
+],
+"kinds": [
+"governance"
+],
+"competencies": [
+"Use the built-in rating control to flag a faulty answer in addition to correcting your own copy."
+]
+},
+{
+"id": "concept_context_limit_handling",
+"label": "context limit handling",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Automatic context management"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Decide when letting the conversation condense itself is acceptable versus persisting knowledge elsewhere."
+]
+},
+{
+"id": "concept_disposable_versus_durable_work",
+"label": "disposable versus durable work",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Automatic context management"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Decide when letting the conversation condense itself is acceptable versus persisting knowledge elsewhere."
+]
+},
+{
+"id": "concept_automatic_context_management",
+"label": "automatic context management",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Configuration and Knowledge Management"
+],
+"features": [
+"Automatic context management"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Decide when letting the conversation condense itself is acceptable versus persisting knowledge elsewhere."
+]
+},
+{
+"id": "concept_research_mode_usage",
+"label": "research mode usage",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Artifacts",
+"Research mode"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Match multi-source research and collaborative editing needs to the right claude.ai capabilities."
+]
+},
+{
+"id": "concept_artifacts_for_shared_editing",
+"label": "artifacts for shared editing",
+"certs": [
+"claude-certified-associate-foundations"
+],
+"domains": [
+"Product and Model Selection"
+],
+"features": [
+"Artifacts",
+"Research mode"
+],
+"kinds": [
+"platform-ops"
+],
+"competencies": [
+"Match multi-source research and collaborative editing needs to the right claude.ai capabilities."
+]
+}
+]

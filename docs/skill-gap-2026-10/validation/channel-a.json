@@ -1,0 +1,850 @@
+[
+ {
+  "id": "S1",
+  "verdict": "UNVERIFIABLE",
+  "url": "https://code.claude.com/docs/en/skills",
+  "quote": "Personal: ~/.claude/skills/<skill-name>/SKILL.md ... Every skill needs a SKILL.md file",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Directory form is documented (skills page; claude-directory lists skills/<name>/SKILL.md). No doc states that a loose skills/<name>.md is ignored; only commands/*.md is the documented single-file form. Negative half not stated."
+ },
+ {
+  "id": "S2",
+  "verdict": "REFUTED",
+  "url": "https://code.claude.com/docs/en/model-config",
+  "quote": "Use v2.1.293 or later with Haiku 5.5.",
+  "doc_version": "model-config, fetched 2026-10-28; installed CLI 2.1.287",
+  "note": "Per docs: Opus 5.5 requires v2.1.280+, Sonnet 5.5 requires v2.1.284+ (both met by 2.1.287), but Haiku 5.5 requires v2.1.293+, above the installed 2.1.287. Docs also say --model is not validated up front ('a mistyped value produces There's an issue with the selected model on the first request'), so a runtime run may still exit 0 and the claude-haiku-9-9 falsifier fails only at request time."
+ },
+ {
+  "id": "S3",
+  "verdict": "UNVERIFIABLE",
+  "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+  "quote": "Legacy models (still available): Claude Fable 5, Claude Opus 5, ... Claude Sonnet 5 ... Claude Haiku 4.5",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "File contents are outside Channel A. Doc premise holds: claude-opus-5, claude-sonnet-5, claude-haiku-4-5-20251001 are legacy; current lineup is claude-fable-5-1, claude-opus-5-5, claude-sonnet-5-5, claude-haiku-5-5."
+ },
+ {
+  "id": "S4",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Local repo vs ~/.claude diff and mtimes; no primary documentation applies."
+ },
+ {
+  "id": "S5",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Local file existence (scripts/sf_deploy.py); no primary documentation applies."
+ },
+ {
+  "id": "S6",
+  "verdict": "UNVERIFIABLE",
+  "url": "https://code.claude.com/docs/en/skills",
+  "quote": "Keep SKILL.md under 500 lines. Move detailed reference material to separate files.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Guidance half CONFIRMED (a tip, not a hard limit). The 794-line count of the live graphify SKILL.md is a local fact for Channel B."
+ },
+ {
+  "id": "P1",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/model-config",
+  "quote": "Fable 5.1 requires Claude Code v2.1.257 or later.",
+  "doc_version": "model-config + models/overview, fetched 2026-10-28; installed CLI 2.1.287",
+  "note": "claude-fable-5-1 is the current Claude API ID (models overview); --model accepts full model names (cli-reference). Version floor 2.1.257 is met by 2.1.287. Falsifier caveat: unknown IDs are not checked up front, they fail on the first request."
+ },
+ {
+  "id": "P2",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/permission-modes",
+  "quote": "In Claude Code v2.1.302 or later, claude -p and Agent SDK runs with no permission mode set start in Manual mode.",
+  "doc_version": "VERSION-GATED v2.1.302+; manual alias v2.1.200+; installed CLI 2.1.287",
+  "note": "manual is an alias for default (cli-reference: 'requires Claude Code v2.1.200 or later; claude --help lists it in place of default'). The -p default-to-Manual behaviour starts at v2.1.302, which is NEWER than installed 2.1.287, so the docs do not describe the -p default on this machine. A Channel B probe on 2.1.287 is outside the documented regime."
+ },
+ {
+  "id": "P3",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/headless",
+  "quote": "The response includes metadata ... with the structured output in the structured_output field.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Also: 'If a run ends without valid structured output ... the response has no structured_output field.' Invalid schema exits with 'Error: --json-schema is not a valid JSON Schema'."
+ },
+ {
+  "id": "P4",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/sub-agents",
+  "quote": "In version 2.1.63, the Task tool was renamed to Agent. Existing Task(...) references ... still work as aliases.",
+  "doc_version": "v2.1.63+; installed CLI 2.1.287",
+  "note": "PROBE WARNING: agent-sdk/subagents says 'The tool appears as \"Agent\" in tool_use blocks but as \"Task\" in the system:init tools list.' The ledger's probe asserts the init list contains Agent and not Task; per docs that probe is expected to FAIL even though the claim is true."
+ },
+ {
+  "id": "P5",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/api/migration-2026-10-21",
+  "quote": "a request that sends temperature, top_p, or top_k returns a 400 error, even at the parameter's default value.",
+  "doc_version": "API version 2026-10-21",
+  "note": "Also listed in model-deprecations 'API parameter deprecations' table."
+ },
+ {
+  "id": "P6",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+  "quote": "The output_format parameter has moved to output_config.format, and beta headers are no longer required.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp (status: ga)",
+  "note": ""
+ },
+ {
+  "id": "P7",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+  "quote": "compact-2026-09-04 and the top-level compaction parameter.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp (compaction: beta)",
+  "note": "Scope: compact-2026-09-04 is the header for compaction ON DEMAND; the page says threshold compaction has its own header ('each kind has its own beta header'). Context editing header context-management-2025-06-27 confirmed on context-editing page."
+ },
+ {
+  "id": "P8",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+  "quote": "November 30, 2026 | claude-sonnet-4-5-20250929 | claude-sonnet-5-5",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Deprecated 2026-09-30; retirement 2026-11-30 on Anthropic-operated platforms."
+ },
+ {
+  "id": "K-claude-agent-orchestration-1",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/sub-agents",
+  "quote": "In version 2.1.63, the Task tool was renamed to Agent. Existing Task(...) references ... still work as aliases.",
+  "doc_version": "v2.1.63+",
+  "note": "agent-sdk/subagents: 'To keep detection working across SDK versions, match both values in block.name.'"
+ },
+ {
+  "id": "K-claude-agent-orchestration-2",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/sub-agents",
+  "quote": "The Agent(agent_type) allowlist syntax applies only to an agent running as the main thread with claude --agent.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-agent-orchestration-3",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/subagents",
+  "quote": "Depth ... 3 layers ... Concurrency ... 20 subagents running at once",
+  "doc_version": "concurrency var requires v2.1.217+; section describes CLI v2.1.219+; installed CLI 2.1.287",
+  "note": ""
+ },
+ {
+  "id": "K-claude-agent-orchestration-4",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/sub-agents",
+  "quote": "Only name and description are required.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "model values: 'sonnet, opus, haiku, fable, a full model ID ... or inherit'. tools/disallowedTools/permissionMode/maxTurns/hooks/isolation listed (claude-directory agents/*.md fields). Built-ins Explore, Plan, general-purpose (also helper agents claude, statusline-setup, claude-code-guide). Forks are the exception to fresh context."
+ },
+ {
+  "id": "K-claude-agent-orchestration-5",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/subagents",
+  "quote": "When Claude calls the Agent tool without a subagent_type, it gets the built-in general-purpose subagent",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "AgentDefinition description+prompt required; allowedTools includes Agent; parent_tool_use_id; caps via the two env vars and maxBudgetUsd/max_budget_usd."
+ },
+ {
+  "id": "K-claude-agent-orchestration-6",
+  "verdict": "REFUTED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/permissions",
+  "quote": "The subagent inherits plan, acceptEdits, auto, or bypassPermissions from the main session ... Claude Code never applies a \"bypassPermissions\" value",
+  "doc_version": "bypass exception v2.1.267+",
+  "note": "Correction: a subagent's OWN permissionMode value of bypassPermissions is never applied (v2.1.267+), but a subagent DOES run in bypassPermissions when the main conversation is in it (sub-agents: 'A subagent runs in this mode only when the main conversation does'). Other facts (async_launched default, agentId trailer, Explore/Plan one-shot) confirmed."
+ },
+ {
+  "id": "K-claude-agent-orchestration-7",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+  "quote": "Forking branches the conversation history, not the filesystem. If a forked agent edits files, those changes are real",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "session_id on result message; continue = most recent session in the current directory; forkSession/fork_session; ~/.claude/projects/<encoded-cwd>/*.jsonl."
+ },
+ {
+  "id": "K-claude-agent-orchestration-8",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+  "quote": "listSessions() and getSessionMessages() in TypeScript, list_sessions() and get_session_messages() in Python",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-agent-orchestration-9",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+  "quote": "Set persistSession: false (TypeScript only). ... In Python, set CLAUDE_CODE_SKIP_PROMPT_HISTORY",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Asserted facts hold; the deferred items resolve: persistSession is TypeScript-only; Python uses CLAUDE_CODE_SKIP_PROMPT_HISTORY in env. File checkpointing snapshots/reverts agent file changes."
+ },
+ {
+  "id": "K-claude-agent-orchestration-10",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/headless",
+  "quote": "With --permission-prompts none, Claude Code removes the tools that need an answer from a person, such as AskUserQuestion",
+  "doc_version": "--permission-prompts requires v2.1.259+",
+  "note": "agent-sdk/permissions: AskUserQuestion 'always fall through to the callback, even when an allow rule matches. In dontAsk mode ... denied'."
+ },
+ {
+  "id": "K-claude-agent-orchestration-11",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+  "quote": "The total_cost_usd and costUSD fields are client-side estimates, not authoritative billing data.",
+  "doc_version": "resume carry-over v2.1.277+",
+  "note": "usage excludes subagents; total_cost_usd and modelUsage include them; a resumed call counts the session's earlier spend."
+ },
+ {
+  "id": "K-claude-api-ops-1",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+  "quote": "On a refusal, the stop_details object identifies the policy category that triggered it.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "All seven stop_reason values listed."
+ },
+ {
+  "id": "K-claude-api-ops-2",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+  "quote": "The default limit is 10 iterations for each request.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-api-ops-3",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+  "quote": "support up to 300k output tokens with the output-300k-2026-03-24 beta header",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "128K is the synchronous limit. 300k list names Opus 5.5/5/4.8/4.7/4.6, Sonnet 5.5/5/4.6, Haiku 5.5 only (not Fable). Batches: 'Each batched request must have max_tokens of at least 1'."
+ },
+ {
+  "id": "K-claude-api-ops-4",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+  "quote": "From $0.10 / input MTok, From $0.50 / output MTok",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Fable 5.1 $10/$50, Opus 5.5 $4/$20, Sonnet 5.5 $2/$10; all 1M context, 128K max output."
+ },
+ {
+  "id": "K-claude-api-ops-5",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+  "quote": "Legacy models (still available): Claude Fable 5, Claude Opus 5, Claude Opus 4.8, ... Claude Sonnet 5, ... Claude Haiku 4.5",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Note: deprecations table gives claude-haiku-4-5-20251001 'Not sooner than October 15, 2026', a date already past on 2026-10-28; still listed Active."
+ },
+ {
+  "id": "K-claude-api-ops-6",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/effort",
+  "quote": "Claude Opus 5.5 and Claude Haiku 5.5 default to medium.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Levels low/medium/high/xhigh/max; high default on Fable 5.1 and Sonnet 5.5."
+ },
+ {
+  "id": "K-claude-api-ops-7",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+  "quote": "November 30, 2026 | claude-sonnet-4-5-20250929 | claude-sonnet-5-5",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-api-ops-8",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/api/migration-2026-10-21",
+  "quote": "returns a 400 error, even at the parameter's default value.",
+  "doc_version": "API version 2026-10-21",
+  "note": ""
+ },
+ {
+  "id": "K-claude-api-ops-9",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+  "quote": "providing at least 60 days' notice before model retirement for publicly released models.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Precision: the docs say PARTNER-operated platforms (Bedrock, Google-managed) set their own dates; Anthropic-managed cloud offerings follow Anthropic dates."
+ },
+ {
+  "id": "K-claude-api-ops-10",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+  "quote": "Cache write tokens with a 1-hour TTL are 2 times the base input tokens price.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Up to 4 breakpoints; 'The lookback window is 20 blocks.'"
+ },
+ {
+  "id": "K-claude-api-ops-11",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+  "quote": "Cache hits and refreshes on Claude Opus 5.5 and Claude Sonnet 5.5 are priced at 0.05x the base input price.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "0.05 x $4 = $0.20; 0.05 x $2 = $0.10."
+ },
+ {
+  "id": "K-claude-api-ops-12",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+  "quote": "Any requests to cache fewer than this number of tokens are processed without caching, and no error is returned.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "512: Fable 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5 (and others); 1,024: Sonnet 5; 4,096: Haiku 4.5."
+ },
+ {
+  "id": "K-claude-api-ops-13",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+  "quote": "Number of input tokens that were not read from or used to create a cache (that is, tokens after the last cache breakpoint)",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-api-ops-14",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+  "quote": "A Message Batch is limited to either 100,000 Message requests or 256 MB in size",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "custom_id 1-64 chars matching ^[a-zA-Z0-9_-]{1,64}$; expire within 24h; results 29 days; results_url; in_progress then ended (canceling also exists); request_counts."
+ },
+ {
+  "id": "K-claude-api-ops-15",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/token-counting",
+  "quote": "Token counting is free to use but subject to requests per minute rate limits",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Endpoint /v1/messages/count_tokens; returns input_tokens; 'The token count is an estimate.'"
+ },
+ {
+  "id": "K-claude-api-ops-16",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+  "quote": "Claude Opus 5.5 | 286 tokens",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Column is 'auto, none'."
+ },
+ {
+  "id": "K-claude-api-ops-17",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Deferral only ('confirm in docs'); no checkable assertion."
+ },
+ {
+  "id": "K-claude-code-config-1",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/memory",
+  "quote": "Imported files can recursively import other files, with a maximum depth of four hops.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "'All discovered files are concatenated ... ordered from the filesystem root down'; subdirectory files load on demand; /init; claudeMdExcludes; AGENTS.md read in place of CLAUDE.md when no CLAUDE.md exists."
+ },
+ {
+  "id": "K-claude-code-config-2",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/memory",
+  "quote": "Linux and WSL: /etc/claude-code/CLAUDE.md",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-code-config-3",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/settings",
+  "quote": "Before v2.1.211, Claude Code kept the file in the starting directory.",
+  "doc_version": "repo-root placement v2.1.211+; installed CLI 2.1.287",
+  "note": "Precedence: managed > command line (--settings) > project local > shared project > user. Root placement has exceptions (outside git, home-dir root, Windows, ownership)."
+ },
+ {
+  "id": "K-claude-code-config-4",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/permission-modes",
+  "quote": "dontAsk: never appears in the cycle; set it with --permission-mode dontAsk.",
+  "doc_version": "manual alias v2.1.200+",
+  "note": ""
+ },
+ {
+  "id": "K-claude-code-config-5",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/permission-modes",
+  "quote": "In Claude Code v2.1.302 or later, claude -p and Agent SDK runs with no permission mode set start in Manual mode.",
+  "doc_version": "VERSION-GATED: auto interactive default v2.1.283+ (applies to 2.1.287); -p Manual default v2.1.302+ (does NOT apply to 2.1.287)",
+  "note": "Project-level auto and bypassPermissions defaultMode ignored (settings: 'Before v2.1.257, bypassPermissions took effect from any file')."
+ },
+ {
+  "id": "K-claude-code-config-6",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/permission-modes",
+  "quote": "Allow rules have no effect in bypassPermissions.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "permissions.disableBypassPermissionsMode set to \"disable\" in managed settings."
+ },
+ {
+  "id": "K-claude-code-config-7",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/permissions",
+  "quote": "File edits are never auto-approved in plan mode, even when an allow rule matches or a PreToolUse hook returns allow.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "ExitPlanMode: tools-reference 'Presents a plan for approval and exits plan mode'; /plan and --permission-mode plan on permission-modes."
+ },
+ {
+  "id": "K-claude-code-config-8",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/cli-reference",
+  "quote": "--disallowedTools, --disallowed-tools | Deny rules.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "--allowedTools, --tools present; permissions.allow/deny/ask in settings."
+ },
+ {
+  "id": "K-claude-code-config-9",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/hooks",
+  "quote": "The tool_name, tool_input, and tool_use_id fields are event-specific.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Exit 2 blocks; permissionDecision allow/deny/ask/defer; updatedInput under hookSpecificOutput."
+ },
+ {
+  "id": "K-claude-code-config-10",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/skills",
+  "quote": "Keep SKILL.md under 500 lines. Move detailed reference material to separate files.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "All eight frontmatter fields exist."
+ },
+ {
+  "id": "K-claude-code-config-11",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/headless",
+  "quote": "Set ANTHROPIC_API_KEY before running it, because bare mode doesn't use your subscription login",
+  "doc_version": "--bare limits complete from v2.1.286",
+  "note": "Precision: bare mode also accepts an apiKeyHelper via --settings, and Bedrock/Agent Platform/Foundry credentials. Other flags present in cli-reference."
+ },
+ {
+  "id": "K-claude-code-config-12",
+  "verdict": "UNVERIFIABLE",
+  "url": "https://code.claude.com/docs/en/cli-reference",
+  "quote": "--output-format | Specify output format for print mode (options: text, json, stream-json)",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Values, result, session_id, usage, total_cost_usd with per-model breakdown and permission_denials are documented. 'stream-json (needs --verbose)' is NOT stated: docs only show stream-json used together with --verbose. That sub-fact is unverifiable."
+ },
+ {
+  "id": "K-claude-code-config-13",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/headless",
+  "quote": "If a run ends without valid structured output ... the response has no structured_output field.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-context-management-1",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+  "quote": "use the beta header context-management-2025-06-27 in your API requests.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Top-level context_management with edits; client.beta.messages."
+ },
+ {
+  "id": "K-claude-context-management-2",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+  "quote": "Use the clear_at_least parameter to ensure a minimum number of tokens is cleared each time.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-context-management-3",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+  "quote": "You can specify this value in either input_tokens or tool_uses.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Defaults trigger 100,000 input tokens, keep 3, exclude_tools none, clear_tool_inputs false; placeholder text."
+ },
+ {
+  "id": "K-claude-context-management-4",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+  "quote": "For most use cases, [server-side compaction] is the primary strategy for managing context in long-running conversations.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-context-management-5",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+  "quote": "The returned block first in messages, in place of the messages it summarizes",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp (beta)",
+  "note": "Header compact-2026-09-04 + top-level compaction apply to the on-demand form; threshold form has its own header."
+ },
+ {
+  "id": "K-claude-context-management-6",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/api/migration-2026-10-21",
+  "quote": "Client-side compaction in the tool runner is removed in favor of server-side compaction",
+  "doc_version": "SDK releases adopting API 2026-10-21",
+  "note": "Scope: an SDK change affecting the TypeScript and Ruby SDKs, listed under 'SDK and CLI changes' in the migration guide, not on the compaction page."
+ },
+ {
+  "id": "K-claude-context-management-7",
+  "verdict": "UNVERIFIABLE",
+  "url": "https://code.claude.com/docs/en/hooks",
+  "quote": "PreCompact | Before context compaction",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Deferral only. For reference: PreCompact and PostCompact hook events exist with matcher values manual and auto."
+ },
+ {
+  "id": "K-claude-context-management-8",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+  "quote": "Your handler must reject paths outside /memories",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Client-side; {type: memory_20250818, name: memory}; six commands; storage, size and expiry are the app's responsibility."
+ },
+ {
+  "id": "K-claude-context-management-9",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+  "quote": "Use modelUsage ... for whole-tree token accounting; the usage field undercounts as soon as nesting occurs.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-context-management-10",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+  "quote": "Sessions persist the conversation, not the filesystem.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "agent-sdk/subagents: 'only its final message returns to the parent' (forks excepted)."
+ },
+ {
+  "id": "K-claude-evals-1",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Meta-statement; asserts no platform fact."
+ },
+ {
+  "id": "K-claude-evals-2",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Deferral only."
+ },
+ {
+  "id": "K-claude-governance-1",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/server-managed-settings",
+  "quote": "Settings that Claude Code fetches from Anthropic's servers at startup and refreshes hourly during the session",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Teams or Enterprise; Owner or Primary Owner; network access to api.anthropic.com; highest tier."
+ },
+ {
+  "id": "K-claude-governance-2",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/server-managed-settings",
+  "quote": "You can't distribute a managed-mcp.json file through server-managed settings. Deliver the allowedMcpServers and deniedMcpServers policy keys",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Also managedMcpServers (http/sse only) on v2.1.259+."
+ },
+ {
+  "id": "K-claude-governance-3",
+  "verdict": "REFUTED",
+  "url": "https://code.claude.com/docs/en/server-managed-settings",
+  "quote": "In a running session, /status shows the same line after a failed fetch",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Correction: MDM/OS policy and managed-settings.json alternatives and /status are on the page, but requiredMinimumVersion does NOT appear on server-managed-settings; it appears on the settings page ('Admin-side keys that also wait for a restart, such as requiredMinimumVersion') and managed-settings. Low materiality (doc location)."
+ },
+ {
+  "id": "K-claude-governance-4",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/monitoring-usage",
+  "quote": "Claude Code ignores the OpenTelemetry exporter variables in a repository's .claude/settings.json and .claude/settings.local.json",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Exception: a repository can still turn a signal off by setting an exporter to none."
+ },
+ {
+  "id": "K-claude-governance-5",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/monitoring-usage",
+  "quote": "Claude Code has no default protocol, so set this or the signal-specific protocol variable",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-governance-6",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/monitoring-usage",
+  "quote": "Export interval in milliseconds (default: 60000)",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-governance-7",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/manage-claude/usage-cost-api",
+  "quote": "All costs are in USD, reported as decimal strings in lowest units (cents).",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Cited URL build-with-claude/usage-cost-api serves manage-claude/usage-cost-api. Priority Tier excluded from cost endpoint; workspace keys don't work; unavailable for individual accounts."
+ },
+ {
+  "id": "K-claude-governance-8",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Deferral / meta-statement only."
+ },
+ {
+  "id": "K-claude-prompt-engineering-1",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+  "quote": "Structured outputs guarantee schema-compliant responses through constrained decoding.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp (status: ga)",
+  "note": "Combinable with strict: true."
+ },
+ {
+  "id": "K-claude-prompt-engineering-2",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+  "quote": "Array constraints beyond minItems of 0 or 1",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Plus recursive, numeric, string-length, external $ref, additionalProperties not false."
+ },
+ {
+  "id": "K-claude-prompt-engineering-3",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+  "quote": "The API returns a 400 error if citations are enabled with output_config.format.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "'Prefilling is incompatible with JSON outputs.'"
+ },
+ {
+  "id": "K-claude-prompt-engineering-4",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+  "quote": "Wrap a Zod schema in zodOutputFormat() and pass it to client.messages.parse()",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Python: Pydantic model to client.messages.parse() as output_format."
+ },
+ {
+  "id": "K-claude-prompt-engineering-5",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+  "quote": "The output_format parameter is deprecated. To use it anyway, add the structured-outputs-2025-11-13 beta header.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-prompt-engineering-6",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+  "quote": "1M tokens | 1M tokens | 1M tokens | 1M tokens",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Thinking: Adaptive on all four; 128K max output."
+ },
+ {
+  "id": "K-claude-prompt-engineering-7",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+  "quote": "it is deprecated on Claude Opus 4.6 and Claude Sonnet 4.6 and not accepted on later models.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Effort levels and output_config.effort on effort page; not every model with max supports xhigh."
+ },
+ {
+  "id": "K-claude-prompt-engineering-8",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/api/migration-2026-10-21",
+  "quote": "returns a 400 error, even at the parameter's default value.",
+  "doc_version": "API version 2026-10-21",
+  "note": ""
+ },
+ {
+  "id": "K-claude-prompt-engineering-9",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+  "quote": "November 30, 2026 | claude-sonnet-4-5-20250929 | claude-sonnet-5-5",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-prompt-engineering-10",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Meta-statement / deferral; no checkable assertion."
+ },
+ {
+  "id": "K-claude-rag-and-citations-1",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+  "quote": "Currently, citations must be enabled on all or none of the documents within a request.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp (status: ga)",
+  "note": ""
+ },
+ {
+  "id": "K-claude-rag-and-citations-2",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+  "quote": "\"type\": \"char_location\" ... \"type\": \"page_location\" ... \"type\": \"content_block_location\"",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-rag-and-citations-3",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+  "quote": "cited_text does not count toward your output tokens.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-rag-and-citations-4",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+  "quote": "Only text citations are currently supported. Image citations are not yet possible.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Structured-outputs conflict returns 400."
+ },
+ {
+  "id": "K-claude-rag-and-citations-5",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/citations",
+  "quote": "The citation blocks generated in responses cannot be cached directly, but the source documents they reference can be cached.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-rag-and-citations-6",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/api/migration-2026-10-21",
+  "quote": "a request that sends a text block with a non-empty citations array in a user message returns a 400 error.",
+  "doc_version": "API version 2026-10-21",
+  "note": "enabled on documents and search results still accepted."
+ },
+ {
+  "id": "K-claude-rag-and-citations-7",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+  "quote": "Any stable string works: a URL, or an internal identifier such as kb://article-1234",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-rag-and-citations-8",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+  "quote": "From tool calls ... As top-level content: You provide search results directly in user messages",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Cited as search_result_location."
+ },
+ {
+  "id": "K-claude-rag-and-citations-9",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+  "quote": "No beta header is required: search results are part of the standard Messages API.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Doc excepts Claude Haiku 3, which is retired (not active), so 'all active models' holds. Citations all-or-nothing across search results."
+ },
+ {
+  "id": "K-claude-solution-design-1",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Meta-statement; asserts no platform fact."
+ },
+ {
+  "id": "K-claude-solution-design-2",
+  "verdict": "UNVERIFIABLE",
+  "url": "",
+  "quote": "",
+  "doc_version": "n/a",
+  "note": "Deferral only."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-1",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+  "quote": "Add strict: true to your custom tool definitions to ensure Claude's tool calls always match your schema exactly.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-2",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+  "quote": "With the default tool_choice of {\"type\": \"auto\"}",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "auto/none/any/tool appear in the overhead table; disable_parallel_tool_use shown on auto."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-3",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+  "quote": "the API also automatically includes a special system prompt for the model that enables tool use.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-4",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+  "quote": "end_turn, max_tokens, stop_sequence, tool_use, pause_turn, refusal, model_context_window_exceeded",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": ""
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-5",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+  "quote": "At least one tool must have defer_loading=false. All tools cannot be deferred.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Returned as tool_reference blocks; 400 invalid_request_error."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-6",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+  "quote": "To return an error to Claude, set is_error to true on the tool result",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "The asserted name is_error holds; JSON-encoding remains a deferral."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-7",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/mcp",
+  "quote": "A JSON entry that has a url but no type is a configuration error",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "No type = stdio; streamable-http alias for http; ${VAR}/${VAR:-default} in command, args, env, url, headers."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-8",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/mcp",
+  "quote": "The entire server entry from that source is used; fields are not merged across scopes.",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "Precedence local, project, user, plugin, claude.ai connectors."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-9",
+  "verdict": "CONFIRMED",
+  "url": "https://code.claude.com/docs/en/mcp",
+  "quote": "The SSE (Server-Sent Events) transport is deprecated. Use HTTP servers instead",
+  "doc_version": "fetched 2026-10-28; page carries no version stamp",
+  "note": "mcp__<server>__<tool> form shown via permission rules (agent-sdk/permissions: 'mcp__puppeteer__*', 'mcp__github__get_issue'); plugin servers use mcp__plugin_<plugin>_<server>__<tool>."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-10",
+  "verdict": "CONFIRMED",
+  "url": "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+  "quote": "Local STDIO servers cannot be connected directly.",
+  "doc_version": "status: beta; betaHeader mcp-client-2025-11-20",
+  "note": "mcp_servers array plus mcp_toolset in tools."
+ }
+]
