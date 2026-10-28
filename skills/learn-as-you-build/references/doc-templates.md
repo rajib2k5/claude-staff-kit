@@ -100,6 +100,7 @@ Learning mode: full
 ## Owed checkpoints
 
 - Milestone 02 (deferred). Say "quiz me on milestone 2" to catch up.
+- Milestone 03 (docs owed). Say "write the docs for milestone 3" to catch up.
 ```
 
-The `Learning mode:` line is the only line that `off` mode writes. Update it when the user switches modes. Update the Pairs and Explain-it-back columns from the results message. Remove a topic from the missed list only when the user answers a new question on it correctly.
+The `Learning mode:` line is the only line that `off` mode writes. When the user switches modes, update it. Update the Pairs and Explain-it-back columns from the results message. Keep a topic on the missed-topics list. When the user answers a new question on it correctly, remove it.
