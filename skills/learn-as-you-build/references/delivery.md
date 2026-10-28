@@ -64,7 +64,7 @@ B. <option>
 C. <option>
 D. <option>
 
-Reply with a letter. Reply "skip question" to skip this one question.
+Reply with a letter. Reply "skip question" to skip this one question. A skipped question gets no grade. Its topic goes to the missed-topics list.
 ```
 
 After the pick, send the explanation of every option, as in message 2 below.

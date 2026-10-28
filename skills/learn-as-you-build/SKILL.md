@@ -44,7 +44,7 @@ In a shared repo, ask before you create `LEARNING_LOG.md`. Offer to add it to `.
 
 ### Rules for every mode
 
-- **Ask once.** When the skill starts on a project with no mode set, ask which mode to use. Recommend `full` for a learning project. Record the answer as the `Learning mode:` line. Respect it and do not ask again. If the user does not answer, write `Learning mode: deferred` to `LEARNING_LOG.md` and say so in one line. Then keep working.
+- **Ask once.** When the skill starts on a project with no mode set, ask which mode to use. Recommend `full` for a learning project. Record the answer as the `Learning mode:` line. Respect it and do not ask again. If the user does not answer, write `Learning mode: deferred` to `LEARNING_LOG.md` and say so in one line. Then keep working. In a shared repo, use `deferred` for this session only and do not create the file.
 - **Ask only before a build.** Ask the mode question only before you build. A request to explain existing code is not a build. Answer it, and do not ask.
 - **When unsure, use `deferred`.** If no mode is set and the user is in a hurry, use `deferred`. Say so in one line.
 - **Never block urgent work.** A hotfix, an incident, or "just ship it" never waits for a checkpoint. If a checkpoint is open, mark it owed in the log and do the work. Doc writing never delays urgent work. Log "docs owed" and continue.
