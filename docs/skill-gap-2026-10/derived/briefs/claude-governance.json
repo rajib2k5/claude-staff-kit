@@ -1,0 +1,737 @@
+{
+ "skill": "claude-governance",
+ "gap_concepts": [
+  {
+   "label": "latency and availability SLA design",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Pick platform levers that protect a latency and uptime commitment."
+   ]
+  },
+  {
+   "label": "model fallback",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Pick platform levers that protect a latency and uptime commitment."
+   ]
+  },
+  {
+   "label": "bias and fairness evaluation",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Choose concrete pre-launch controls for bias, explainability and recourse."
+   ]
+  },
+  {
+   "label": "transparency controls",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Choose concrete pre-launch controls for bias, explainability and recourse."
+   ]
+  },
+  {
+   "label": "discovery session criteria",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Name capability, speed and budget as the factors to settle before recommending a model."
+   ]
+  },
+  {
+   "label": "stakeholder expectation setting",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Set accurate migration expectations when a model is retired on the direct API."
+   ]
+  },
+  {
+   "label": "cost attribution monitoring",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Attribute spend growth to workspace and model through the admin usage endpoint."
+   ]
+  },
+  {
+   "label": "spend growth diagnosis",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Attribute spend growth to workspace and model through the admin usage endpoint."
+   ]
+  },
+  {
+   "label": "Claude Code enterprise rollout",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Match rollout needs such as unmanaged devices and spend visibility to the right admin mechanisms."
+   ]
+  },
+  {
+   "label": "server-managed settings",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Match rollout needs such as unmanaged devices and spend visibility to the right admin mechanisms."
+   ]
+  },
+  {
+   "label": "reporting problematic responses",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Use the built-in rating control to flag a faulty answer in addition to correcting your own copy."
+   ]
+  },
+  {
+   "label": "feedback controls",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Use the built-in rating control to flag a faulty answer in addition to correcting your own copy."
+   ]
+  },
+  {
+   "label": "project sharing exposure",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Recognise that anything in shared project knowledge is reachable by everyone with access."
+   ]
+  },
+  {
+   "label": "sensitive data in knowledge",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Recognise that anything in shared project knowledge is reachable by everyone with access."
+   ]
+  },
+  {
+   "label": "least necessary data",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Recognise that anything in shared project knowledge is reachable by everyone with access."
+   ]
+  },
+  {
+   "label": "autonomy boundaries for agents",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Identify the responsible-use concern when an agent can act on production systems unchecked."
+   ]
+  },
+  {
+   "label": "owner-level privacy controls",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Know which organisation-wide setting stops rating feedback from leaving the workspace."
+   ]
+  },
+  {
+   "label": "disabling response ratings",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Know which organisation-wide setting stops rating feedback from leaving the workspace."
+   ]
+  },
+  {
+   "label": "incognito mode limits",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Explain that private-chat modes do not lift obligations around regulated data."
+   ]
+  },
+  {
+   "label": "regulated data policy",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Explain that private-chat modes do not lift obligations around regulated data."
+   ]
+  },
+  {
+   "label": "AI policy compliance check",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Consult the firm's AI policy for the specific deliverable type before releasing client work."
+   ]
+  },
+  {
+   "label": "client deliverable requirements",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Consult the firm's AI policy for the specific deliverable type before releasing client work."
+   ]
+  },
+  {
+   "label": "consequential decisions stay human",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Keep allocation decisions affecting individuals with staff while using Claude only for drafting."
+   ]
+  },
+  {
+   "label": "separating decision from drafting",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Keep allocation decisions affecting individuals with staff while using Claude only for drafting."
+   ]
+  },
+  {
+   "label": "privacy-preserving workflow order",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Order steps for summarising personal free-text: permissions, redaction, review, then documentation."
+   ]
+  },
+  {
+   "label": "consent and policy check",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Order steps for summarising personal free-text: permissions, redaction, review, then documentation."
+   ]
+  },
+  {
+   "label": "data minimisation",
+   "certs": [
+    "claude-certified-associate-foundations",
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Order steps for summarising personal free-text: permissions, redaction, review, then documentation.",
+    "Reduce personal data exposure to third parties and in internal logs."
+   ]
+  },
+  {
+   "label": "documenting redactions",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Order steps for summarising personal free-text: permissions, redaction, review, then documentation."
+   ]
+  },
+  {
+   "label": "PII redaction before vendor transfer",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Reduce personal data exposure to third parties and in internal logs."
+   ]
+  },
+  {
+   "label": "internal log hygiene",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Reduce personal data exposure to third parties and in internal logs."
+   ]
+  },
+  {
+   "label": "per-tenant tool scoping",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Layer tenant scoping, input screening and server-side authorization around an agent that can transact."
+   ]
+  },
+  {
+   "label": "multi-tenant confidentiality",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Layer tenant scoping, input screening and server-side authorization around an agent that can transact."
+   ]
+  },
+  {
+   "label": "HIPAA feature eligibility",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Respond to a compliance-based rejection by dropping the ineligible feature."
+   ]
+  },
+  {
+   "label": "API restriction enforcement",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Respond to a compliance-based rejection by dropping the ineligible feature."
+   ]
+  },
+  {
+   "label": "remove ineligible tools",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Respond to a compliance-based rejection by dropping the ineligible feature."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Use SDK hooks to normalize tool results before the model sees them and to intercept outgoing tool calls that violate business rules, redirecting to an alternative workflow.",
+   "concepts": [
+    "PostToolUse normalization",
+    "call interception",
+    "deterministic vs probabilistic compliance"
+   ],
+   "features": [
+    "PostToolUse hook",
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Enforce schema-compliant output via tool use with JSON schemas, choose the right tool_choice mode, and design nullable fields and enum escape values to prevent fabrication.",
+   "concepts": [
+    "tool_use extraction",
+    "tool_choice",
+    "nullable fields",
+    "other+detail enum"
+   ],
+   "features": [
+    "tool_use",
+    "tool_choice",
+    "JSON Schema"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Preserve critical facts in long interactions by keeping a persistent case-facts block, trimming verbose tool output, and ordering inputs to counter lost-in-the-middle effects.",
+   "concepts": [
+    "progressive summarization risk",
+    "case facts",
+    "lost in the middle",
+    "tool output trimming"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Define escalation and ambiguity rules: escalate on explicit human request, policy gaps or stalled progress, ask for more identifiers on multiple matches, and distrust sentiment or self-confidence proxies.",
+   "concepts": [
+    "escalation triggers",
+    "policy gaps",
+    "multiple matches",
+    "unreliable proxies"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Analyze authentication and authorization requirements to find security gaps.",
+   "concepts": [
+    "authn/authz",
+    "security gaps"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Define evaluation metrics spanning accuracy, latency, cost, safety and security.",
+   "concepts": [
+    "eval metrics",
+    "multi-dimensional"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Implement guardrails and safety controls.",
+   "concepts": [
+    "guardrails",
+    "safety controls"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Identify risks, limitations and failure modes of LLM systems.",
+   "concepts": [
+    "LLM risks",
+    "failure modes"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Apply human-in-the-loop validation strategies.",
+   "concepts": [
+    "human-in-the-loop",
+    "validation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Ensure regulatory compliance, with GDPR, HIPAA and FedRAMP named as examples.",
+   "concepts": [
+    "GDPR",
+    "HIPAA",
+    "FedRAMP"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Address ethical AI concerns including bias, fairness and transparency.",
+   "concepts": [
+    "bias",
+    "fairness",
+    "transparency"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Spot hallucinations, inconsistencies and bias in responses.",
+   "concepts": [
+    "hallucination",
+    "bias",
+    "inconsistency"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Governance, Risk, and Responsible Use",
+   "weight_pct": 15,
+   "task": "Recognize appropriate and inappropriate use cases.",
+   "concepts": [
+    "use-case suitability",
+    "inappropriate use"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Governance, Risk, and Responsible Use",
+   "weight_pct": 15,
+   "task": "Apply data sensitivity, regulatory and privacy considerations.",
+   "concepts": [
+    "data sensitivity",
+    "privacy",
+    "regulation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Governance, Risk, and Responsible Use",
+   "weight_pct": 15,
+   "task": "Follow organizational AI policies and governance standards.",
+   "concepts": [
+    "AI policy",
+    "governance"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Governance, Risk, and Responsible Use",
+   "weight_pct": 15,
+   "task": "Understand the ethical implications of AI use.",
+   "concepts": [
+    "ethics",
+    "responsible AI"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Security and Safety",
+   "weight_pct": 8.1,
+   "task": "Apply AI application security: prompt-injection and jailbreak defense, untrusted input handling, leakage and PII protection, and authn/authz integrity.",
+   "concepts": [
+    "prompt injection",
+    "untrusted input",
+    "PII",
+    "data leakage"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Security and Safety",
+   "weight_pct": 8.1,
+   "task": "Deploy safely with content policy, layered guardrails and secure-by-design principles such as least privilege and IAM.",
+   "concepts": [
+    "guardrail layering",
+    "least privilege",
+    "IAM"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Security and Safety",
+   "weight_pct": 8.1,
+   "task": "Use hooks as guardrails that stop destructive actions in Claude applications.",
+   "concepts": [
+    "hooks",
+    "destructive action prevention"
+   ],
+   "features": [
+    "Claude Code hooks"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Security and Safety",
+   "weight_pct": 8.1,
+   "task": "Manage secrets, credentials and API keys with identity validation, access approval and monitoring of authorized access.",
+   "concepts": [
+    "secrets management",
+    "key management",
+    "access monitoring"
+   ],
+   "features": [],
+   "kind": "governance"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Usage and Cost Admin API",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/usage-cost-api",
+   "fact": "Organization-level reporting for Claude Console accounts: GET /v1/organizations/usage_report/messages (token usage; buckets 1m, 1h, 1d; filter/group by api key, workspace, model, service tier, context window, data residency, speed) and GET /v1/organizations/cost_report (USD as decimal strings in cents; excludes Priority Tier, which you read from the usage endpoint by service_tier). Needs an Admin API key (sk-ant-admin01-...), org:admin OAuth token, or unscoped key; workspace keys fail; unavailable to individual accounts. Claude Enterprise uses the Analytics API; per-user Claude Code cost uses the Claude Code Analytics API.",
+   "identifiers": [
+    "/v1/organizations/usage_report/messages",
+    "/v1/organizations/cost_report",
+    "bucket_width",
+    "group_by[]",
+    "starting_at",
+    "ending_at",
+    "service_tiers[]",
+    "sk-ant-admin01",
+    "org:admin"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "API version 2026-10-21 renames several Admin API response fields (e.g. workspace_id on API keys becomes scope)."
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "server-managed settings",
+   "doc_url": "https://code.claude.com/docs/en/server-managed-settings",
+   "fact": "Org Owners set Claude Code policy in claude.ai Organization settings > Claude Code > Managed settings; clients fetch at startup and poll hourly. Needs Claude for Teams or Enterprise, Owner/Primary Owner role, and network access to api.anthropic.com. Managed settings sit at the top of the precedence stack and a lower scope cannot override them (a few restrictive keys are exceptions). A managed-mcp.json cannot be delivered this way; use allowedMcpServers/deniedMcpServers keys. Endpoint-managed alternatives: MDM/OS policy or a managed-settings.json file.",
+   "identifiers": [
+    "managed-settings.json",
+    "allowedMcpServers",
+    "deniedMcpServers",
+    "managed-mcp.json",
+    "/status",
+    "requiredMinimumVersion"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Claude for Teams",
+   "doc_url": "https://code.claude.com/docs/en/server-managed-settings",
+   "fact": "Plan on which server-managed settings are available (together with Enterprise). Other Teams plan details: not verified.",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Claude for Enterprise",
+   "doc_url": "https://code.claude.com/docs/en/server-managed-settings",
+   "fact": "Plan on which server-managed settings are available (together with Teams); Enterprise cost/usage reporting goes through the Claude Enterprise Analytics API rather than the Admin API. Other plan details: not verified.",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "CLAUDE_CODE_ENABLE_TELEMETRY",
+   "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+   "fact": "Set to 1 to turn on OpenTelemetry export; required for any telemetry. Exporter variables set in a repository's .claude/settings.json or settings.local.json are ignored, so only user, managed or shell settings can enable or route telemetry. Prompt text is not logged unless OTEL_LOG_USER_PROMPTS=1.",
+   "identifiers": [
+    "CLAUDE_CODE_ENABLE_TELEMETRY",
+    "OTEL_LOG_USER_PROMPTS",
+    "OTEL_LOG_ASSISTANT_RESPONSES"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "OpenTelemetry exporters",
+   "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+   "fact": "Claude Code exports metrics (time series), events via the logs/events protocol, and beta traces. Exporter choices: otlp, prometheus (metrics only), console, none. Protocols for otlp: grpc, http/json, http/protobuf; no default protocol, so you must set one. Metrics include claude_code.session.count, claude_code.cost.usage, claude_code.token.usage, claude_code.lines_of_code.count, claude_code.commit.count, claude_code.pull_request.count, claude_code.code_edit_tool.decision, claude_code.active_time.total. Setting a generic endpoint in managed settings strips developer-set per-signal endpoints.",
+   "identifiers": [
+    "OTEL_METRICS_EXPORTER",
+    "OTEL_LOGS_EXPORTER",
+    "OTEL_TRACES_EXPORTER",
+    "OTEL_EXPORTER_OTLP_PROTOCOL",
+    "OTEL_EXPORTER_OTLP_ENDPOINT",
+    "OTEL_EXPORTER_OTLP_HEADERS",
+    "OTEL_METRIC_EXPORT_INTERVAL",
+    "claude_code.cost.usage",
+    "claude_code.token.usage",
+    "claude_code.session.count"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "OTEL_METRICS_EXPORTER",
+   "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+   "fact": "Selects metrics exporters, comma-separated: otlp, prometheus, console, none (none disables). Logs use OTEL_LOGS_EXPORTER (otlp, console, none). Export interval OTEL_METRIC_EXPORT_INTERVAL defaults to 60000 ms. Selectors follow ordinary per-key precedence, so set them in managed settings to lock them.",
+   "identifiers": [
+    "OTEL_METRICS_EXPORTER",
+    "otlp",
+    "prometheus",
+    "console",
+    "none",
+    "OTEL_METRIC_EXPORT_INTERVAL"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Claude Code usage dashboard",
+   "doc_url": "https://code.claude.com/docs/en/monitoring-usage",
+   "fact": "No page describing a built-in 'usage dashboard' was fetched; the telemetry page only discusses building your own dashboards from OTel data, and the Admin API FAQ points to the Claude Code Analytics API for per-user cost. Specific product dashboard behaviour: not verified.",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Projects",
+   "doc_url": null,
+   "fact": "Claude Code docs mention 'projects' only in passing (cloud threads in a project do not apply repo settings). The claude.ai Projects feature itself: not verified.",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Project knowledge",
+   "doc_url": null,
+   "fact": "claude.ai project knowledge: not verified (page not fetched).",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Admin and enterprise",
+   "feature": "Research mode",
+   "doc_url": null,
+   "fact": "claude.ai Research mode: not verified (page not fetched).",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__ai-bias-and-fairness-where-bias-comes-from-and-how-to-measure-it.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__latency-cost-safety-and-security-metrics.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__claude-code-settings-scopes-and-managed-policy-delivery-for-teams.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__claude-code-team-policy-permissions-mcp-servers-models-and-spend.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__finding-mcp-authorization-gaps-scopes-per-user-credentials-and-server-policy.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__hipaa-compliance-on-claude-baa-hipaa-readiness-and-zdr.txt"
+ ],
+ "lesson_words": 24556
+}

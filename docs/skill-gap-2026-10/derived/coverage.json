@@ -1,0 +1,4583 @@
+[
+{
+"concept_id": "concept_hub_and_spoke_coordination",
+"covered_by": [
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Coordinates independent parallel agents, not coordinator-owned fault policy."
+},
+{
+"skill_id": "plugin_6_4_1_subagent_driven_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Controller dispatches implementer subagents; no fault-policy guidance."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_centralized_error_policy",
+"covered_by": [
+{
+"skill_id": "agent_sre_reliability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Covers retries and degradation generally, not coordinator-worker policy."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_agentic_loop_mechanics",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Claude API reference covers tool use loops."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_tool_result_message_pairing",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Tool use reference; pairing rule not named explicitly."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_stop_reason_handling",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "API reference covers streaming and params; stop_reason not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_truncated_output_detection",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "API params reference; truncation handling not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_explicit_context_passing_to_subagents",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Subagent system prompts; not context handoff between workers."
+},
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Dispatches isolated agents without shared state."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_subagent_context_isolation",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Delegates to subagents specifically to protect the main context."
+},
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Independent agents without shared state."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_goal_over_procedure_subagent_prompts",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Agent system prompt structure; goal-versus-steps not addressed."
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Covers dispatching subagents, not brief style."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_subagent_task_briefing",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Teaches agent system prompts and triggering, not task briefs."
+},
+{
+"skill_id": "rule_context_discipline",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Delegation guidance without brief-writing detail."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_deterministic_hook_enforcement",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "PreToolUse/PostToolUse hooks that block dangerous commands."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_pretooluse_input_rewriting",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Names PreToolUse hooks and validating tool use; rewriting implied."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_structured_escalation_handoff",
+"covered_by": [
+{
+"skill_id": "skill_eck_pause",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Session state handoff via STATE.md; not human escalation records."
+}
+],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_human_handoff_context",
+"covered_by": [
+{
+"skill_id": "skill_eck_pause",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Saves session state for clean handoff; agent-to-agent not human."
+}
+],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_session_resume_limits",
+"covered_by": [
+{
+"skill_id": "skill_eck_resume",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Resumes via STATE.md; no SDK resume semantics."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_file_checkpointing",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_multi_pass_code_review",
+"covered_by": [
+{
+"skill_id": "skill_staff_review",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Multi-lens review of a diff, not per-file plus integration passes."
+},
+{
+"skill_id": "rule_code_review",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Review order guidance; no pass-splitting."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_attention_dilution",
+"covered_by": [
+{
+"skill_id": "skill_staff_review",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Multi-lens review hints at splitting, not dilution itself."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_sdk_session_management",
+"covered_by": [
+{
+"skill_id": "plugin_session_report_session_report",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Reads session transcripts locally; not SDK session calls."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_session_persistence_apis",
+"covered_by": [
+{
+"skill_id": "plugin_session_report_session_report",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Reads stored transcripts; not SDK persistence APIs."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_tool_choice_modes",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "API params and tool use; tool_choice not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_forced_first_tool_call",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "API tool use reference; forcing a tool not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_tool_granularity",
+"covered_by": [
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Interface design guidance, not LLM tool splitting."
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-and-mcp-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_single_purpose_tools",
+"covered_by": [
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Resource-oriented interface design; not LLM tool design."
+},
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Exposing tools to Claude; granularity not covered."
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-and-mcp-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_mcp_project_scope_config",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Covers .mcp.json and MCP server configuration."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_environment_variable_expansion",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "MCP config with variable expansion for plugin root only."
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-and-mcp-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_built_in_tool_selection",
+"covered_by": [
+{
+"skill_id": "agent_codebase_explorer",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Locates files and symbols but does not teach tool choice."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-core-workflows",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_glob_versus_grep_distinction",
+"covered_by": [
+{
+"skill_id": "agent_codebase_explorer",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Pattern file inventory work; distinction not taught."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-core-workflows",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_partial_failure_handling",
+"covered_by": [
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Graceful degradation rules, not parallel-agent partial results."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_structured_error_propagation",
+"covered_by": [
+{
+"skill_id": "rule_code_quality",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Errors carry context and retryability; generic, not agent-specific."
+},
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Stable machine-readable error shapes."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_tool_description_quality",
+"covered_by": [
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Builds MCP tools for Claude; description quality not named."
+},
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "MCP integration setup only."
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-and-mcp-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_input_schema_documentation",
+"covered_by": [
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Tool exposure for Claude; schema documentation not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-and-mcp-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_subagent_local_recovery",
+"covered_by": [
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Bounded retries with backoff, generic not subagent-specific."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_plan_mode_exploration",
+"covered_by": [
+{
+"skill_id": "skill_staff_design",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Design alternatives before building; plan mode not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-core-workflows",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_design_option_comparison",
+"covered_by": [
+{
+"skill_id": "skill_staff_design",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Weighs two or three real alternatives before building."
+},
+{
+"skill_id": "skill_eck_design",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Design orchestrator with architecture research."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_headless_cli_structured_output",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-code-headless-and-ci",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_ci_integration_of_claude",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-code-headless-and-ci",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_headless_cli_json_metadata",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-code-headless-and-ci",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_cost_tracking_from_cli",
+"covered_by": [
+{
+"skill_id": "plugin_session_report_session_report",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Reports tokens and cost from transcripts, not CLI JSON result."
+},
+{
+"skill_id": "plugin_receipts_receipts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Usage report from local transcripts."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-headless-and-ci",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_skill_tool_restrictions",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_skill_development",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Skill authoring; allowed-tools semantics not named."
+},
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Configures settings.json permissions."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_permission_versus_availability",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Configures permissions in settings.json; allow versus deny unnamed."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_test_first_iteration",
+"covered_by": [
+{
+"skill_id": "skill_staff_tdd",
+"strength": "strong",
+"confidence_score": 0.95,
+"why": "Drives features test-first: RED, GREEN, refactor."
+},
+{
+"skill_id": "plugin_6_4_1_test_driven_development",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Write tests before implementation code."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_correction_cycle_reduction",
+"covered_by": [
+{
+"skill_id": "skill_staff_tdd",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Test-first reproduction reduces rework before implementation."
+},
+{
+"skill_id": "plugin_6_4_1_test_driven_development",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Tests before implementation code."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_interview_driven_specification",
+"covered_by": [
+{
+"skill_id": "plugin_6_4_1_brainstorming",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Explores user intent and requirements before implementation."
+},
+{
+"skill_id": "skill_eck_spec",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Discovery and open questions for spec-driven work."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_requirements_elicitation",
+"covered_by": [
+{
+"skill_id": "plugin_6_4_1_brainstorming",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Explores user intent, requirements and design first."
+},
+{
+"skill_id": "skill_eck_spec",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Spec orchestrator: discovery, scope, acceptance criteria."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_claude_md_scope_hierarchy",
+"covered_by": [
+{
+"skill_id": "plugin_1_0_0_claude_md_improver",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Audits CLAUDE.md files; scope hierarchy not named."
+},
+{
+"skill_id": "skill_staff_bootstrap",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Writes project CLAUDE.md."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-core-workflows",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_team_convention_sharing",
+"covered_by": [
+{
+"skill_id": "skill_staff_bootstrap",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Writes a project CLAUDE.md wiring repo to shared standards."
+},
+{
+"skill_id": "plugin_1_0_0_claude_md_improver",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Improves repository CLAUDE.md files."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_cross_file_integration_pass",
+"covered_by": [
+{
+"skill_id": "skill_staff_review",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Multi-lens review; no explicit cross-file reconciliation."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_schema_enforced_extraction",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tool use reference; forced-tool structured output not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_explicit_review_criteria",
+"covered_by": [
+{
+"skill_id": "rule_code_review",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Severity taxonomy and finding requirements for reviewers."
+},
+{
+"skill_id": "skill_staff_review",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Findings need concrete failure scenarios."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_false_positive_reduction",
+"covered_by": [
+{
+"skill_id": "skill_staff_review",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Every finding backed by a concrete failure scenario."
+},
+{
+"skill_id": "rule_code_review",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Verify before flagging; downgrade unproven findings."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_validation_retry_loops",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Validation gating, not Claude extraction retries."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_targeted_retry_feedback",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_few_shot_examples",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_escalation_criteria",
+"covered_by": [
+{
+"skill_id": "rule_engineering_bar",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Irreversibility ladder requires human confirmation at T4."
+}
+],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_policy_driven_autonomy",
+"covered_by": [
+{
+"skill_id": "rule_engineering_bar",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Irreversibility tiers decide when human confirmation is required."
+}
+],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_segment_level_accuracy_review",
+"covered_by": [
+{
+"skill_id": "plugin_data_validate_data",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "QA of analyses; no routing of low-accuracy slices."
+}
+],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_human_review_routing",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_conflicting_source_detection",
+"covered_by": [
+{
+"skill_id": "skill_data_quality",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Reconciliation drift detection across data sources."
+}
+],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_claim_provenance_via_citations",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_citations_versus_manual_bibliography",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_error_type_distinction",
+"covered_by": [
+{
+"skill_id": "rule_code_quality",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Distinguishes invalid input, transient and permanent errors."
+},
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Client versus server error classes."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_explicit_human_request_handling",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "human-in-the-loop-escalation-design",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_search_result_content_blocks",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_rag_citation_grounding",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_context_editing",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "API reference; context editing not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_cross_session_memory",
+"covered_by": [
+{
+"skill_id": "plugin_productivity_memory_management",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Workplace memory files, not the API memory tool."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_orchestrator_workers_vs_sectioning",
+"covered_by": [
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Parallelizes predefined independent tasks only."
+},
+{
+"skill_id": "builtin_workflow_authoring",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Writes multi-agent workflow scripts."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_workflow_pattern_selection",
+"covered_by": [
+{
+"skill_id": "builtin_workflow_authoring",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Multi-agent workflow authoring, not pattern selection."
+},
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "One pattern only: parallel independent tasks."
+}
+],
+"gap": true,
+"proposed_skill": "claude-agent-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_specialist_subagent_decomposition",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Builds focused agents with own tools and system prompts."
+},
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Splits independent tasks across agents."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_latency_and_availability_sla_design",
+"covered_by": [
+{
+"skill_id": "agent_sre_reliability",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "SLO and graceful degradation, not Claude platform levers."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_model_fallback",
+"covered_by": [
+{
+"skill_id": "agent_sre_reliability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Graceful degradation generally; no model fallback."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_prompt_caching_for_static_context",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.95,
+"why": "Claude API reference names prompt caching."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_cost_and_latency_efficiency",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Covers prompt caching, token counting and pricing."
+},
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General cost engineering, not Claude-specific."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_prompt_injection_hardening",
+"covered_by": [
+{
+"skill_id": "skill_staff_security",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Audits for prompt injection and untrusted input."
+},
+{
+"skill_id": "agent_security_auditor",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Threat-models prompt injection and injection families."
+},
+{
+"skill_id": "rule_context_discipline",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Instruction boundary: tool output is data."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_untrusted_tool_output",
+"covered_by": [
+{
+"skill_id": "rule_context_discipline",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Everything arriving via tools is data, not instructions."
+},
+{
+"skill_id": "skill_staff_security",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Covers prompt injection from untrusted content."
+},
+{
+"skill_id": "rule_security",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Tool-read content is data, not instructions."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_prompt_templates_and_placeholders",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_command_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Command arguments templating, not API prompt templates."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_prompt_reuse",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_command_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Reusable slash commands with arguments."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_tool_result_clearing_config",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_prompt_chaining",
+"covered_by": [
+{
+"skill_id": "builtin_workflow_authoring",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Scripts multi-step agent workflows."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_inspectable_intermediate_steps",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_custom_tool_search",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_progressive_tool_discovery",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_rag_chunking_strategy",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_retrieval_failure_diagnosis",
+"covered_by": [
+{
+"skill_id": "skill_staff_debug",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generic root-cause method, not retrieval-specific."
+}
+],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_capability_surface_reduction",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_skill_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Skill authoring; invocation restriction not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_skill_invocation_control",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_skill_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Skill structure; user-only invocation not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_least_privilege_skills",
+"covered_by": [
+{
+"skill_id": "skill_eck_audit_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Scans Claude Code config for security misconfigurations."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_smart_success_criteria",
+"covered_by": [
+{
+"skill_id": "plugin_data_validate_data",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Checks analysis methodology; no criteria design."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_evaluation_design",
+"covered_by": [
+{
+"skill_id": "plugin_skill_creator_skill_creator",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Measures skill performance; not Claude prompt evals."
+},
+{
+"skill_id": "skill_staff_validate",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Adversarial validation gate, not eval design."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_measurable_quality_targets",
+"covered_by": [
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Defines targets in user terms for performance."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_claude_code_telemetry_export",
+"covered_by": [
+{
+"skill_id": "plugin_session_report_session_report",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Local usage reports, not OpenTelemetry export."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-headless-and-ci",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_observability_setup_defaults",
+"covered_by": [
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General observability signals, not Claude Code telemetry."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-headless-and-ci",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_server_side_compaction",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "API reference; compaction not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_effort_parameter_tuning",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "API params reference; effort not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-advanced-features",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_cost_latency_tuning",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Prompt caching and pricing covered; effort tuning not named."
+},
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General measured optimisation rules."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_realistic_success_criteria",
+"covered_by": [
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Define targets in user terms before measuring."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_feasible_performance_targets",
+"covered_by": [
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Measured targets, not feasibility of LLM accuracy."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_held_out_test_set",
+"covered_by": [
+{
+"skill_id": "plugin_data_statistical_analysis",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Hypothesis testing; held-out evaluation not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_overfitting_to_dev_set",
+"covered_by": [
+{
+"skill_id": "plugin_data_statistical_analysis",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Statistical methods; overfitting to prompts not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_model_capability_mismatch_evidence",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Routes work to cheapest sufficient model; evidence not taught."
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Model ids and pricing reference."
+}
+],
+"gap": true,
+"proposed_skill": "claude-eval-and-success-criteria",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_model_selection_trade_offs",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Chooses cheapest model that can do the task correctly."
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Classifies tasks to Sonnet or Opus by complexity."
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Model ids, pricing reference."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_quote_first_grounding",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_hallucination_reduction",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Detects hallucinated APIs in code, not prompt techniques."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_hook_based_approval_enforcement",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "PreToolUse hooks block or gate dangerous tool calls."
+},
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Configures hooks and permissions in settings.json."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_permission_modes",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Configures permissions; modes not named."
+},
+{
+"skill_id": "skill_eck_sandbox",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Sets sandbox default only."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_bias_and_fairness_evaluation",
+"covered_by": [
+{
+"skill_id": "plugin_data_validate_data",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Includes bias checks on analyses."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_transparency_controls",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_discovery_session_criteria",
+"covered_by": [
+{
+"skill_id": "rule_agent_models",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Model choice by task complexity; no customer discovery."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_compliance_driven_requirements_mapping",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-rag-and-citations",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_model_deprecation_planning",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Claude API reference covers model migration."
+},
+{
+"skill_id": "skill_staff_migrate",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generic migration planning."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_stakeholder_expectation_setting",
+"covered_by": [
+{
+"skill_id": "skill_staff_migrate",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Migration rollback planning, not stakeholder messaging."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_cost_attribution_monitoring",
+"covered_by": [
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Attribute spend with tags and per-unit costs."
+},
+{
+"skill_id": "skill_data_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Warehouse spend investigation, not API usage."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_spend_growth_diagnosis",
+"covered_by": [
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General spend diagnosis rules."
+},
+{
+"skill_id": "skill_data_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Warehouse cost investigation only."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_claude_code_enterprise_rollout",
+"covered_by": [
+{
+"skill_id": "skill_eck_update_permissions",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generates project permissions, not org rollout."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_server_managed_settings",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Edits local settings.json, not server-managed."
+}
+],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_ci_permission_modes",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Configures permissions; CI mode not named."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_unattended_pipeline_safety",
+"covered_by": [
+{
+"skill_id": "skill_eck_audit_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Config security audit; not unattended runs."
+},
+{
+"skill_id": "skill_eck_sandbox",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Sets sandbox default."
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config-permissions-and-scopes",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_autocompact_thrashing_recovery",
+"covered_by": [
+{
+"skill_id": "rule_context_discipline",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Read specific parts and delegate to subagents."
+},
+{
+"skill_id": "skill_eck_fresh_context",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Continues in subagent when context nears exhaustion."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_context_size_management",
+"covered_by": [
+{
+"skill_id": "rule_context_discipline",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Context is scarcest resource; read narrowly, delegate."
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Delegates to subagents to protect main context."
+},
+{
+"skill_id": "skill_eck_fresh_context",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Continues work when context window nears exhaustion."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_mcp_server_debugging",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Configures MCP servers; no debugging procedure."
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-and-mcp-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_systematic_failure_diagnosis",
+"covered_by": [
+{
+"skill_id": "skill_staff_debug",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Reproduce, one hypothesis at a time, prove cause."
+},
+{
+"skill_id": "plugin_6_4_1_systematic_debugging",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Systematic debugging before proposing fixes."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_ordered_step_lists",
+"covered_by": [
+{
+"skill_id": "skill_simple_english",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Procedure writing rules: condition before command, simple tenses."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_sequence_ambiguity",
+"covered_by": [
+{
+"skill_id": "skill_simple_english",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Unambiguous procedure wording rules."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_prompt_structure",
+"covered_by": [
+{
+"skill_id": "skill_simple_english",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Technical writing rules, not prompt structure."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_staged_task_guidance",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_audience_and_tone_specification",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_marketing_content_prompting",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_written_acceptance_criteria",
+"covered_by": [
+{
+"skill_id": "skill_eck_spec",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Spec orchestrator produces acceptance criteria."
+},
+{
+"skill_id": "skill_eck_ac_coverage",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Per-criterion traceability across lifecycle phases."
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_revision_regressions",
+"covered_by": [
+{
+"skill_id": "skill_eck_ac_coverage",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Criterion traceability, not revision regression in chat."
+},
+{
+"skill_id": "skill_staff_tdd",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Regression tests guard fixes."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_iteration_drift",
+"covered_by": [
+{
+"skill_id": "skill_eck_ac_coverage",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Traceability of criteria across phases."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_task_decomposition_signals",
+"covered_by": [
+{
+"skill_id": "plugin_6_4_1_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Splits independent tasks; not chat decomposition signals."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_multiple_deliverables_per_request",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_dependent_stages",
+"covered_by": [
+{
+"skill_id": "builtin_workflow_authoring",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Scripts multi-step agent workflows."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_targeted_follow_up_refinement",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_readability_adjustment",
+"covered_by": [
+{
+"skill_id": "skill_simple_english",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Rewrites technical text for readability."
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_preserving_accuracy",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering-patterns",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_relevance_versus_accuracy",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_answering_the_actual_question",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_output_assessment",
+"covered_by": [
+{
+"skill_id": "plugin_data_validate_data",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "QA of analyses before sharing."
+},
+{
+"skill_id": "skill_staff_validate",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Validation gate for claims and numbers."
+}
+],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_quotation_verification",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Checks claims against sources, for code not quotes."
+}
+],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_source_checking",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Dual-channel check of claims against documentation."
+},
+{
+"skill_id": "plugin_data_validate_data",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Spot-checks analysis accuracy."
+}
+],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_fabricated_attribution",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Detects hallucinated APIs and kwargs in code."
+}
+],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_scope_agreement_before_synthesis",
+"covered_by": [
+{
+"skill_id": "plugin_6_4_1_brainstorming",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Clarifies requirements before building."
+}
+],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_consolidating_separate_outputs",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_comparison_matrix_design",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_citation_verification_against_sources",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Verifies claims against official documentation."
+},
+{
+"skill_id": "skill_staff_validate",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Validates numbers before decisions."
+}
+],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_pre_publication_fact_check",
+"covered_by": [
+{
+"skill_id": "skill_staff_validate",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Validates claims and numbers before reporting."
+},
+{
+"skill_id": "plugin_data_validate_data",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "QA before stakeholder presentation."
+}
+],
+"gap": true,
+"proposed_skill": "claude-output-verification-and-fact-checking",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_web_search_sourcing",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_reporting_problematic_responses",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_feedback_controls",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-platform-ops-and-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_context_limit_handling",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Context protection for coding sessions, not claude.ai."
+},
+{
+"skill_id": "skill_eck_pause",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Saves session state for later resume."
+}
+],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_disposable_versus_durable_work",
+"covered_by": [
+{
+"skill_id": "skill_eck_pause",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Persists session state outside the conversation."
+}
+],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_automatic_context_management",
+"covered_by": [
+{
+"skill_id": "skill_eck_fresh_context",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Manual context continuation, not automatic condensing."
+}
+],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_research_mode_usage",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_artifacts_for_shared_editing",
+"covered_by": [
+{
+"skill_id": "builtin_artifact_design",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Design guidance for Artifacts, not shared editing choice."
+},
+{
+"skill_id": "plugin_64e3e0b88be8_artifact",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Builds interactive HTML artifacts."
+}
+],
+"gap": true,
+"proposed_skill": "claude-ai-workflow-and-research-features",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_feature_to_task_matching",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_model_tier_selection",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Routes work to cheapest model that can do it correctly"
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Maps work type to Sonnet or Opus"
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Lists model ids and pricing, not selection"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_throughput_versus_depth_tradeoff",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Cost-based routing touches speed versus depth tradeoff"
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Simple versus complex work split only"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_usage_quota_impact",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Covers token spend, not plan usage quotas"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_model_tier_characteristics",
+"covered_by": [
+{
+"skill_id": "rule_agent_models",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Classifies tasks by tier but not tier traits"
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Model ids and pricing reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_default_tier_suitability",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Cheapest adequate model idea, no default-tier guidance"
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Sonnet default, Opus when ambiguous"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_allowance_consumption",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Tracks token spend, not plan allowance"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_define_quality_first",
+"covered_by": [
+{
+"skill_id": "rule_definition_of_done",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Definition of done, not model quality criteria"
+}
+],
+"gap": true,
+"proposed_skill": "claude-evals",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_sample_based_tier_validation",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Routes by correctness but no sample validation method"
+},
+{
+"skill_id": "agent_adversarial_validator",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Validates claims, not tier fit on samples"
+}
+],
+"gap": true,
+"proposed_skill": "claude-evals",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_escalate_tier_on_evidence",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Routes to cheapest model that works; escalation implied"
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Opus for complex or ambiguous work"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_human_review_as_safety_net",
+"covered_by": [
+{
+"skill_id": "skill_staff_validate",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Validation gate, not human review of cheap tiers"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_risk_based_tier_choice",
+"covered_by": [
+{
+"skill_id": "rule_agent_models",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Higher-risk or validation work goes to Opus"
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Cheapest model that is still correct"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_unchecked_workload_quality",
+"covered_by": [
+{
+"skill_id": "agent_adversarial_validator",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Breaks work, not for unreviewed model output"
+}
+],
+"gap": true,
+"proposed_skill": "claude-evals",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_need_versus_solution_framing",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_brainstorming",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Explores intent before building"
+},
+{
+"skill_id": "plugin_7_0_0_writing_plans",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Plans from given requirements"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_requirements_elicitation_with_ai",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_brainstorming",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Elicits intent and requirements through questions before work"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_flagging_unclear_outcomes",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_brainstorming",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Surfaces ambiguity before building"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_vague_feedback_diagnosis",
+"covered_by": [
+{
+"skill_id": "skill_staff_debug",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Systematic diagnosis of code failures only"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_gather_concrete_failing_examples",
+"covered_by": [
+{
+"skill_id": "skill_staff_debug",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Reproduce before hypothesising"
+},
+{
+"skill_id": "plugin_skill_creator_skill_creator",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Runs evals on skills, not user feedback"
+}
+],
+"gap": true,
+"proposed_skill": "claude-evals",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_pilot_triage",
+"covered_by": [
+{
+"skill_id": "skill_staff_debug",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Triage of code bugs, not AI pilots"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_change_communication",
+"covered_by": [
+{
+"skill_id": "agent_docs_writer",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Drafts documentation, not change rollout comms"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_human_and_ai_responsibility_split",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_review_checkpoints",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_requesting_code_review",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Review checkpoints in dev workflow"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_ai_assisted_research_planning",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_writing_plans",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Writes plans for multi-step tasks"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_team_refinement_of_plans",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_writing_plans",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Plan writing, no team refinement process"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_stakeholder_buy_in_evidence",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_human_review_rationale",
+"covered_by": [
+{
+"skill_id": "rule_code_review",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Review purpose, not rationale for AI output"
+}
+],
+"gap": true,
+"proposed_skill": "claude-workflow-adoption",
+"canonical_skill": "claude-solution-design"
+},
+{
+"concept_id": "concept_measured_pilot_outcome",
+"covered_by": [
+{
+"skill_id": "skill_staff_perf",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Baseline and re-measure method"
+},
+{
+"skill_id": "rule_performance_and_cost",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Measure before and after"
+}
+],
+"gap": true,
+"proposed_skill": "claude-evals",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_knowledge_versus_instructions_placement",
+"covered_by": [
+{
+"skill_id": "plugin_claude_md_management_claude_md_improver",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Improves CLAUDE.md instruction files, not project knowledge"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_project_instructions",
+"covered_by": [
+{
+"skill_id": "plugin_claude_md_management_claude_md_improver",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "CLAUDE.md analogue of project instructions"
+},
+{
+"skill_id": "builtin_init",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generates a CLAUDE.md"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_reference_material_upload",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_shared_project_maintenance",
+"covered_by": [
+{
+"skill_id": "plugin_claude_md_management_claude_md_improver",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Maintains shared CLAUDE.md files"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_notifying_members_of_changes",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_knowledge_source_updates",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_live_connectors_versus_static_uploads",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Covers MCP connector setup, not tradeoff"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_source_freshness",
+"covered_by": [
+{
+"skill_id": "skill_data_quality",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Freshness checks for data, not Claude knowledge"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_project_sharing_exposure",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generic data classification and access"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_sensitive_data_in_knowledge",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Classify data before storing"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_least_necessary_data",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Collect the minimum data"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_human_oversight_of_irreversible_actions",
+"covered_by": [
+{
+"skill_id": "skill_destructive_ops_guard",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Guards delete, drop, overwrite actions before running"
+},
+{
+"skill_id": "rule_engineering_bar",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Irreversibility ladder needs human confirmation at T4"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_autonomy_boundaries_for_agents",
+"covered_by": [
+{
+"skill_id": "skill_destructive_ops_guard",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Guards destructive actions only"
+},
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Permissions config, not autonomy policy"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_owner_level_privacy_controls",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_disabling_response_ratings",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_incognito_mode_limits",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_regulated_data_policy",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Classify regulated data generically"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_ai_policy_compliance_check",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_client_deliverable_requirements",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_consequential_decisions_stay_human",
+"covered_by": [
+{
+"skill_id": "skill_destructive_ops_guard",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Human confirmation for destructive actions"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_separating_decision_from_drafting",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_privacy_preserving_workflow_order",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Data minimisation and redaction guidance"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_consent_and_policy_check",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_data_minimisation",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Collect the minimum, delete on schedule"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_documenting_redactions",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_underspecified_prompt_root_cause",
+"covered_by": [
+{
+"skill_id": "plugin_skill_creator_skill_creator",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Optimises skill descriptions, not general prompts"
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_explicit_categories_and_criteria",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_temperature_versus_clarity",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Lists API params like temperature"
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_allowance_efficiency_habits",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Token spend and context discipline"
+},
+{
+"skill_id": "plugin_session_report_session_report",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Reports token use, no habits"
+}
+],
+"gap": true,
+"proposed_skill": "claude-context-management",
+"canonical_skill": "claude-context-management"
+},
+{
+"concept_id": "concept_front_loaded_context",
+"covered_by": [
+{
+"skill_id": "rule_context_discipline",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Context reading discipline"
+}
+],
+"gap": true,
+"proposed_skill": "claude-context-management",
+"canonical_skill": "claude-context-management"
+},
+{
+"concept_id": "concept_fresh_chat_per_task",
+"covered_by": [
+{
+"skill_id": "skill_eck_fresh_context",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Continues in fresh context near exhaustion"
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Protects main context"
+}
+],
+"gap": true,
+"proposed_skill": "claude-context-management",
+"canonical_skill": "claude-context-management"
+},
+{
+"concept_id": "concept_disable_unused_connectors",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Configures MCP servers, not pruning them"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_lean_configuration",
+"covered_by": [
+{
+"skill_id": "plugin_claude_code_setup_claude_automation_recommender",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Recommends setup, not lean config"
+}
+],
+"gap": true,
+"proposed_skill": "claude-project-knowledge",
+"canonical_skill": "claude-rag-and-citations"
+},
+{
+"concept_id": "concept_compare_output_against_logs",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Probes runtime behaviour empirically"
+}
+],
+"gap": true,
+"proposed_skill": "claude-evals",
+"canonical_skill": "claude-evals"
+},
+{
+"concept_id": "concept_summary_only_return",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Delegates to subagents to protect main context"
+},
+{
+"skill_id": "rule_context_discipline",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Subagent burns own context, returns conclusion"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_main_context_token_cost",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Protects main context and token spend"
+},
+{
+"skill_id": "rule_context_discipline",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Context is scarcest resource; delegate reads"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_transcript_archival_before_compaction",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Hook events could archive, PreCompact not named"
+},
+{
+"skill_id": "skill_eck_pause",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Saves session state to STATE.md"
+}
+],
+"gap": true,
+"proposed_skill": "claude-context-management",
+"canonical_skill": "claude-context-management"
+},
+{
+"concept_id": "concept_rules_that_survive_compaction",
+"covered_by": [
+{
+"skill_id": "plugin_claude_md_management_claude_md_improver",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Maintains CLAUDE.md, no compaction teaching"
+},
+{
+"skill_id": "builtin_init",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Generates persistent CLAUDE.md"
+}
+],
+"gap": true,
+"proposed_skill": "claude-context-management",
+"canonical_skill": "claude-context-management"
+},
+{
+"concept_id": "concept_persistent_instruction_file",
+"covered_by": [
+{
+"skill_id": "plugin_claude_md_management_claude_md_improver",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Audits and improves CLAUDE.md files"
+},
+{
+"skill_id": "builtin_init",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Generates a CLAUDE.md for a repo"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_agent_framework_comparison",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_model_agnostic_frameworks",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_graph_based_workflow_control",
+"covered_by": [
+{
+"skill_id": "builtin_workflow_authoring",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Multi-agent workflow scripts, not graph frameworks"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_opentelemetry_tracing",
+"covered_by": [
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Traces and context propagation, not OpenTelemetry for agents"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_parallelization_by_voting",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Parallel agents on independent tasks"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_voting_versus_sectioning",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_dispatching_parallel_agents",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Parallel independent tasks resemble sectioning"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_majority_verdict_confidence",
+"covered_by": [
+{
+"skill_id": "skill_evidence_gated_validation",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Two independent channels must converge"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_cheap_model_for_high_volume_step",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.95,
+"why": "Routes work to cheapest model that works"
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Sonnet for mechanical subagent work"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_per_subagent_model_assignment",
+"covered_by": [
+{
+"skill_id": "rule_agent_models",
+"strength": "strong",
+"confidence_score": 0.95,
+"why": "Every subagent launched with explicit model"
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Chooses model when dispatching any subagent"
+},
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Agent frontmatter structure"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_stale_tool_result_clearing",
+"covered_by": [
+{
+"skill_id": "skill_eck_fresh_context",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Context continuation, not clearing tool results"
+}
+],
+"gap": true,
+"proposed_skill": "claude-context-management",
+"canonical_skill": "claude-context-management"
+},
+{
+"concept_id": "concept_beta_feature_risk",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General API reference, no beta guidance"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_beta_versus_ga_readiness",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General API reference, no GA table"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_feature_availability_table",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General API reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_session_resume",
+"covered_by": [
+{
+"skill_id": "skill_eck_resume",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Resumes workflow sessions, not SDK resume option"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_capturing_session_id",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_init_system_message",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_built_in_shell_tool",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Covers tool use and agents broadly"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_version_control_automation",
+"covered_by": [
+{
+"skill_id": "skill_eck_deploy",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Release tagging orchestration, not SDK Bash"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_stateless_sessions",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_disabling_session_persistence",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_typescript_only_option",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_resumed_session_model_fallback",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Settings config, no resume model behaviour"
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_retired_model_handling",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Covers model ids and migration"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_model_precedence_order",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Configures settings, no model precedence"
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_batch_size_limits",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Names batches in reference scope"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_batch_expiry_window",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Names batches in reference scope"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_result_retention_period",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Names batches in reference scope"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_nightly_batch_suitability",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Batches reference for offline bulk work"
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Cost-aware routing"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_permission_rule_merging",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Configures permissions in settings.json"
+},
+{
+"skill_id": "skill_eck_update_permissions",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Regenerates permissions in settings.json"
+},
+{
+"skill_id": "builtin_fewer_permission_prompts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Builds permission allowlist"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_deny_overrides_allow",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Configures permissions in settings files"
+},
+{
+"skill_id": "skill_eck_update_permissions",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Regenerates permission rules"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_settings_scope_hierarchy",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Edits settings.json and settings.local.json scopes"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_local_settings_file",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Names settings.local.json explicitly"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_plugin_packaging",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_plugin_structure",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Scaffolds plugin.json and components"
+},
+{
+"skill_id": "plugin_plugin_dev_plugin_settings",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Plugin configuration files"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_reusable_capability_bundle",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_plugin_structure",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Organises commands, agents, skills, hooks in plugin"
+},
+{
+"skill_id": "plugin_plugin_dev_skill_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Skill authoring within plugins"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_plugin_directory_layout",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_plugin_structure",
+"strength": "strong",
+"confidence_score": 0.95,
+"why": "Teaches plugin directory structure directly"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_speed_and_intelligence_balance",
+"covered_by": [
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Cheapest adequate model routing"
+},
+{
+"skill_id": "rule_agent_models",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Sonnet versus Opus tradeoff"
+}
+],
+"gap": true,
+"proposed_skill": "claude-model-selection",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_current_model_lineup",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Lists current model ids"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_acceleration_limits",
+"covered_by": [
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Backpressure and bounded retries"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_429_under_published_limits",
+"covered_by": [
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Retry with backoff on 429"
+},
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Backoff, jitter, bounded retries"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_gradual_traffic_ramp",
+"covered_by": [
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Progressive rollout, not API traffic ramps"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_error_code_classification",
+"covered_by": [
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Client versus transient versus permanent errors"
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General API reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_oversized_payload_errors",
+"covered_by": [
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generic error handling"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_auth_and_conflict_errors",
+"covered_by": [
+{
+"skill_id": "rule_api_and_contracts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generic error handling"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_streaming_does_not_cure_everything",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Streaming covered in reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_pre_send_token_counting",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Names token counting directly"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_budget_enforcement",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Token counting reference"
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Token spend tracking"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_extended_thinking_streaming_events",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Streaming reference"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_thinking_block_signature",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Streaming and params, thinking not named"
+}
+],
+"gap": true,
+"proposed_skill": "claude-api-ops",
+"canonical_skill": "claude-api-ops"
+},
+{
+"concept_id": "concept_content_block_lifecycle",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Streaming reference"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_autoregressive_generation",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_next_token_prediction",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_prompt_caching_breakpoints",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Names prompt caching directly"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_stable_prefix_reuse",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Prompt caching reference"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_ephemeral_cache_lifetime",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Prompt caching reference"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_bulk_file_exploration",
+"covered_by": [
+{
+"skill_id": "agent_codebase_explorer",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Fan-out file search returning conclusions only"
+},
+{
+"skill_id": "skill_cost_conscious_orchestration",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Delegates reads to subagents"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_prompt_clarity_testing",
+"covered_by": [
+{
+"skill_id": "plugin_skill_creator_skill_creator",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Evals and description optimisation for skills"
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_cold_reader_check",
+"covered_by": [
+{
+"skill_id": "skill_simple_english",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Rewrites text for clarity"
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_ambiguity_discovery",
+"covered_by": [
+{
+"skill_id": "plugin_7_0_0_brainstorming",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Surfaces ambiguity in requirements"
+}
+],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_defensive_json_parsing",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "General API reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-structured-output",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_stop_reason_inspection",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "General API reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-structured-output",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_tool_error_feedback_loop",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tool use reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_is_error_tool_results",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tool use reference"
+},
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Builds MCP tools"
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_strict_tool_schemas",
+"covered_by": [
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tool use reference"
+},
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Builds MCP tools"
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_tool_description_clarity",
+"covered_by": [
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Exposes tools to Claude"
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Tool use reference"
+}
+],
+"gap": true,
+"proposed_skill": "claude-tool-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_xml_document_tagging",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_source_attribution",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_prompt_section_boundaries",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-prompt-engineering",
+"canonical_skill": "claude-prompt-engineering"
+},
+{
+"concept_id": "concept_subagent_nesting_depth",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Subagent structure, no spawn depth"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_blocking_child_spawning",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Subagent tools, no spawn blocking"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_subagent_tool_allowlist",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Agent tools and frontmatter named"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_pii_redaction_before_vendor_transfer",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Redact PII in logs and payloads"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_internal_log_hygiene",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Never log secrets or PII"
+},
+{
+"skill_id": "rule_reliability_observability",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Structured logging practice"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_per_tenant_tool_scoping",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tenant predicate enforced server-side"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_injection_screening_of_tool_results",
+"covered_by": [
+{
+"skill_id": "skill_staff_security",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Audits code for prompt injection"
+},
+{
+"skill_id": "agent_security_auditor",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "Threat-models prompt injection"
+},
+{
+"skill_id": "rule_context_discipline",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tool output is data, not instructions"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_backend_authorization_for_actions",
+"covered_by": [
+{
+"skill_id": "skill_staff_security",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Audits broken authorization"
+},
+{
+"skill_id": "agent_security_auditor",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Finds authorization defects"
+},
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Authorise every request server-side"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_multi_tenant_confidentiality",
+"covered_by": [
+{
+"skill_id": "skill_staff_security",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Authorization audit, tenant isolation implied"
+},
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Multi-tenancy tenant predicate"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_hipaa_feature_eligibility",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_api_restriction_enforcement",
+"covered_by": [
+{
+"skill_id": "rule_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generic security controls"
+}
+],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_remove_ineligible_tools",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-governance",
+"canonical_skill": "claude-governance"
+},
+{
+"concept_id": "concept_hook_decision_precedence",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "strong",
+"confidence_score": 0.65,
+"why": "PreToolUse hooks that block or allow tool use"
+},
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Configures hooks and permissions"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_local_versus_shared_settings",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Covers settings.json versus settings.local.json"
+},
+{
+"skill_id": "plugin_plugin_dev_plugin_settings",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Per-project plugin settings files"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_managed_policy_settings",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Settings config, managed policy not named"
+},
+{
+"skill_id": "skill_eck_audit_security",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Audits Claude Code project configuration"
+}
+],
+"gap": true,
+"proposed_skill": "claude-code-config",
+"canonical_skill": "claude-code-config"
+},
+{
+"concept_id": "concept_hook_matcher_regex",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "strong",
+"confidence_score": 0.85,
+"why": "Covers PreToolUse matchers for tool use"
+},
+{
+"skill_id": "plugin_hookify_writing_rules",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Regex patterns in hookify rules"
+},
+{
+"skill_id": "skill_code_mods_essentials",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Hook patterns for Claude Code"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_tool_name_matching_rules",
+"covered_by": [
+{
+"skill_id": "plugin_plugin_dev_hook_development",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "PreToolUse and PostToolUse tool matching"
+},
+{
+"skill_id": "skill_code_mods_essentials",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Hook patterns for Claude Code"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_unattended_ci_permissions",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Configures permissions, not SDK CI mode"
+},
+{
+"skill_id": "skill_eck_update_permissions",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generates project permissions"
+},
+{
+"skill_id": "builtin_fewer_permission_prompts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Builds permission allowlist"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_automatic_denial_of_unlisted_tools",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Permissions config, not SDK semantics"
+},
+{
+"skill_id": "skill_eck_update_permissions",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Generates permission rules"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_fixed_tool_allowlist",
+"covered_by": [
+{
+"skill_id": "builtin_update_config",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Permission allowlists in settings"
+},
+{
+"skill_id": "builtin_fewer_permission_prompts",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Builds permission allowlist"
+},
+{
+"skill_id": "plugin_plugin_dev_agent_development",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Agent tools restriction"
+}
+],
+"gap": true,
+"proposed_skill": "agent-sdk-orchestration",
+"canonical_skill": "claude-agent-orchestration"
+},
+{
+"concept_id": "concept_custom_tool_for_internal_api",
+"covered_by": [
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "strong",
+"confidence_score": 0.75,
+"why": "Wraps an API for Claude as tools"
+},
+{
+"skill_id": "builtin_claude_api",
+"strength": "partial",
+"confidence_score": 0.65,
+"why": "Tool use and MCP reference"
+}
+],
+"gap": false,
+"proposed_skill": null,
+"canonical_skill": null
+},
+{
+"concept_id": "concept_in_process_mcp_server",
+"covered_by": [
+{
+"skill_id": "plugin_mcp_server_dev_build_mcp_server",
+"strength": "partial",
+"confidence_score": 0.75,
+"why": "Builds MCP servers, not SDK in-process"
+},
+{
+"skill_id": "plugin_plugin_dev_mcp_integration",
+"strength": "partial",
+"confidence_score": 0.55,
+"why": "Integrates MCP server types"
+}
+],
+"gap": true,
+"proposed_skill": "mcp-server-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_built_in_tools_first",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-tool-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+},
+{
+"concept_id": "concept_avoid_unnecessary_custom_tooling",
+"covered_by": [],
+"gap": true,
+"proposed_skill": "claude-tool-design",
+"canonical_skill": "claude-tool-and-mcp-design"
+}
+]

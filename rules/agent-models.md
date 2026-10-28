@@ -25,12 +25,16 @@ the current generation without being edited:
 opus | sonnet | haiku | fable
 ```
 
-Canonical ids in this environment as of 2026-08-10:
+Canonical ids in this environment as of 2026-10-28 (models overview page; checked in the skill-gap
+study's evidence gate, see `docs/skill-gap-2026-10/validation/` in claude-staff-kit):
 
-- latest Opus: `claude-opus-5`
-- latest Sonnet: `claude-sonnet-5`
-- latest Fable: `claude-fable-5`
-- Haiku: `claude-haiku-4-5-20251001`
+- latest Opus: `claude-opus-5-5`
+- latest Sonnet: `claude-sonnet-5-5`
+- latest Fable: `claude-fable-5-1`
+- latest Haiku: `claude-haiku-5-5`. Claude Code needs v2.1.293 or later for it; older builds resolve the
+  `haiku` alias to `claude-haiku-4-5-20251001`.
+
+The previous generation (`claude-opus-5`, `claude-sonnet-5`, `claude-fable-5`) is listed as legacy.
 
 **Model ids are not guessable and they roll forward.** Prefer the alias. If you must pin an exact id,
 confirm the current set from the `/model` picker or the session banner first, and update this table

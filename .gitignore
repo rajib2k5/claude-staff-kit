@@ -6,3 +6,8 @@ node_modules/
 backups/
 __pycache__/
 *.pyc
+
+# Raw third-party content fetched for local analysis; never committed (copyright)
+.cache/
+# graphify intermediate files (regenerable)
+docs/skill-gap-2026-10/graphify-out/.graphify_*

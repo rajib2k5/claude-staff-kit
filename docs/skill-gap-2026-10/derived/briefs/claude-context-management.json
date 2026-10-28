@@ -1,0 +1,526 @@
+{
+ "skill": "claude-context-management",
+ "gap_concepts": [
+  {
+   "label": "allowance efficiency habits",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Structure chats to conserve usage allowance without lowering output quality."
+   ]
+  },
+  {
+   "label": "front-loaded context",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Structure chats to conserve usage allowance without lowering output quality."
+   ]
+  },
+  {
+   "label": "fresh chat per task",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Structure chats to conserve usage allowance without lowering output quality."
+   ]
+  },
+  {
+   "label": "transcript archival before compaction",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Combine a pre-compaction hook with CLAUDE.md placement to preserve both history and formatting rules."
+   ]
+  },
+  {
+   "label": "rules that survive compaction",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Combine a pre-compaction hook with CLAUDE.md placement to preserve both history and formatting rules."
+   ]
+  },
+  {
+   "label": "stale tool result clearing",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Select the platform features that summarise history and prune old tool outputs automatically."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Configure subagent spawning and context passing, remembering that subagents start with isolated context and need findings passed explicitly, with parallel spawns in a single response.",
+   "concepts": [
+    "isolated subagent context",
+    "explicit context passing",
+    "parallel spawn",
+    "content vs metadata"
+   ],
+   "features": [
+    "Task tool",
+    "allowedTools",
+    "AgentDefinition",
+    "fork_session"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Create team slash commands and skills with the right scope and frontmatter (forked context, tool restrictions, argument hints), and choose skills versus always-loaded CLAUDE.md.",
+   "concepts": [
+    "project vs user commands",
+    "SKILL.md frontmatter",
+    "context fork",
+    "skills vs CLAUDE.md"
+   ],
+   "features": [
+    ".claude/commands/",
+    ".claude/skills/",
+    "context: fork",
+    "allowed-tools",
+    "argument-hint"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Decide between plan mode and direct execution by task complexity and use the Explore subagent to keep verbose discovery out of the main context.",
+   "concepts": [
+    "plan mode",
+    "direct execution",
+    "Explore subagent",
+    "plan then execute"
+   ],
+   "features": [
+    "plan mode",
+    "Explore subagent"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Run Claude Code in CI non-interactively with structured JSON output, project context via CLAUDE.md, independent review sessions, and de-duplication against prior findings.",
+   "concepts": [
+    "non-interactive CI",
+    "structured findings",
+    "independent reviewer",
+    "avoid duplicate comments"
+   ],
+   "features": [
+    "-p / --print",
+    "--output-format json",
+    "--json-schema"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Select between synchronous and batch processing by latency tolerance, handle batch failures by correlation id, and size submission windows against an SLA.",
+   "concepts": [
+    "Message Batches",
+    "50% discount",
+    "24h window",
+    "custom_id",
+    "SLA windowing"
+   ],
+   "features": [
+    "Message Batches API",
+    "custom_id"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Preserve critical facts in long interactions by keeping a persistent case-facts block, trimming verbose tool output, and ordering inputs to counter lost-in-the-middle effects.",
+   "concepts": [
+    "progressive summarization risk",
+    "case facts",
+    "lost in the middle",
+    "tool output trimming"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Define escalation and ambiguity rules: escalate on explicit human request, policy gaps or stalled progress, ask for more identifiers on multiple matches, and distrust sentiment or self-confidence proxies.",
+   "concepts": [
+    "escalation triggers",
+    "policy gaps",
+    "multiple matches",
+    "unreliable proxies"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Propagate errors across agents with structured context (failure type, attempt, partial results, alternatives), avoiding both silent suppression and whole-workflow aborts.",
+   "concepts": [
+    "structured error context",
+    "access failure vs empty",
+    "local recovery",
+    "coverage annotations"
+   ],
+   "features": [],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Manage context in large-codebase exploration with scratchpad files, subagent delegation, phase summaries, manifest-based crash recovery, and compaction.",
+   "concepts": [
+    "context degradation",
+    "scratchpad files",
+    "state manifests",
+    "compaction"
+   ],
+   "features": [
+    "/compact",
+    "Explore subagent"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Design human review workflows using stratified sampling, per-document-type and per-field accuracy analysis, and calibrated field-level confidence thresholds.",
+   "concepts": [
+    "stratified sampling",
+    "segment accuracy",
+    "confidence calibration",
+    "review routing"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Preserve provenance in multi-source synthesis with claim-source mappings, dated outputs, annotated conflicts, and content-appropriate rendering.",
+   "concepts": [
+    "claim-source mapping",
+    "conflicting statistics",
+    "temporal data",
+    "coverage gaps"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Select a Claude model by weighing capability, latency and cost tradeoffs.",
+   "concepts": [
+    "model selection",
+    "tradeoffs"
+   ],
+   "features": [
+    "Claude models"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Design system prompts, templates and guardrails.",
+   "concepts": [
+    "system prompts",
+    "templates",
+    "guardrails"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Apply zero-shot, few-shot and chain-of-thought prompting appropriately.",
+   "concepts": [
+    "zero-shot",
+    "few-shot",
+    "chain-of-thought"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Optimize context windows and token usage.",
+   "concepts": [
+    "context window",
+    "token budget"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Reuse prompts via caching, modular prompts and Skills.",
+   "concepts": [
+    "prompt caching",
+    "modular prompts",
+    "Skills"
+   ],
+   "features": [
+    "prompt caching",
+    "Agent Skills"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Compare progressive discovery against a monolithic context strategy.",
+   "concepts": [
+    "progressive discovery",
+    "monolithic context"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Handle context limits and memory by knowing when to restart, summarize or persist.",
+   "concepts": [
+    "context limits",
+    "memory",
+    "restart vs persist"
+   ],
+   "features": [
+    "Memory"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Agents and Workflows",
+   "weight_pct": 14.7,
+   "task": "Apply common agent patterns (tool-use loops, subagents, memory, context management) and agentic frameworks such as Strands, LangGraph and PydanticAI.",
+   "concepts": [
+    "agent patterns",
+    "memory",
+    "agent frameworks"
+   ],
+   "features": [
+    "Strands",
+    "LangGraph",
+    "PydanticAI"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Claude Code",
+   "weight_pct": 3.1,
+   "task": "Operate Claude Code core pieces (rules, skills, commands, agents, agent memory) and features such as sessions, slash commands, headless and streaming modes and auto mode, plus repo initialization and settings.json.",
+   "concepts": [
+    "Claude Code components",
+    "headless mode",
+    "CLAUDE.md hierarchy",
+    "settings"
+   ],
+   "features": [
+    "Claude Code",
+    "CLAUDE.md",
+    "settings.json",
+    "slash commands",
+    "Agent Skills",
+    "auto mode"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Explain LLM fundamentals (tokens, context window, sampling, non-determinism), model modes (fast mode, extended and adaptive thinking, effort levels) and zero/single/multi-shot prompting.",
+   "concepts": [
+    "tokens",
+    "sampling",
+    "thinking modes",
+    "effort levels",
+    "multi-shot"
+   ],
+   "features": [
+    "extended thinking",
+    "adaptive thinking",
+    "effort levels",
+    "fast mode"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Control context with window management, drift and bloat prevention (tool-output pruning, compaction) and isolation via subagents or multi-step workflows.",
+   "concepts": [
+    "context window",
+    "compaction",
+    "tool output pruning",
+    "context isolation"
+   ],
+   "features": [
+    "compaction",
+    "subagents"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Engineer prompts with clear instructions, few-shot examples, system-vs-user placement, output constraints, iterative refinement and input sanitization.",
+   "concepts": [
+    "instruction clarity",
+    "few-shot",
+    "system vs user",
+    "input sanitization"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Produce, validate and consume Claude output using structured output, response validation, defensive parsing and skepticism toward confident answers.",
+   "concepts": [
+    "structured output",
+    "defensive parsing",
+    "response validation"
+   ],
+   "features": [
+    "structured outputs"
+   ],
+   "kind": "claude-api"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "Context management",
+   "feature": "Context editing",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+   "fact": "Server-side clearing of old context, beta header context-management-2025-06-27. Two strategies: clear_tool_uses_20250919 (clear oldest tool results) and clear_thinking_20251015 (manage earlier thinking blocks). The docs call server-side compaction the primary strategy for long conversations and context editing the fine-grained option. Clearing invalidates cached prefixes, so use clear_at_least to make it worthwhile.",
+   "identifiers": [
+    "context-management-2025-06-27",
+    "clear_tool_uses_20250919",
+    "clear_thinking_20251015",
+    "clear_at_least"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Context management",
+   "feature": "clear_tool_uses_20250919",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+   "fact": "Strategy type for tool-result clearing, used as {type: clear_tool_uses_20250919} inside context_management.edits. Defaults: trigger 100,000 input tokens (or tool_uses), keep 3 most recent tool use/result pairs, exclude_tools none, clear_tool_inputs false (only results are cleared, calls stay). Cleared results are replaced by placeholder text.",
+   "identifiers": [
+    "clear_tool_uses_20250919",
+    "trigger",
+    "keep",
+    "clear_at_least",
+    "exclude_tools",
+    "clear_tool_inputs"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Context management",
+   "feature": "context_management",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+   "fact": "Top-level request parameter holding an edits array of strategies, sent with beta header context-management-2025-06-27 (client.beta.messages in SDKs).",
+   "identifiers": [
+    "context_management",
+    "edits",
+    "anthropic-beta"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Context management",
+   "feature": "Compaction",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+   "fact": "Server-side summarisation that replaces older turns with a summary. Two API forms: compaction on demand (you request a summary and put the returned block first in messages; beta header compact-2026-09-04 and a top-level compaction parameter) and compaction at a token threshold (API triggers it inside ordinary requests when input tokens reach your trigger; no background run). Client-side compaction in the tool runner was removed in API version 2026-10-21 (migration guide). Claude Code's own /compact and auto-compaction: not verified here.",
+   "identifiers": [
+    "compact-2026-09-04",
+    "compaction",
+    "compaction block"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Compaction is a September 2026 API addition (header compact-2026-09-04) and the tool-runner client-side compaction was removed 2026-10-21; older material describes only context editing or client-side summarising."
+  },
+  {
+   "topic": "Context management",
+   "feature": "Memory tool",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+   "fact": "Client-side tool: add {type: memory_20250818, name: memory}; Claude issues file commands against a /memories directory and your code executes them and returns tool_result. Commands: view, create, str_replace, insert, delete, rename. Your handler must reject paths outside /memories (path traversal), and you own storage, size and expiry. Pairs with context editing/compaction for long-running agents.",
+   "identifiers": [
+    "memory_20250818",
+    "memory",
+    "/memories",
+    "view",
+    "create",
+    "str_replace",
+    "insert",
+    "delete",
+    "rename"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__subagents-memory-and-context-window-management-for-agents.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__context-window-budgeting-what-counts-and-how-to-measure-it.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__managing-long-conversations-compaction-context-editing-and-cache-trade-offs.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-associate-foundations__learn__claude-context-windows-usage-limits-and-length-limits.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__compaction-and-subagent-context-isolation.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__context-window-budget-and-tool-output-pruning.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__claude-code-project-configuration-claude-md-rules-auto-memory-and-settings-json.txt"
+ ],
+ "lesson_words": 24692
+}

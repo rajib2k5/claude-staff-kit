@@ -107,7 +107,7 @@ Checks the manifests, every skill and agent frontmatter (agents must declare a m
 
 ```
 .claude-plugin/   plugin.json, marketplace.json
-skills/           26 skills, one directory each with SKILL.md
+skills/           36 skills, one directory each with SKILL.md
 agents/           19 agents (frontmatter: name, description, model)
 commands/         12 slash commands
 rules/            18 standards files plus README.md, the index

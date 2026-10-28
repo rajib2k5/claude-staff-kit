@@ -1,0 +1,850 @@
+[
+ {
+  "id": "K-claude-agent-orchestration-1",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "agent-sdk/subagents: 'To keep detection working across SDK versions, match both values in block.name.'",
+  "b_note": "Model-facing name is Agent; 'Task' works as an alias (disallowing Task removed Agent); the stream shows 'Task', so 'match both' is correct advice. The 'renamed "
+ },
+ {
+  "id": "K-claude-agent-orchestration-10",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "agent-sdk/permissions: AskUserQuestion 'always fall through to the callback, even when an allow rule matches. In dontAsk mode ... denied'.",
+  "b_note": "AskUserQuestion is absent from the -p tool set even without --permission-prompts none, so removal cannot be shown; canUseTool routing and dontAsk denial were no"
+ },
+ {
+  "id": "K-claude-agent-orchestration-11",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "usage excludes subagents; total_cost_usd and modelUsage include them; a resumed call counts the session's earlier spend.",
+  "b_note": "usage = main loop only; modelUsage and total_cost_usd include the subagent; cost is computed client-side (mock returned no cost; costBasis 'list'). The 'on resu"
+ },
+ {
+  "id": "K-claude-agent-orchestration-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "No probe run."
+ },
+ {
+  "id": "K-claude-agent-orchestration-3",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "",
+  "b_note": "Defaults 3 and 20 are in code. Depth falls back to a remote feature flag (GrowthBook 'tengu_hazel_trellis', default 3) when the env var is unset, so the effecti"
+ },
+ {
+  "id": "K-claude-agent-orchestration-4",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "model values: 'sonnet, opus, haiku, fable, a full model ID ... or inherit'. tools/disallowedTools/permissionMode/maxTurns/hooks/isolation listed (claude-directo",
+  "b_note": "Description is required (file without it is silently ignored). [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authen"
+ },
+ {
+  "id": "K-claude-agent-orchestration-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "AgentDefinition description+prompt required; allowedTools includes Agent; parent_tool_use_id; caps via the two env vars and maxBudgetUsd/max_budget_usd.",
+  "b_note": "Sub-claims seen: AgentDefinition required fields, agents option, parent_tool_use_id. Not exercised: query() with agents, default subagent_type when omitted. The"
+ },
+ {
+  "id": "K-claude-agent-orchestration-6",
+  "A": "REFUTED",
+  "B": "REFUTED",
+  "gate": "REJECTED",
+  "a_note": "Correction: a subagent's OWN permissionMode value of bypassPermissions is never applied (v2.1.267+), but a subagent DOES run in bypassPermissions when the main ",
+  "b_note": "Background default, async_launched, agentId in a completed result, and Explore with no agentId are all observed. REFUTED part: in 2.1.287 the agentId is continu"
+ },
+ {
+  "id": "K-claude-agent-orchestration-7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "session_id on result message; continue = most recent session in the current directory; forkSession/fork_session; ~/.claude/projects/<encoded-cwd>/*.jsonl.",
+  "b_note": "CLI equivalents and the <encoded-cwd> layout are consistent. Not exercised: SDK resume/continue/forkSession, 'conversation not filesystem', forked edits being s"
+ },
+ {
+  "id": "K-claude-agent-orchestration-8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "The installed Python SDK is stale (0.1.23), so its absence does not refute; the TS names appear in the CLI binary. No call made."
+ },
+ {
+  "id": "K-claude-agent-orchestration-9",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Asserted facts hold; the deferred items resolve: persistSession is TypeScript-only; Python uses CLAUDE_CODE_SKIP_PROMPT_HISTORY in env. File checkpointing snaps",
+  "b_note": "Claim defers to docs; nothing to assert beyond names. Names exist in the TS code path."
+ },
+ {
+  "id": "K-claude-api-ops-1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "All seven stop_reason values listed.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Binary cont"
+ },
+ {
+  "id": "K-claude-api-ops-10",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Up to 4 breakpoints; 'The lookback window is 20 blocks.'",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-11",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "0.05 x $4 = $0.20; 0.05 x $2 = $0.10.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-12",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "512: Fable 5.1, Opus 5.5, Sonnet 5.5, Haiku 5.5 (and others); 1,024: Sonnet 5; 4,096: Haiku 4.5.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-13",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-14",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "custom_id 1-64 chars matching ^[a-zA-Z0-9_-]{1,64}$; expire within 24h; results 29 days; results_url; in_progress then ended (canceling also exists); request_co",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-15",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Endpoint /v1/messages/count_tokens; returns input_tokens; 'The token count is an estimate.'",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-16",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Column is 'auto, none'.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-17",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Deferral only ('confirm in docs'); no checkable assertion.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. The claim i"
+ },
+ {
+  "id": "K-claude-api-ops-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-3",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "128K is the synchronous limit. 300k list names Opus 5.5/5/4.8/4.7/4.6, Sonnet 5.5/5/4.6, Haiku 5.5 only (not Fable). Batches: 'Each batched request must have ma",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'output-300"
+ },
+ {
+  "id": "K-claude-api-ops-4",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Fable 5.1 $10/$50, Opus 5.5 $4/$20, Sonnet 5.5 $2/$10; all 1M context, 128K max output.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI 2.1.287"
+ },
+ {
+  "id": "K-claude-api-ops-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Note: deprecations table gives claude-haiku-4-5-20251001 'Not sooner than October 15, 2026', a date already past on 2026-10-28; still listed Active.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. All five id"
+ },
+ {
+  "id": "K-claude-api-ops-6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Levels low/medium/high/xhigh/max; high default on Fable 5.1 and Sonnet 5.5.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI evidenc"
+ },
+ {
+  "id": "K-claude-api-ops-7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Binary cont"
+ },
+ {
+  "id": "K-claude-api-ops-8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI request"
+ },
+ {
+  "id": "K-claude-api-ops-9",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Precision: the docs say PARTNER-operated platforms (Bedrock, Google-managed) set their own dates; Anthropic-managed cloud offerings follow Anthropic dates.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-code-config-1",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "'All discovered files are concatenated ... ordered from the filesystem root down'; subdirectory files load on demand; /init; claudeMdExcludes; AGENTS.md read in",
+  "b_note": "Root-first concatenation, on-demand subdirectory files, @import cap at 4 hops, AGENTS.md fallback, claudeMdExcludes all observed. /init is listed but was not ru"
+ },
+ {
+  "id": "K-claude-code-config-10",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "All eight frontmatter fields exist.",
+  "b_note": "All 8 keys exist. The 500-line guidance is not enforced: `claude plugin validate` passed a 600-line SKILL.md and an unknown key 'frobnicate-level' with no warni"
+ },
+ {
+  "id": "K-claude-code-config-11",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "Precision: bare mode also accepts an apiKeyHelper via --settings, and Bedrock/Agent Platform/Foundry credentials. Other flags present in cli-reference.",
+  "b_note": "Machine difference: --max-turns is NOT listed in `claude --help` (2.1.287), but it is accepted and enforced (error_max_turns; num_turns 4 with --max-turns 3)."
+ },
+ {
+  "id": "K-claude-code-config-12",
+  "A": "UNVERIFIABLE",
+  "B": "CONFIRMED",
+  "gate": "UNRESOLVED",
+  "a_note": "Values, result, session_id, usage, total_cost_usd with per-model breakdown and permission_denials are documented. 'stream-json (needs --verbose)' is NOT stated:",
+  "b_note": "All named fields observed."
+ },
+ {
+  "id": "K-claude-code-config-13",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "",
+  "b_note": "See P3. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshe"
+ },
+ {
+  "id": "K-claude-code-config-2",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "",
+  "b_note": "The managed Linux/WSL path could not be exercised on macOS (string present only). Both ./CLAUDE.md and ./.claude/CLAUDE.md load together. [harness] Real API unr"
+ },
+ {
+  "id": "K-claude-code-config-3",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Precedence: managed > command line (--settings) > project local > shared project > user. Root placement has exceptions (outside git, home-dir root, Windows, own",
+  "b_note": "local > project observed. Not tested: local > user (user settings set no model), --settings/managed outranking, and the v2.1.211 'repository root in a git repo'"
+ },
+ {
+  "id": "K-claude-code-config-4",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "",
+  "b_note": "Falsifier: \"error: option '--permission-mode <mode>' argument 'bogus' is invalid. Allowed choices are acceptEdits, auto, bypassPermissions, manual, dontAsk, pla"
+ },
+ {
+  "id": "K-claude-code-config-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Project-level auto and bypassPermissions defaultMode ignored (settings: 'Before v2.1.257, bypassPermissions took effect from any file').",
+  "b_note": "Project-level bypassPermissions ignored: observed. Project-level auto: not tested. On 2.1.287 (< 2.1.302), -p ALREADY starts in default/manual and denies, so th"
+ },
+ {
+  "id": "K-claude-code-config-6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "permissions.disableBypassPermissionsMode set to \"disable\" in managed settings.",
+  "b_note": "Deny rules apply under bypass: observed. Not tested: explicit ask rules still apply; allow rules have no effect. [falsifier_rc=1: the pass assertion tripped on "
+ },
+ {
+  "id": "K-claude-code-config-7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "ExitPlanMode: tools-reference 'Presents a plan for approval and exits plan mode'; /plan and --permission-mode plan on permission-modes.",
+  "b_note": "Plan mode exists. Not tested: PreToolUse allow not approving edits in plan mode; /plan was not listed among -p slash_commands."
+ },
+ {
+  "id": "K-claude-code-config-8",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "--allowedTools, --tools present; permissions.allow/deny/ask in settings.",
+  "b_note": "permissions.allow is in use in ~/.claude/settings.local.json; permissions.ask was not exercised. Gotcha seen: '--disallowedTools' is variadic and swallowed a tr"
+ },
+ {
+  "id": "K-claude-code-config-9",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "Exit 2 blocks; permissionDecision allow/deny/ask/defer; updatedInput under hookSpecificOutput.",
+  "b_note": "Exit 2 blocks even in bypassPermissions. 'defer' exists in the schema but its runtime effect was not exercised. [harness] Real API unreachable: every `claude -p"
+ },
+ {
+  "id": "K-claude-context-management-1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Top-level context_management with edits; client.beta.messages.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI sends a"
+ },
+ {
+  "id": "K-claude-context-management-10",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "agent-sdk/subagents: 'only its final message returns to the parent' (forks excepted).",
+  "b_note": "Subagent fresh start and final-message-only return: observed. 'Conversation not filesystem' persistence and SDK resume/fork: not tested."
+ },
+ {
+  "id": "K-claude-context-management-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Both strate"
+ },
+ {
+  "id": "K-claude-context-management-3",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Defaults trigger 100,000 input tokens, keep 3, exclude_tools none, clear_tool_inputs false; placeholder text.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-context-management-4",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-context-management-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Header compact-2026-09-04 + top-level compaction apply to the on-demand form; threshold form has its own header.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'compact-20"
+ },
+ {
+  "id": "K-claude-context-management-6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Scope: an SDK change affecting the TypeScript and Ruby SDKs, listed under 'SDK and CLI changes' in the migration guide, not on the compaction page.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-context-management-7",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Deferral only. For reference: PreCompact and PostCompact hook events exist with matcher values manual and auto.",
+  "b_note": "Claim makes no assertion (defers to docs). Evidence: /compact, auto-compaction and PreCompact/PostCompact hook names exist in 2.1.287."
+ },
+ {
+  "id": "K-claude-context-management-8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Client-side; {type: memory_20250818, name: memory}; six commands; storage, size and expiry are the app's responsibility.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'memory_202"
+ },
+ {
+  "id": "K-claude-context-management-9",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "",
+  "b_note": "[harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1"
+ },
+ {
+  "id": "K-claude-evals-1",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Meta-statement; asserts no platform fact.",
+  "b_note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-evals-2",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Deferral only.",
+  "b_note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-governance-1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Teams or Enterprise; Owner or Primary Owner; network access to api.anthropic.com; highest tier.",
+  "b_note": "Cloud console; not observable from the CLI. Binary has managed-settings strings (managed-settings.json 49)."
+ },
+ {
+  "id": "K-claude-governance-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Also managedMcpServers (http/sse only) on v2.1.259+.",
+  "b_note": "Key names exist; the delivery restriction through server-managed settings is not observable."
+ },
+ {
+  "id": "K-claude-governance-3",
+  "A": "REFUTED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Correction: MDM/OS policy and managed-settings.json alternatives and /status are on the page, but requiredMinimumVersion does NOT appear on server-managed-setti",
+  "b_note": "Names exist; MDM delivery not testable; the claim is partly about what a doc mentions."
+ },
+ {
+  "id": "K-claude-governance-4",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "Exception: a repository can still turn a signal off by setting an exporter to none.",
+  "b_note": "Falsifier: 71421 bytes of console export (descriptor name 'claude_code.session.count' ...), so the project-level null result is discriminating. Prompt redacted "
+ },
+ {
+  "id": "K-claude-governance-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "Value names present. 'No default protocol' and 'managed generic endpoint strips per-signal endpoints' not exercised."
+ },
+ {
+  "id": "K-claude-governance-6",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "",
+  "b_note": "[harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1"
+ },
+ {
+  "id": "K-claude-governance-7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Cited URL build-with-claude/usage-cost-api serves manage-claude/usage-cost-api. Priority Tier excluded from cost endpoint; workspace keys don't work; unavailabl",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-governance-8",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Deferral / meta-statement only.",
+  "b_note": "Defers to docs; no assertion to test."
+ },
+ {
+  "id": "K-claude-prompt-engineering-1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Combinable with strict: true.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Claude Code"
+ },
+ {
+  "id": "K-claude-prompt-engineering-10",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Meta-statement / deferral; no checkable assertion.",
+  "b_note": "Defers to docs. The Claude Code JSON-schema flag does exist (--json-schema, see P3)."
+ },
+ {
+  "id": "K-claude-prompt-engineering-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Plus recursive, numeric, string-length, external $ref, additionalProperties not false.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-3",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "'Prefilling is incompatible with JSON outputs.'",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-4",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Python: Pydantic model to client.messages.parse() as output_format.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'structured"
+ },
+ {
+  "id": "K-claude-prompt-engineering-6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Thinking: Adaptive on all four; 128K max output.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI 2.1.287"
+ },
+ {
+  "id": "K-claude-prompt-engineering-7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Effort levels and output_config.effort on effort page; not every model with max supports xhigh.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. --effort ac"
+ },
+ {
+  "id": "K-claude-prompt-engineering-8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI request"
+ },
+ {
+  "id": "K-claude-prompt-engineering-9",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-3",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-4",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Structured-outputs conflict returns 400.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "enabled on documents and search results still accepted.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Cited as search_result_location.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'search_res"
+ },
+ {
+  "id": "K-claude-rag-and-citations-9",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Doc excepts Claude Haiku 3, which is retired (not active), so 'all active models' holds. Citations all-or-nothing across search results.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-solution-design-1",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Meta-statement; asserts no platform fact.",
+  "b_note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-solution-design-2",
+  "A": "UNVERIFIABLE",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Deferral only.",
+  "b_note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-10",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "mcp_servers array plus mcp_toolset in tools.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'mcp-client"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-2",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "auto/none/any/tool appear in the overhead table; disable_parallel_tool_use shown on auto.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-3",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-4",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Binary cont"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Returned as tool_reference blocks; 400 invalid_request_error.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'tool_searc"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "The asserted name is_error holds; JSON-encoding remains a deferral.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Claim defer"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-7",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "No type = stdio; streamable-http alias for http; ${VAR}/${VAR:-default} in command, args, env, url, headers.",
+  "b_note": "mcpServers key, stdio default, url-without-type rejection, ws type, and expansion in command/args/env/url/headers all observed. 'mcp get' displays '${EGV_PATH}'"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Precedence local, project, user, plugin, claude.ai connectors.",
+  "b_note": "Default scope and project approval: observed. Precedence order and no-field-merging: not tested (would write local scope into ~/.claude.json)."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-9",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "mcp__<server>__<tool> form shown via permission rules (agent-sdk/permissions: 'mcp__puppeteer__*', 'mcp__github__get_issue'); plugin servers use mcp__plugin_<pl",
+  "b_note": "Header flag, mcp login and mcp__<server>__<tool> naming: observed. 'sse is deprecated' is not shown by the CLI help; OAuth via /mcp not exercised."
+ },
+ {
+  "id": "P1",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "claude-fable-5-1 is the current Claude API ID (models overview); --model accepts full model names (cli-reference). Version floor 2.1.257 is met by 2.1.287. Fals",
+  "b_note": "The installed CLI's catalog does describe claude-fable-5-1. Whether the API accepts it is not testable (OAuth expired). [harness] Real API unreachable: every `c"
+ },
+ {
+  "id": "P2",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "manual is an alias for default (cli-reference: 'requires Claude Code v2.1.200 or later; claude --help lists it in place of default'). The -p default-to-Manual b",
+  "b_note": "Falsifier: file present (test -e rc=0), so the default-mode denial is discriminating. Stream/init report the mode as 'default'; 'manual' is an alias mapped to '"
+ },
+ {
+  "id": "P3",
+  "A": "CONFIRMED",
+  "B": "CONFIRMED",
+  "gate": "ACCEPTED",
+  "a_note": "Also: 'If a run ends without valid structured output ... the response has no structured_output field.' Invalid schema exits with 'Error: --json-schema is not a ",
+  "b_note": "Falsifier: tool_result 'Output does not match required schema: root: must have required property 'count'', subtype error_max_turns, structured_output None, rc=1"
+ },
+ {
+  "id": "P4",
+  "A": "CONFIRMED",
+  "B": "REFUTED",
+  "gate": "SPLIT",
+  "a_note": "PROBE WARNING: agent-sdk/subagents says 'The tool appears as \"Agent\" in tool_use blocks but as \"Task\" in the system:init tools list.' The ledger's probe asserts",
+  "b_note": "Pre-registered probe fails: the SDK/stream init event names the tool 'Task'. The model is sent 'Agent'. So 'named Agent, not Task' is true only for the model-fa"
+ },
+ {
+  "id": "P5",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Also listed in model-deprecations 'API parameter deprecations' table.",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI evidenc"
+ },
+ {
+  "id": "P6",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI evidenc"
+ },
+ {
+  "id": "P7",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Scope: compact-2026-09-04 is the header for compaction ON DEMAND; the page says threshold compaction has its own header ('each kind has its own beta header'). C",
+  "b_note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. The CLI doe"
+ },
+ {
+  "id": "P8",
+  "A": "CONFIRMED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Deprecated 2026-09-30; retirement 2026-11-30 on Anthropic-operated platforms.",
+  "b_note": "A retirement date in the future cannot be observed. Binary contains 'claude-sonnet-4-5-20250929' (10 occurrences)."
+ },
+ {
+  "id": "S1",
+  "A": "UNVERIFIABLE",
+  "B": "CONFIRMED",
+  "gate": "UNRESOLVED",
+  "a_note": "Directory form is documented (skills page; claude-directory lists skills/<name>/SKILL.md). No doc states that a loose skills/<name>.md is ignored; only commands",
+  "b_note": "Falsifier run: init probe skills ['probe-dir','probe-loose']; body probe-loose=2 -> assertion tripped. Tested at project scope (.claude/skills), per the ledger'"
+ },
+ {
+  "id": "S2",
+  "A": "REFUTED",
+  "B": "UNVERIFIABLE",
+  "gate": "UNRESOLVED",
+  "a_note": "Per docs: Opus 5.5 requires v2.1.280+, Sonnet 5.5 requires v2.1.284+ (both met by 2.1.287), but Haiku 5.5 requires v2.1.293+, above the installed 2.1.287. Docs ",
+  "b_note": "Probe cannot discriminate: the fabricated haiku-9-9 produced the SAME CLI warning and the same auth failure (rc=1) as haiku-5-5, and the CLI passes any id throu"
+ },
+ {
+  "id": "S3",
+  "A": "UNVERIFIABLE",
+  "B": "CONFIRMED",
+  "gate": "UNRESOLVED",
+  "a_note": "File contents are outside Channel A. Doc premise holds: claude-opus-5, claude-sonnet-5, claude-haiku-4-5-20251001 are legacy; current lineup is claude-fable-5-1",
+  "b_note": "Haiku is NOT paired with the word 'latest': agent-models.md:33 '- Haiku: `claude-haiku-4-5-20251001`' and SKILL.md:68 'Haiku `claude-haiku-4-5-20251001`'. 'Olde"
+ },
+ {
+  "id": "S4",
+  "A": "UNVERIFIABLE",
+  "B": "REFUTED",
+  "gate": "UNRESOLVED",
+  "a_note": "Local repo vs ~/.claude diff and mtimes; no primary documentation applies.",
+  "b_note": "8 pairs differ, not 6, and in one (hooks/evolv-skills-enforcer.js) the LIVE copy is OLDER. If the intended 6 were the snowflake-architect, sf-audit, sf-tune and"
+ },
+ {
+  "id": "S5",
+  "A": "UNVERIFIABLE",
+  "B": "REFUTED",
+  "gate": "UNRESOLVED",
+  "a_note": "Local file existence (scripts/sf_deploy.py); no primary documentation applies.",
+  "b_note": "Pre-registered probe 'passes' but tests the wrong directory. The skill references the DQ accelerator project's own `scripts/sf_deploy.py` ('deploy only through "
+ },
+ {
+  "id": "S6",
+  "A": "UNVERIFIABLE",
+  "B": "CONFIRMED",
+  "gate": "UNRESOLVED",
+  "a_note": "Guidance half CONFIRMED (a tip, not a hard limit). The 794-line count of the live graphify SKILL.md is a local fact for Channel B.",
+  "b_note": "Measured 793 lines, claim says 794 (off by one; file ends with a newline). staff-tdd = 52. The 'Anthropic guidance' half is a docs claim; `claude plugin validat"
+ }
+]

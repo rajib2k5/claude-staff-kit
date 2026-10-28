@@ -1,0 +1,2886 @@
+[
+{
+"id": "skill_cost_conscious_orchestration",
+"kind": "skill",
+"name": "cost-conscious-orchestration",
+"origin": "first-party",
+"description": "Routes work to the cheapest model that can do it correctly, delegates to subagents to protect the main context, and tracks every task on a todo list that is verified complete before the work is reported done. Use when planning multi-step work, dispatching any subagent, choosing a model, deciding whe"
+},
+{
+"id": "skill_data_cost",
+"kind": "skill",
+"name": "data-cost",
+"origin": "first-party",
+"description": "Investigate and reduce warehouse or cloud spend \u2014 establish unit economics, find idle and oversized resources, cut data scanned, and quantify savings as validated ranges. Use for any cost investigation or savings estimate. Triggers - reduce costs, snowflake bill, cloud spend, cost optimization, why "
+},
+{
+"id": "skill_data_dbt_audit",
+"kind": "skill",
+"name": "data-dbt-audit",
+"origin": "first-party",
+"description": "Audit a dbt project for layering violations, untested keys, unsafe incremental models, missing contracts, and undocumented marts \u2014 then report ranked by which would put a wrong number in front of someone. Use on any dbt project you inherit or before trusting its output. Triggers - audit dbt, review "
+},
+{
+"id": "skill_data_metric",
+"kind": "skill",
+"name": "data-metric",
+"origin": "first-party",
+"description": "Define a business metric completely, or reconcile two conflicting versions of one \u2014 grain, filters, time semantics, and additivity made explicit. Use when defining a KPI or when two dashboards disagree about the same number. Triggers - define this metric, KPI definition, two dashboards disagree, whi"
+},
+{
+"id": "skill_data_model",
+"kind": "skill",
+"name": "data-model",
+"origin": "first-party",
+"description": "Design a data model or dbt model correctly \u2014 declare the grain first, choose keys, pick the SCD type and materialisation, then write the tests that prove the grain holds. Use before building any table, mart, or dbt model. Triggers - design a table, data model, new dbt model, star schema, dimensional"
+},
+{
+"id": "skill_data_pipeline_debug",
+"kind": "skill",
+"name": "data-pipeline-debug",
+"origin": "first-party",
+"description": "Root-cause a data pipeline failure across dbt, Airflow, Snowflake tasks and streams, and ingestion \u2014 including the hard case where the run succeeded but the data is stale or wrong. Use for any pipeline incident or unexplained data discrepancy. Triggers - pipeline failed, dbt run failed, airflow task"
+},
+{
+"id": "skill_data_quality",
+"kind": "skill",
+"name": "data-quality",
+"origin": "first-party",
+"description": "Hunt the silent data failures \u2014 grain violations and join fan-out, freshness gaps, reconciliation drift, absence-vs-zero, broken SCDs, and untested keys. Use when a number looks wrong, when a pipeline succeeds but data seems stale, or before a dataset is trusted. Triggers - data quality, this number"
+},
+{
+"id": "skill_data_snowflake_audit",
+"kind": "skill",
+"name": "data-snowflake-audit",
+"origin": "first-party",
+"description": "Audit a Snowflake account for RBAC hygiene, warehouse topology, credit waste, missing recoverability, and unmasked PII \u2014 every finding backed by a query you ran with its measurement window. Use for platform review or before taking ownership of an account. Triggers - audit snowflake, snowflake health"
+},
+{
+"id": "skill_data_snowflake_tune",
+"kind": "skill",
+"name": "data-snowflake-tune",
+"origin": "first-party",
+"description": "Tune a slow or expensive Snowflake query using the Query Profile \u2014 diagnose pruning, then spill, then idle compute, in that order, with before and after numbers. Use for any slow warehouse query or unexpected credit burn. Triggers - slow snowflake query, expensive query, tune this query, warehouse i"
+},
+{
+"id": "skill_destructive_ops_guard",
+"kind": "skill",
+"name": "destructive-ops-guard",
+"origin": "first-party",
+"description": "Use before running, generating or approving a command or statement that deletes, drops, truncates, overwrites, force-pushes or rotates something the user owns \u2014 a repository, the user's own folders, a live database (Snowflake or any RDBMS server, through SQL of any dialect, dbt, an ORM or a script) "
+},
+{
+"id": "skill_evidence_gated_validation",
+"kind": "skill",
+"name": "evidence-gated-validation",
+"origin": "first-party",
+"description": "Validates AI-generated code in any programming language, plus ML/AI algorithm implementations, using evidence-gated validation with two independent audit channels \u2014 one researches official documentation, one probes runtime behavior empirically \u2014 and accepts a claim only when both converge. Use when "
+},
+{
+"id": "skill_simple_english",
+"kind": "skill",
+"name": "simple-english",
+"origin": "first-party",
+"description": ">-"
+},
+{
+"id": "skill_staff_adr",
+"kind": "skill",
+"name": "staff-adr",
+"origin": "first-party",
+"description": "Write an Architecture Decision Record capturing a decision, the alternatives rejected, and the conditions to revisit it. Use after any significant technical decision. Triggers - write an ADR, document this decision, architecture decision record, why did we choose."
+},
+{
+"id": "skill_staff_bootstrap",
+"kind": "skill",
+"name": "staff-bootstrap",
+"origin": "first-party",
+"description": "Install the global engineering standards into a new or existing project \u2014 writes a project CLAUDE.md that inherits the rules library, sets up the agent roster, quality gates, and CI checks. Use when starting a new project, or when an existing repo has no standards wiring. Triggers - new project, boo"
+},
+{
+"id": "skill_staff_debug",
+"kind": "skill",
+"name": "staff-debug",
+"origin": "first-party",
+"description": "Root-cause a bug systematically \u2014 reproduce, bisect the change, form one hypothesis at a time, and prove the cause before fixing. Use for any bug, test failure, or unexplained behaviour, before proposing a fix. Triggers - debug this, why is this failing, root cause, this is broken, unexpected behavi"
+},
+{
+"id": "skill_staff_design",
+"kind": "skill",
+"name": "staff-design",
+"origin": "first-party",
+"description": "Run a staff-level design process for a feature or subsystem \u2014 constraints, non-goals, two or three real alternatives, a recommendation, failure modes, and an incremental migration path. Use before building anything non-trivial. Triggers - design this, architecture for, how should we build, system de"
+},
+{
+"id": "skill_staff_incident",
+"kind": "skill",
+"name": "staff-incident",
+"origin": "first-party",
+"description": "Drive a live incident and write the postmortem \u2014 mitigate before diagnosing, keep a timeline, then produce a blameless writeup with detection-time analysis and owned actions. Use during an outage or immediately after. Triggers - incident, outage, production is down, postmortem, we have an incident."
+},
+{
+"id": "skill_staff_migrate",
+"kind": "skill",
+"name": "staff-migrate",
+"origin": "first-party",
+"description": "Plan and execute a schema, data, or API migration using expand/contract with a resumable backfill, a real rollback plan, and a production-scale dry run. Use before any migration, backfill, or breaking interface change. Triggers - migration, migrate the schema, backfill, breaking change, alter table,"
+},
+{
+"id": "skill_staff_onboard",
+"kind": "skill",
+"name": "staff-onboard",
+"origin": "first-party",
+"description": "Rapid reconnaissance of an unfamiliar codebase \u2014 entry points, architecture, data flow, test and deploy commands, conventions, and the risky areas. Use when starting work in a repo you do not know. Triggers - explain this codebase, onboard me, what does this repo do, get me up to speed, understand t"
+},
+{
+"id": "skill_staff_perf",
+"kind": "skill",
+"name": "staff-perf",
+"origin": "first-party",
+"description": "Investigate a performance problem from a measurement rather than intuition \u2014 baseline, profile, one change, re-measure, report both numbers with their window. Use when something is slow and the actual cause is needed. Triggers - this is slow, optimize this, performance problem, why is this taking so"
+},
+{
+"id": "skill_staff_review",
+"kind": "skill",
+"name": "staff-review",
+"origin": "first-party",
+"description": "Deep multi-lens review of a diff or PR \u2014 correctness, security, data integrity, silent failure, and rollback \u2014 with every finding labelled by severity and backed by a concrete failure scenario. Use before merging anything non-trivial. Triggers - review this, review the PR, review my changes, is this"
+},
+{
+"id": "skill_staff_security",
+"kind": "skill",
+"name": "staff-security",
+"origin": "first-party",
+"description": "Threat-model and audit code for exploitable security defects \u2014 broken authorization, injection, secret exposure, supply-chain risk, crypto misuse, and prompt injection. Use before shipping anything touching auth, untrusted input, secrets, payments, or PII. Triggers - security review, security audit,"
+},
+{
+"id": "skill_staff_ship",
+"kind": "skill",
+"name": "staff-ship",
+"origin": "first-party",
+"description": "Run the definition-of-done gate before declaring work complete \u2014 executes build, tests, lint, and types, checks rollback and observability, and reports honestly what was skipped. Use before saying \"done\", opening a PR, or merging. Triggers - is this done, ready to ship, pre-merge check, definition o"
+},
+{
+"id": "skill_staff_tdd",
+"kind": "skill",
+"name": "staff-tdd",
+"origin": "first-party",
+"description": "Drive a feature or bugfix test-first \u2014 reproduce, observe RED, minimal GREEN, then refactor under a green suite. Use before writing implementation code for any feature or fix. Triggers - write tests, TDD, test first, add test coverage, reproduce this bug."
+},
+{
+"id": "skill_staff_validate",
+"kind": "skill",
+"name": "staff-validate",
+"origin": "first-party",
+"description": "Run the mandatory adversarial validation gate \u2014 dispatch an Opus validator to break a claim, number, migration, or fix, then empirically confirm any blocker it raises before acting. Use before reporting anything complete, and always for numbers headed to a decision-maker. Triggers - validate this, v"
+},
+{
+"id": "agent_adversarial_validator",
+"kind": "agent",
+"name": "adversarial-validator",
+"origin": "first-party",
+"description": "Use when a non-trivial change needs verifying before it is reported complete \u2014 code, SQL, schema, config, cost models, or numbers destined for a decision-maker. Its job is to BREAK the work, not confirm it. Always runs on Opus."
+},
+{
+"id": "agent_analytics_engineer",
+"kind": "agent",
+"name": "analytics-engineer",
+"origin": "first-party",
+"description": "Owns metric definitions and the semantic layer \u2014 makes sure a business term means one thing everywhere, defines metrics with grain and filters explicit, and traces a reported number back to its source. Use when defining or reconciling metrics, or when two dashboards disagree. Runs on Opus."
+},
+{
+"id": "agent_codebase_explorer",
+"kind": "agent",
+"name": "codebase-explorer",
+"origin": "first-party",
+"description": "Read-only reconnaissance across a codebase \u2014 locate symbols, map call sites, inventory files matching a pattern, list which tests cover a function, trace an import graph. Use for broad fan-out searches where you want the conclusion, not the file dumps. Mechanical work, runs on Sonnet."
+},
+{
+"id": "agent_cost_optimizer",
+"kind": "agent",
+"name": "cost-optimizer",
+"origin": "first-party",
+"description": "Finds and quantifies cloud and warehouse spend reduction \u2014 unit economics, idle and over-provisioned resources, data scanned, egress, and commitment options. Use for any spend investigation or savings estimate. Every figure it produces must survive adversarial validation. Runs on Opus."
+},
+{
+"id": "agent_data_quality_auditor",
+"kind": "agent",
+"name": "data-quality-auditor",
+"origin": "first-party",
+"description": "Audits datasets and pipelines for the silent failures \u2014 grain violations, join fan-out, freshness gaps, reconciliation drift, absence-vs-zero errors, and untested keys. Use when a number looks wrong, when a pipeline succeeds but the data is stale, or before a dataset is trusted for reporting. Runs o"
+},
+{
+"id": "agent_dbt_engineer",
+"kind": "agent",
+"name": "dbt-engineer",
+"origin": "first-party",
+"description": "Builds and audits dbt projects \u2014 layering, model design, tests, contracts, incremental strategies, macros, and slim CI. Use for any dbt model work, or when a dbt project needs its layering and incremental logic attacked. Runs on Opus."
+},
+{
+"id": "agent_dependency_auditor",
+"kind": "agent",
+"name": "dependency-auditor",
+"origin": "first-party",
+"description": "Inventories dependencies and reports versions, licences, known CVEs, unpinned or unlocked entries, and unused or duplicated packages. Mechanical inventory work, runs on Sonnet. Escalate judgement calls about whether to upgrade to the caller."
+},
+{
+"id": "agent_docs_writer",
+"kind": "agent",
+"name": "docs-writer",
+"origin": "first-party",
+"description": "Drafts READMEs, runbooks, ADRs, design docs, and dbt/model documentation from material you provide. Use when the decisions are already made and the task is writing them down accurately. Drafting from given material \u2014 runs on Sonnet."
+},
+{
+"id": "agent_incident_responder",
+"kind": "agent",
+"name": "incident-responder",
+"origin": "first-party",
+"description": "Drives a live incident \u2014 mitigate first, diagnose second \u2014 then produces a blameless postmortem with detection-time analysis and owned action items. Use during an active outage or immediately after one. Runs on Opus."
+},
+{
+"id": "agent_migration_planner",
+"kind": "agent",
+"name": "migration-planner",
+"origin": "first-party",
+"description": "Plans schema, data, and API migrations using expand/contract \u2014 with a backfill strategy, a real rollback plan, and a dry run at production scale. Use before any migration, backfill, or breaking interface change. These are tier T3 changes and require adversarial validation. Runs on Opus."
+},
+{
+"id": "agent_performance_engineer",
+"kind": "agent",
+"name": "performance-engineer",
+"origin": "first-party",
+"description": "Diagnoses and fixes performance problems from a measurement, never from intuition \u2014 profiling, N+1 and query plans, tail latency, concurrency, caching, and complexity budgets. Use when something is slow and you need the actual cause with before/after numbers. Runs on Opus."
+},
+{
+"id": "agent_pipeline_debugger",
+"kind": "agent",
+"name": "pipeline-debugger",
+"origin": "first-party",
+"description": "Root-causes data pipeline failures across dbt, Airflow, Snowflake tasks/streams, and ingestion \u2014 including the hard case where the pipeline reports success but the data is wrong or stale. Use for any pipeline incident or unexplained data discrepancy. Runs on Opus."
+},
+{
+"id": "agent_principal_code_reviewer",
+"kind": "agent",
+"name": "principal-code-reviewer",
+"origin": "first-party",
+"description": "Deep code review for correctness, security, data integrity, and silent failure \u2014 the defects tests do not catch. Use before merging non-trivial changes or when you want a diff attacked rather than approved. Labels every finding by severity with a concrete failure scenario. Runs on Opus."
+},
+{
+"id": "agent_release_manager",
+"kind": "agent",
+"name": "release-manager",
+"origin": "first-party",
+"description": "Assembles a release \u2014 verifies CI status, collects the changelog from commits, checks version bumps and migration ordering, and confirms the rollback path is stated. Mechanical assembly and checking against a checklist, runs on Sonnet. Escalate any judgement call about whether to ship."
+},
+{
+"id": "agent_security_auditor",
+"kind": "agent",
+"name": "security-auditor",
+"origin": "first-party",
+"description": "Threat-models and audits code for injection, broken authorization, secret exposure, supply-chain risk, crypto misuse, and prompt injection. Use before shipping anything handling auth, untrusted input, secrets, payments, or PII. Produces exploitable findings, not a checklist. Runs on Opus."
+},
+{
+"id": "agent_snowflake_architect",
+"kind": "agent",
+"name": "snowflake-architect",
+"origin": "first-party",
+"description": "Designs and audits Snowflake platforms \u2014 warehouse topology, RBAC hierarchy, pruning and clustering, streams/tasks/dynamic tables, Time Travel and cloning, and credit governance. Use for Snowflake design, query tuning, cost investigation, or access-model review. Runs on Opus."
+},
+{
+"id": "agent_sre_reliability",
+"kind": "agent",
+"name": "sre-reliability",
+"origin": "first-party",
+"description": "Reviews and designs for reliability \u2014 SLIs/SLOs and error budgets, timeouts and retries, circuit breakers, backpressure, graceful degradation, health checks, progressive delivery, and alerting that pages on user pain. Use before shipping a service change or when a system is fragile under load. Runs "
+},
+{
+"id": "agent_staff_engineer",
+"kind": "agent",
+"name": "staff-engineer",
+"origin": "first-party",
+"description": "Use for system design, architecture decisions, and cross-module change planning \u2014 when the question is \"how should this be built\" or \"what will this cost us later\", not \"write this function\". Produces designs with named failure modes, rejected alternatives, and a migration path. Runs on Opus."
+},
+{
+"id": "agent_test_engineer",
+"kind": "agent",
+"name": "test-engineer",
+"origin": "first-party",
+"description": "Designs and writes test suites \u2014 reproduction tests for bugs, boundary and error-path coverage, property-based tests, contract tests, and de-flaking. Use when a change needs tests that would actually catch a regression, or when a suite is green but untrustworthy. Runs on Opus."
+},
+{
+"id": "command_adr",
+"kind": "command",
+"name": "adr",
+"origin": "first-party",
+"description": "Write an Architecture Decision Record capturing the decision, rejected alternatives, and revisit conditions"
+},
+{
+"id": "command_bootstrap",
+"kind": "command",
+"name": "bootstrap",
+"origin": "first-party",
+"description": "Wire this project onto the global engineering standards (detect stack, write project CLAUDE.md, verify commands)"
+},
+{
+"id": "command_dbt_audit",
+"kind": "command",
+"name": "dbt-audit",
+"origin": "first-party",
+"description": "Audit a dbt project \u2014 layering violations, untested keys, unsafe incrementals, missing contracts, undocumented marts"
+},
+{
+"id": "command_deep_review",
+"kind": "command",
+"name": "deep-review",
+"origin": "first-party",
+"description": "Multi-lens staff review of a diff or PR \u2014 correctness, security, data integrity, silent failure, rollback"
+},
+{
+"id": "command_design",
+"kind": "command",
+"name": "design",
+"origin": "first-party",
+"description": "Run a staff-level design process \u2014 constraints, non-goals, real alternatives, recommendation, migration path"
+},
+{
+"id": "command_dq",
+"kind": "command",
+"name": "dq",
+"origin": "first-party",
+"description": "Hunt silent data failures \u2014 grain/fan-out, freshness, reconciliation, absence-vs-zero, broken SCDs"
+},
+{
+"id": "command_rca",
+"kind": "command",
+"name": "rca",
+"origin": "first-party",
+"description": "Root-cause a bug or failure systematically \u2014 reproduce, bisect, one hypothesis at a time, prove the cause"
+},
+{
+"id": "command_sf_audit",
+"kind": "command",
+"name": "sf-audit",
+"origin": "first-party",
+"description": "Audit a Snowflake account \u2014 RBAC hygiene, warehouse topology, credit waste, recoverability, unmasked PII"
+},
+{
+"id": "command_sf_tune",
+"kind": "command",
+"name": "sf-tune",
+"origin": "first-party",
+"description": "Tune a slow or expensive Snowflake query from the Query Profile \u2014 pruning, then spill, then idle compute"
+},
+{
+"id": "command_ship",
+"kind": "command",
+"name": "ship",
+"origin": "first-party",
+"description": "Run the definition-of-done gate \u2014 execute build/tests/lint/types, check rollback and observability, report honestly"
+},
+{
+"id": "command_standards",
+"kind": "command",
+"name": "standards",
+"origin": "first-party",
+"description": "Print the engineering standards library index \u2014 rules, agents, skills, and how they compose"
+},
+{
+"id": "command_validate",
+"kind": "command",
+"name": "validate",
+"origin": "first-party",
+"description": "Run the adversarial validation gate on a claim, number, migration, or fix (Opus validator, never downgraded)"
+},
+{
+"id": "rule_readme",
+"kind": "rule",
+"name": "README",
+"origin": "first-party",
+"description": "Rules \u2014 the standards layer; Priority order when rules appear to conflict; Index"
+},
+{
+"id": "rule_adversarial_validation",
+"kind": "rule",
+"name": "adversarial-validation",
+"origin": "first-party",
+"description": "Rule: Adversarial Validation \u2014 HIGHEST TIER; Principle; When validation is MANDATORY; How validation runs; Verdict format; Validators are also wrong \u2014 the second failure mode"
+},
+{
+"id": "rule_agent_models",
+"kind": "rule",
+"name": "agent-models",
+"origin": "first-party",
+"description": "Rule: Subagent Model Selection; The rule; Model ids; Classifying the task; How to pass it; Two failure modes worth naming"
+},
+{
+"id": "rule_api_and_contracts",
+"kind": "rule",
+"name": "api-and-contracts",
+"origin": "first-party",
+"description": "Rule: API and Interface Design; Contract first; Compatibility; Errors; Idempotency and concurrency; Pagination, filtering, limits"
+},
+{
+"id": "rule_code_quality",
+"kind": "rule",
+"name": "code-quality",
+"origin": "first-party",
+"description": "Rule: Code Quality; Match the codebase before improving it; Naming; Functions and structure; Error handling; Comments"
+},
+{
+"id": "rule_code_review",
+"kind": "rule",
+"name": "code-review",
+"origin": "first-party",
+"description": "Rule: Code Review; What review is for; Review order \u2014 highest consequence first; Severity taxonomy \u2014 always label; Every finding needs three parts; Reviewer discipline"
+},
+{
+"id": "rule_context_discipline",
+"kind": "rule",
+"name": "context-discipline",
+"origin": "first-party",
+"description": "Rule: Context Discipline and Agent Collaboration; Reading; Delegating; Trusting subagents; Instruction boundary; Session hygiene"
+},
+{
+"id": "rule_data_modeling",
+"kind": "rule",
+"name": "data-modeling",
+"origin": "first-party",
+"description": "Rule: Data Modeling; State the grain first \u2014 before writing any SQL; Dimensional modelling for analytics; Keys; Slowly changing dimensions; Normalisation, applied with judgement"
+},
+{
+"id": "rule_dbt_standards",
+"kind": "rule",
+"name": "dbt-standards",
+"origin": "first-party",
+"description": "Rule: dbt Standards (Analytics Engineering); Layering \u2014 never skip a layer; Naming; Testing \u2014 the minimum bar; Contracts, versions and freshness; Materialisation \u2014 choose deliberately"
+},
+{
+"id": "rule_definition_of_done",
+"kind": "rule",
+"name": "definition-of-done",
+"origin": "first-party",
+"description": "Rule: Definition of Done; The gate \u2014 every item, or say which you skipped and why; Reporting; Project thresholds"
+},
+{
+"id": "rule_documentation_and_adr",
+"kind": "rule",
+"name": "documentation-and-adr",
+"origin": "first-party",
+"description": "Rule: Documentation, ADRs and Design Docs; What is worth writing; Architecture Decision Records; ADR-0007: <decision, stated as a decision>; Context; Decision"
+},
+{
+"id": "rule_engineering_bar",
+"kind": "rule",
+"name": "engineering-bar",
+"origin": "first-party",
+"description": "Rule: The Engineering Bar; The four questions, asked before every change; Altitude \u2014 match the response to the request; Seniority signals; Irreversibility ladder \u2014 apply rigour proportionally; What \"done\" means"
+},
+{
+"id": "rule_git_release_and_migrations",
+"kind": "rule",
+"name": "git-release-and-migrations",
+"origin": "first-party",
+"description": "Rule: Git, Release and Migrations; Branch and commit; Pull requests; Release; Migrations \u2014 the expand/contract discipline; Environments"
+},
+{
+"id": "rule_performance_and_cost",
+"kind": "rule",
+"name": "performance-and-cost",
+"origin": "first-party",
+"description": "Rule: Performance and Cost Engineering; Measure, then change; Where the time usually is; Latency discipline; Caching; Cost is a first-class engineering constraint"
+},
+{
+"id": "rule_reliability_observability",
+"kind": "rule",
+"name": "reliability-observability",
+"origin": "first-party",
+"description": "Rule: Reliability, Observability and Incidents; Measure what users experience; The three signals, used correctly; Alerting; Designing for failure; Deploy safety"
+},
+{
+"id": "rule_security",
+"kind": "rule",
+"name": "security",
+"origin": "first-party",
+"description": "Rule: Security; Trust boundaries; Secrets; Injection \u2014 the whole family; Authentication and authorisation; Cryptography"
+},
+{
+"id": "rule_snowflake_standards",
+"kind": "rule",
+"name": "snowflake-standards",
+"origin": "first-party",
+"description": "Rule: Snowflake Standards; The mental model that prevents most mistakes; Warehouses; Pruning, clustering and query design; RBAC \u2014 roles, not users; Data engineering constructs \u2014 pick the right one"
+},
+{
+"id": "rule_sql_standards",
+"kind": "rule",
+"name": "sql-standards",
+"origin": "first-party",
+"description": "Rule: SQL Standards; Correctness traps that produce wrong numbers silently; Style; Constructs worth reaching for; Performance; Safety"
+},
+{
+"id": "rule_testing",
+"kind": "rule",
+"name": "testing",
+"origin": "first-party",
+"description": "Rule: Testing; The test is the specification; Shape of the suite; What makes a test good; Mocking; What to test, ranked"
+},
+{
+"id": "loose_skill_file_api_design",
+"kind": "loose-skill-file",
+"name": "api-design",
+"origin": "first-party",
+"description": "/api-design - Design REST/GraphQL APIs; Instructions; Output Format; REST Example; GraphQL Example"
+},
+{
+"id": "skill_code_mods_essentials",
+"kind": "skill",
+"name": "code-mods-essentials",
+"origin": "first-party",
+"description": "Build custom hooks and extensions for Claude Code. Use when writing mods that monitor context/tokens, validate operations, or create review interfaces. Covers hook patterns, state management, UI rendering, testing, and marketplace distribution."
+},
+{
+"id": "loose_skill_file_code_review",
+"kind": "loose-skill-file",
+"name": "code-review",
+"origin": "first-party",
+"description": "/code-review - Review Code Quality; Instructions; Output Format; Summary; Critical Issues; Suggestions"
+},
+{
+"id": "loose_skill_file_data_model",
+"kind": "loose-skill-file",
+"name": "data-model",
+"origin": "first-party",
+"description": "/data-model - Design Data Models; Instructions; Output Format; Entity Relationship Diagram; Tables; [table_name]"
+},
+{
+"id": "loose_skill_file_data_pipeline",
+"kind": "loose-skill-file",
+"name": "data-pipeline",
+"origin": "first-party",
+"description": "/data-pipeline - Design Data Pipelines; Instructions; Output Format; Pipeline Overview; Architecture; DAG Structure"
+},
+{
+"id": "loose_skill_file_debug",
+"kind": "loose-skill-file",
+"name": "debug",
+"origin": "first-party",
+"description": "/debug - Debug Issues Systematically; Instructions; Output Format; Error Analysis; Root Cause; Solution"
+},
+{
+"id": "skill_eck_ac_coverage",
+"kind": "skill",
+"name": "eck-ac-coverage",
+"origin": "eck-coder-kit",
+"description": "AC-ID traceability dashboard \u2014 shows per-criterion lifecycle coverage across spec, design, develop, and validate phases."
+},
+{
+"id": "skill_eck_archive_feature",
+"kind": "skill",
+"name": "eck-archive-feature",
+"origin": "eck-coder-kit",
+"description": "Archive a feature, removing it from active tracking. Works on backlog, active, parked, or done features."
+},
+{
+"id": "skill_eck_archive_project",
+"kind": "skill",
+"name": "eck-archive-project",
+"origin": "eck-coder-kit",
+"description": "Archive a managed project in the global registry, marking it as no longer actively monitored."
+},
+{
+"id": "skill_eck_audit_current_project",
+"kind": "skill",
+"name": "eck-audit-current-project",
+"origin": "eck-coder-kit",
+"description": "Quick health check and drift detection for managed projects \u2014 compares deployed infrastructure against global catalog checksums."
+},
+{
+"id": "skill_eck_audit_security",
+"kind": "skill",
+"name": "eck-audit-security",
+"origin": "eck-coder-kit",
+"description": "Scan Claude Code project configuration for security misconfigurations with A-F grading"
+},
+{
+"id": "skill_eck_audit_unmanaged_project",
+"kind": "skill",
+"name": "eck-audit-unmanaged-project",
+"origin": "eck-coder-kit",
+"description": "Discover and register unmanaged projects by deep scanning infrastructure against canonical templates with git-aware classification and reconciliation reporting."
+},
+{
+"id": "skill_eck_clean_deprecated",
+"kind": "skill",
+"name": "eck-clean-deprecated",
+"origin": "eck-coder-kit",
+"description": "Remove deprecated skills, agents, and primitives from a managed project after pull-from-global-catalog flags them. Run this after /eck:pull-from-global-catalog reports deprecated items."
+},
+{
+"id": "skill_eck_create_feature",
+"kind": "skill",
+"name": "eck-create-feature",
+"origin": "eck-coder-kit",
+"description": "Create a feature with a project-scoped identifier, tracker issue, register it in lifecycle.json, and optionally activate it."
+},
+{
+"id": "skill_eck_deploy",
+"kind": "skill",
+"name": "eck-deploy",
+"origin": "eck-coder-kit",
+"description": "Deployment orchestrator: promote dev to main, release tagging, changelog generation, and production verification. Consumes validated code on dev branch."
+},
+{
+"id": "skill_eck_design",
+"kind": "skill",
+"name": "eck-design",
+"origin": "eck-coder-kit",
+"description": "Design orchestrator: research, discovery, architecture, solution design, specs, ADRs, QA plan, risk, and documentation. Reads FRD.md for requirements."
+},
+{
+"id": "skill_eck_dev_rigor",
+"kind": "skill",
+"name": "eck-dev-rigor",
+"origin": "eck-coder-kit",
+"description": "Display or switch the active dev rigor level (lite/standard/strict)"
+},
+{
+"id": "skill_eck_develop",
+"kind": "skill",
+"name": "eck-develop",
+"origin": "eck-coder-kit",
+"description": "Development orchestrator: load design artifacts, generate dev plan, execute tasks with fresh contexts, wave parallelism, TDD support, and code simplification."
+},
+{
+"id": "skill_eck_disable_protections",
+"kind": "skill",
+"name": "eck-disable-protections",
+"origin": "eck-coder-kit",
+"description": "Remove safety hooks from settings.json (restores from backup if session-scoped, removes directly if permanent)"
+},
+{
+"id": "skill_eck_enable_protections",
+"kind": "skill",
+"name": "eck-enable-protections",
+"origin": "eck-coder-kit",
+"description": "Flip the protectionsEnabled flag in global-state.json to activate safety hooks"
+},
+{
+"id": "skill_eck_feature_status",
+"kind": "skill",
+"name": "eck-feature-status",
+"origin": "eck-coder-kit",
+"description": "Dashboard showing all features with lifecycle status, progress, and last-updated dates."
+},
+{
+"id": "skill_eck_fresh_context",
+"kind": "skill",
+"name": "eck-fresh-context",
+"origin": "eck-coder-kit",
+"description": "Subagent-based context continuation when the current context window is nearing exhaustion."
+},
+{
+"id": "skill_eck_help",
+"kind": "skill",
+"name": "eck-help",
+"origin": "eck-coder-kit",
+"description": "Grouped reference of all available skills with descriptions and usage examples."
+},
+{
+"id": "skill_eck_history",
+"kind": "skill",
+"name": "eck-history",
+"origin": "eck-coder-kit",
+"description": "Display project activity history from .claude/activity.log with filtering and formatting."
+},
+{
+"id": "skill_eck_list_global_catalog",
+"kind": "skill",
+"name": "eck-list-global-catalog",
+"origin": "eck-coder-kit",
+"description": "Read-only display of all components in the global template catalog with categorized tables."
+},
+{
+"id": "skill_eck_list_project_catalog",
+"kind": "skill",
+"name": "eck-list-project-catalog",
+"origin": "eck-coder-kit",
+"description": "Read-only display of a managed project's catalog with component statuses and health score."
+},
+{
+"id": "skill_eck_list_user_catalog",
+"kind": "skill",
+"name": "eck-list-user-catalog",
+"origin": "eck-coder-kit",
+"description": "Read-only display of user-harvested improvements in user-catalog.yaml with source attribution."
+},
+{
+"id": "skill_eck_migrate_project",
+"kind": "skill",
+"name": "eck-migrate-project",
+"origin": "eck-coder-kit",
+"description": "Onboard an existing unmanaged project into the evolv-coder-kit ecosystem with assessment, interview, and selective infrastructure deployment."
+},
+{
+"id": "skill_eck_new_project",
+"kind": "skill",
+"name": "eck-new-project",
+"origin": "eck-coder-kit",
+"description": "Interview-driven project scaffolding with full Claude Code infrastructure deployment (hooks, primitives, context tiers, agents, skills, plugins)."
+},
+{
+"id": "skill_eck_next_feature",
+"kind": "skill",
+"name": "eck-next-feature",
+"origin": "eck-coder-kit",
+"description": "Auto-select the next backlog feature chronologically without prompting. Non-interactive alternative to /eck:select-feature."
+},
+{
+"id": "skill_eck_output_mode",
+"kind": "skill",
+"name": "eck-output-mode",
+"origin": "eck-coder-kit",
+"description": "Display or switch the active output mode (guided/standard/concise)"
+},
+{
+"id": "skill_eck_pause",
+"kind": "skill",
+"name": "eck-pause",
+"origin": "eck-coder-kit",
+"description": "Save current session state to STATE.md for clean handoff or later resume via /eck:resume."
+},
+{
+"id": "skill_eck_pause_feature",
+"kind": "skill",
+"name": "eck-pause-feature",
+"origin": "eck-coder-kit",
+"description": "Park the active feature to work on something else. Resume later with /eck:resume-feature."
+},
+{
+"id": "skill_eck_plugin_status",
+"kind": "skill",
+"name": "eck-plugin-status",
+"origin": "eck-coder-kit",
+"description": "Display official plugin status and integration guidance"
+},
+{
+"id": "skill_eck_project_status",
+"kind": "skill",
+"name": "eck-project-status",
+"origin": "eck-coder-kit",
+"description": "Read-only dashboard showing project health, status, pull candidates, and upstream submission history from the evolv-coder-kit registry."
+},
+{
+"id": "skill_eck_pull_from_global_catalog",
+"kind": "skill",
+"name": "eck-pull-from-global-catalog",
+"origin": "eck-coder-kit",
+"description": "Apply template and agent updates from the global catalog to a managed project with catalog-driven reconciliation, smart merging, and rollback support. Reads ONLY from global-catalog.yaml."
+},
+{
+"id": "skill_eck_pull_from_standards",
+"kind": "skill",
+"name": "eck-pull-from-standards",
+"origin": "eck-coder-kit",
+"description": "Pull and compile development standards from the evolv-coder-standards repository into project context files."
+},
+{
+"id": "skill_eck_pull_from_user_catalog",
+"kind": "skill",
+"name": "eck-pull-from-user-catalog",
+"origin": "eck-coder-kit",
+"description": "Pull user-harvested infrastructure improvements from user-catalog.yaml into a managed project with approval flow and sync tracking."
+},
+{
+"id": "skill_eck_push_to_user_catalog",
+"kind": "skill",
+"name": "eck-push-to-user-catalog",
+"origin": "eck-coder-kit",
+"description": "Push improvements from a deployed project back into the catalog with de-projectification, agent harvesting, and impact analysis."
+},
+{
+"id": "skill_eck_quick_task",
+"kind": "skill",
+"name": "eck-quick-task",
+"origin": "eck-coder-kit",
+"description": "Express SDD lifecycle for quick/lightweight tasks: Spec\u2192Design\u2192Develop\u2192Validate\u2192Deploy with complexity routing, mode-aware gates, and optional --deploy and --trace flags."
+},
+{
+"id": "skill_eck_restore_project",
+"kind": "skill",
+"name": "eck-restore-project",
+"origin": "eck-coder-kit",
+"description": "Restore an archived project in the global registry, reactivating it for monitoring and health tracking."
+},
+{
+"id": "skill_eck_resume",
+"kind": "skill",
+"name": "eck-resume",
+"origin": "eck-coder-kit",
+"description": "Resume an interrupted session by reading STATE.md and dispatching to the last active command."
+},
+{
+"id": "skill_eck_resume_feature",
+"kind": "skill",
+"name": "eck-resume-feature",
+"origin": "eck-coder-kit",
+"description": "Switch to a parked feature from the lifecycle queue and show the next step."
+},
+{
+"id": "skill_eck_sandbox",
+"kind": "skill",
+"name": "eck-sandbox",
+"origin": "eck-coder-kit",
+"description": "Show or set the sandbox default in ~/.claude/settings.json. Config-only \u2014 changes apply next session."
+},
+{
+"id": "skill_eck_select_feature",
+"kind": "skill",
+"name": "eck-select-feature",
+"origin": "eck-coder-kit",
+"description": "Pick a feature from the backlog to start working on. Auto-parks the current active feature if needed."
+},
+{
+"id": "skill_eck_spec",
+"kind": "skill",
+"name": "eck-spec",
+"origin": "eck-coder-kit",
+"description": "Spec orchestrator: research, scope, discovery, acceptance criteria, and open questions for spec-driven development."
+},
+{
+"id": "skill_eck_submit_to_repo",
+"kind": "skill",
+"name": "eck-submit-to-repo",
+"origin": "eck-coder-kit",
+"description": "Submit catalog improvements to the upstream GitHub repository via fork-based pull requests."
+},
+{
+"id": "skill_eck_sudo",
+"kind": "skill",
+"name": "eck-sudo",
+"origin": "eck-coder-kit",
+"description": "Temporarily disable safety protections for the current session only \u2014 does not modify global or project settings permanently"
+},
+{
+"id": "skill_eck_switch_docs",
+"kind": "skill",
+"name": "eck-switch-docs",
+"origin": "eck-coder-kit",
+"description": "Toggle Confluence publishing for the project. Docs always live in docs/ (local-first); this skill enables or disables the Confluence publish channel."
+},
+{
+"id": "skill_eck_switch_tracker",
+"kind": "skill",
+"name": "eck-switch-tracker",
+"origin": "eck-coder-kit",
+"description": "Switch the project's tracker type (JIRA, GitHub Issues, Linear, Local) and update all dependent configuration."
+},
+{
+"id": "skill_eck_update_permissions",
+"kind": "skill",
+"name": "eck-update-permissions",
+"origin": "eck-coder-kit",
+"description": "Scan project configuration and regenerate optimal permissions in .claude/settings.json from tech stack, MCP servers, and ECK workflow commands."
+},
+{
+"id": "skill_eck_update_project",
+"kind": "skill",
+"name": "eck-update-project",
+"origin": "eck-coder-kit",
+"description": "Post-upgrade root document merge \u2014 section-level update of CLAUDE.md, project-constants.md, and project-constitution.md after a package version bump."
+},
+{
+"id": "skill_eck_validate",
+"kind": "skill",
+"name": "eck-validate",
+"origin": "eck-coder-kit",
+"description": "Validation orchestrator: quality gates, code review, security scan, CI triage, and user acceptance testing against FRD.md criteria."
+},
+{
+"id": "skill_graphify",
+"kind": "skill",
+"name": "graphify",
+"origin": "first-party",
+"description": "Use for any question about a codebase, its architecture, file relationships, or project content \u2014 especially when graphify-out/ exists, where the question should be treated as a graphify query first. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with god node"
+},
+{
+"id": "loose_skill_file_security_check",
+"kind": "loose-skill-file",
+"name": "security-check",
+"origin": "first-party",
+"description": "/security-check - Security Code Review; Instructions; Output Format; Security Assessment; Vulnerabilities Found; [Severity] - [Vulnerability Type]"
+},
+{
+"id": "skill_snowflake_sql",
+"kind": "skill",
+"name": "snowflake-sql",
+"origin": "first-party",
+"description": "Run Snowflake SQL and inspect a Snowflake account with a programmatic access token (PAT) through the Snowflake SQL API, using the bundled stdlib-only Python CLI sf.py. Use for any task that has to execute something in Snowflake - queries, SHOW / DESCRIBE / GET_DDL, grants, query history, warehouse c"
+},
+{
+"id": "loose_skill_file_sql_optimize",
+"kind": "loose-skill-file",
+"name": "sql-optimize",
+"origin": "first-party",
+"description": "/sql-optimize - Optimize SQL Queries; Instructions; Output Format; Analysis; Optimized Query; Recommended Indexes"
+},
+{
+"id": "loose_skill_file_system_design",
+"kind": "loose-skill-file",
+"name": "system-design",
+"origin": "first-party",
+"description": "/system-design - Design System Architecture; Instructions; Output Format; System Overview; Architecture Diagram; Components"
+},
+{
+"id": "loose_skill_file_test_gen",
+"kind": "loose-skill-file",
+"name": "test-gen",
+"origin": "first-party",
+"description": "/test-gen - Generate Test Cases; Instructions; Output Format; Test Suite for [module/function]; Setup; Tests"
+},
+{
+"id": "loose_skill_file_v0_prompt",
+"kind": "loose-skill-file",
+"name": "v0-prompt",
+"origin": "first-party",
+"description": "/v0-prompt - Generate v0.app Prompts; Instructions; Example Output Format"
+},
+{
+"id": "plugin_64e3e0b88be8_artifact",
+"kind": "plugin-skill",
+"name": "64e3e0b88be8:artifact",
+"origin": "plugin",
+"description": "Creates interactive HTML artifacts \u2014 self-contained single-file explorers that let users configure something visually through controls, see a live preview, and copy out a prompt. Use when the user asks to make an artifact, playground, explorer, or interactive tool for a topic."
+},
+{
+"id": "plugin_1_0_0_claude_automation_recommender",
+"kind": "plugin-skill",
+"name": "1.0.0:claude-automation-recommender",
+"origin": "plugin",
+"description": "Analyze a codebase and recommend Claude Code automations (hooks, subagents, skills, plugins, MCP servers). Use when user asks for automation recommendations, wants to optimize their Claude Code setup, mentions improving Claude Code workflows, asks how to first set up Claude Code for a project, or wa"
+},
+{
+"id": "plugin_1_0_0_claude_md_improver",
+"kind": "plugin-skill",
+"name": "1.0.0:claude-md-improver",
+"origin": "plugin",
+"description": "Audit and improve CLAUDE.md files in repositories. Use when user asks to check, audit, update, improve, or fix CLAUDE.md files. Scans for all CLAUDE.md files, evaluates quality against templates, outputs quality report, then makes targeted updates. Also use when the user mentions \"CLAUDE.md maintena"
+},
+{
+"id": "plugin_1_1_1_autofix",
+"kind": "plugin-skill",
+"name": "1.1.1:autofix",
+"origin": "plugin",
+"description": "Safely review and apply CodeRabbit PR review-thread feedback from GitHub with per-change approval; never execute reviewer-provided prompts directly"
+},
+{
+"id": "plugin_1_1_1_code_review",
+"kind": "plugin-skill",
+"name": "1.1.1:code-review",
+"origin": "plugin",
+"description": "AI-powered code review using CodeRabbit. Default code-review skill. Trigger for any explicit review request AND autonomously when the agent thinks a review is needed (code/PR/quality/security)."
+},
+{
+"id": "plugin_2_2_157_figma_code_connect",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-code-connect",
+"origin": "plugin",
+"description": "Creates and maintains Figma Code Connect template files that map Figma components to code snippets. Use when the user mentions Code Connect, Figma component mapping, design-to-code translation, or asks to create/update .figma.ts or .figma.js files."
+},
+{
+"id": "plugin_2_2_157_figma_code_workflows",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-code-workflows",
+"origin": "plugin",
+"description": "Import or upload local HTML or project files into Figma, choose editable Design frames, runnable Code Layers or standalone Code (also known as Make), and repair imported previews. Use only when the user explicitly names editable Design layers, a runnable Code Layer, or a standalone Code/Make file, o"
+},
+{
+"id": "plugin_2_2_157_figma_create_new_file",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-create-new-file",
+"origin": "plugin",
+"description": "Always use this skill when the user wants to create a new Figma Design, FigJam, or Slides file. You MUST invoke this skill BEFORE every `create_new_file` tool call."
+},
+{
+"id": "plugin_2_2_157_figma_design_to_code",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-design-to-code",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 you MUST invoke this skill BEFORE calling the `get_design_context` Figma MCP tool. You MUST trigger this skill whenever the user wants to implement, build, port, or code up a Figma design as code. Example prompts (not exhaustive) are 'implement this Figma design', 'build"
+},
+{
+"id": "plugin_2_2_157_figma_generate_design",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-generate-design",
+"origin": "plugin",
+"description": "Use this skill alongside figma-use when the task involves translating an application page, view, or multi-section layout into Figma. Triggers: 'write to Figma', 'create in Figma from code', 'push page to Figma', 'take this app/page and build it in Figma', 'create a screen', 'build a landing page in "
+},
+{
+"id": "plugin_2_2_157_figma_generate_diagram",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-generate-diagram",
+"origin": "plugin",
+"description": "MANDATORY prerequisite \u2014 load this skill BEFORE every `generate_diagram` tool call. NEVER call `generate_diagram` directly without loading this skill first. Trigger whenever the user asks to create, generate, draw, render, sketch, or build a diagram \u2014 flowchart, architecture diagram, sequence diagra"
+},
+{
+"id": "plugin_2_2_157_figma_generate_library",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-generate-library",
+"origin": "plugin",
+"description": "Build or update a professional-grade design system in Figma from a codebase. Use when the user wants to create variables/tokens, build component libraries, create individual components with proper variant sets and variable bindings, set up theming (light/dark modes), document foundations, or reconci"
+},
+{
+"id": "plugin_2_2_157_figma_generative_plugins",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-generative-plugins",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 load this skill before calling `create_generative_plugin` or `update_generative_plugin`. Use when the user asks to create, author, change, fix, or extend a reusable generative Figma plugin."
+},
+{
+"id": "plugin_2_2_157_figma_implement_motion",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-implement-motion",
+"origin": "plugin",
+"description": "Translates Figma motion and animations into production-ready application code. Use when implementing animation/motion from a Figma design \u2014 user mentions \"implement this motion\", \"add animation from Figma\", \"animate this component\", provides a Figma URL whose node is animated, or when `get_design_co"
+},
+{
+"id": "plugin_2_2_157_figma_shaders",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-shaders",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 load this skill before calling `create_shader` or `update_shader`. Use when the user asks to create, author, change, fix, or iterate on a shader effect, shader fill, custom effect, custom fill, or procedural shader in Figma."
+},
+{
+"id": "plugin_2_2_157_figma_spec",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-spec",
+"origin": "plugin",
+"description": "This skill is required to create, read, edit, review, or comment on Figma specs. You must read it when working on a PRD, brief, RFC or any kind of document in either a standalone Figma spec or a Figma spec embedded in a Figma Design or Figjam file."
+},
+{
+"id": "plugin_2_2_157_figma_swiftui",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-swiftui",
+"origin": "plugin",
+"description": "SwiftUI \u2194 Figma translation. Use whenever the user mentions Swift, SwiftUI, iOS, iPhone, or iPad \u2014 in EITHER direction \u2014 translating a Figma design into SwiftUI (design \u2192 code), or pushing SwiftUI views / screens / tokens back into a Figma file (code \u2192 design). Triggers on phrases like 'implement th"
+},
+{
+"id": "plugin_2_2_157_figma_use",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-use",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 you MUST invoke this skill BEFORE every `use_figma` tool call. NEVER call `use_figma` directly without loading this skill first. Skipping it causes common, hard-to-debug failures. Trigger whenever the user wants to perform a write action or a unique read action that requ"
+},
+{
+"id": "plugin_2_2_157_figma_use_figjam",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-use-figjam",
+"origin": "plugin",
+"description": "This skill helps agents use Figma's use_figma MCP tool in the FigJam context. Can be used alongside figma-use which has foundational context for using the use_figma tool."
+},
+{
+"id": "plugin_2_2_157_figma_use_motion",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-use-motion",
+"origin": "plugin",
+"description": "Motion / animation context for the `use_figma` MCP tool \u2014 animating Figma nodes via manual keyframes, animation styles, easing, and timeline duration. Load alongside figma-use whenever a task involves adding, editing, or inspecting animation on a node. Also covers working with custom animation style"
+},
+{
+"id": "plugin_2_2_157_figma_use_slides",
+"kind": "plugin-skill",
+"name": "2.2.157:figma-use-slides",
+"origin": "plugin",
+"description": "This skill helps agents use Figma's use_figma MCP tool in the Slides context. Can be used alongside figma-use which has foundational context for using the use_figma tool."
+},
+{
+"id": "plugin__figma_code_connect",
+"kind": "plugin-skill",
+"name": "?:figma-code-connect",
+"origin": "plugin",
+"description": "Creates and maintains Figma Code Connect template files that map Figma components to code snippets. Use when the user mentions Code Connect, Figma component mapping, design-to-code translation, or asks to create/update .figma.ts or .figma.js files."
+},
+{
+"id": "plugin__figma_create_new_file",
+"kind": "plugin-skill",
+"name": "?:figma-create-new-file",
+"origin": "plugin",
+"description": "Always use this skill when the user wants to create a new Figma Design, FigJam, or Slides file. You MUST invoke this skill BEFORE every `create_new_file` tool call."
+},
+{
+"id": "plugin__figma_design_to_code",
+"kind": "plugin-skill",
+"name": "?:figma-design-to-code",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 you MUST invoke this skill BEFORE calling the `get_design_context` Figma MCP tool. You MUST trigger this skill whenever the user wants to implement, build, port, or code up a Figma design as code. Example prompts (not exhaustive) are 'implement this Figma design', 'build"
+},
+{
+"id": "plugin__figma_generate_design",
+"kind": "plugin-skill",
+"name": "?:figma-generate-design",
+"origin": "plugin",
+"description": "Use this skill alongside figma-use when the task involves translating an application page, view, or multi-section layout into Figma. Triggers: 'write to Figma', 'create in Figma from code', 'push page to Figma', 'take this app/page and build it in Figma', 'create a screen', 'build a landing page in "
+},
+{
+"id": "plugin__figma_generate_diagram",
+"kind": "plugin-skill",
+"name": "?:figma-generate-diagram",
+"origin": "plugin",
+"description": "MANDATORY prerequisite \u2014 load this skill BEFORE every `generate_diagram` tool call. NEVER call `generate_diagram` directly without loading this skill first. Trigger whenever the user asks to create, generate, draw, render, sketch, or build a diagram \u2014 flowchart, architecture diagram, sequence diagra"
+},
+{
+"id": "plugin__figma_generate_library",
+"kind": "plugin-skill",
+"name": "?:figma-generate-library",
+"origin": "plugin",
+"description": "Build or update a professional-grade design system in Figma from a codebase. Use when the user wants to create variables/tokens, build component libraries, create individual components with proper variant sets and variable bindings, set up theming (light/dark modes), document foundations, or reconci"
+},
+{
+"id": "plugin__figma_generative_plugins",
+"kind": "plugin-skill",
+"name": "?:figma-generative-plugins",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 load this skill before calling `create_generative_plugin` or `update_generative_plugin`. Use when the user asks to create, author, change, fix, or extend a reusable generative Figma plugin."
+},
+{
+"id": "plugin__figma_implement_motion",
+"kind": "plugin-skill",
+"name": "?:figma-implement-motion",
+"origin": "plugin",
+"description": "Translates Figma motion and animations into production-ready application code. Use when implementing animation/motion from a Figma design \u2014 user mentions \"implement this motion\", \"add animation from Figma\", \"animate this component\", provides a Figma URL whose node is animated, or when `get_design_co"
+},
+{
+"id": "plugin__figma_shaders",
+"kind": "plugin-skill",
+"name": "?:figma-shaders",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 load this skill before calling `create_shader` or `update_shader`. Use when the user asks to create, author, change, fix, or iterate on a shader effect, shader fill, custom effect, custom fill, or procedural shader in Figma."
+},
+{
+"id": "plugin__figma_swiftui",
+"kind": "plugin-skill",
+"name": "?:figma-swiftui",
+"origin": "plugin",
+"description": "SwiftUI \u2194 Figma translation. Use whenever the user mentions Swift, SwiftUI, iOS, iPhone, or iPad \u2014 in EITHER direction \u2014 translating a Figma design into SwiftUI (design \u2192 code), or pushing SwiftUI views / screens / tokens back into a Figma file (code \u2192 design). Triggers on phrases like 'implement th"
+},
+{
+"id": "plugin__figma_use",
+"kind": "plugin-skill",
+"name": "?:figma-use",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 you MUST invoke this skill BEFORE every `use_figma` tool call. NEVER call `use_figma` directly without loading this skill first. Skipping it causes common, hard-to-debug failures. Trigger whenever the user wants to perform a write action or a unique read action that requ"
+},
+{
+"id": "plugin__figma_use_figjam",
+"kind": "plugin-skill",
+"name": "?:figma-use-figjam",
+"origin": "plugin",
+"description": "This skill helps agents use Figma's use_figma MCP tool in the FigJam context. Can be used alongside figma-use which has foundational context for using the use_figma tool."
+},
+{
+"id": "plugin__figma_use_motion",
+"kind": "plugin-skill",
+"name": "?:figma-use-motion",
+"origin": "plugin",
+"description": "Motion / animation context for the `use_figma` MCP tool \u2014 animating Figma nodes via manual keyframes, animation styles, easing, and timeline duration. Load alongside figma-use whenever a task involves adding, editing, or inspecting animation on a node."
+},
+{
+"id": "plugin__figma_use_slides",
+"kind": "plugin-skill",
+"name": "?:figma-use-slides",
+"origin": "plugin",
+"description": "This skill helps agents use Figma's use_figma MCP tool in the Slides context. Can be used alongside figma-use which has foundational context for using the use_figma tool."
+},
+{
+"id": "plugin__generate_project_plan",
+"kind": "plugin-skill",
+"name": "?:generate-project-plan",
+"origin": "plugin",
+"description": "Generate a FigJam project plan board from a PRD plus codebase context. Interactive flow: research \u2192 propose sections \u2192 per-section deep research \u2192 per-section content + block-shape proposal \u2192 create FigJam \u2192 skeleton \u2192 fill \u2192 diagrams \u2192 wrap. Each content block (section, nested section, intro callou"
+},
+{
+"id": "plugin__video_interaction_mapper",
+"kind": "plugin-skill",
+"name": "?:video-interaction-mapper",
+"origin": "plugin",
+"description": ">"
+},
+{
+"id": "plugin_1_1_1_frontend_design",
+"kind": "plugin-skill",
+"name": "1.1.1:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_58267944f921_frontend_design",
+"kind": "plugin-skill",
+"name": "58267944f921:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_641d925db5a6_frontend_design",
+"kind": "plugin-skill",
+"name": "641d925db5a6:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_8f814f49002f_frontend_design",
+"kind": "plugin-skill",
+"name": "8f814f49002f:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_a0b04d9ddcca_frontend_design",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_c2bdb427efe8_frontend_design",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_ea10b213686c_frontend_design",
+"kind": "plugin-skill",
+"name": "ea10b213686c:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_f61e6d15fc03_frontend_design",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_0_1_1_writing_rules",
+"kind": "plugin-skill",
+"name": "0.1.1:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_58267944f921_writing_rules",
+"kind": "plugin-skill",
+"name": "58267944f921:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_641d925db5a6_writing_rules",
+"kind": "plugin-skill",
+"name": "641d925db5a6:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_8f814f49002f_writing_rules",
+"kind": "plugin-skill",
+"name": "8f814f49002f:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_a0b04d9ddcca_writing_rules",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_c2bdb427efe8_writing_rules",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_ea10b213686c_writing_rules",
+"kind": "plugin-skill",
+"name": "ea10b213686c:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_f61e6d15fc03_writing_rules",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_0_1_1_agent_development",
+"kind": "plugin-skill",
+"name": "0.1.1:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_0_1_1_command_development",
+"kind": "plugin-skill",
+"name": "0.1.1:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_0_1_1_hook_development",
+"kind": "plugin-skill",
+"name": "0.1.1:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_0_1_1_mcp_integration",
+"kind": "plugin-skill",
+"name": "0.1.1:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_0_1_1_plugin_settings",
+"kind": "plugin-skill",
+"name": "0.1.1:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_0_1_1_plugin_structure",
+"kind": "plugin-skill",
+"name": "0.1.1:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_0_1_1_skill_development",
+"kind": "plugin-skill",
+"name": "0.1.1:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_58267944f921_agent_development",
+"kind": "plugin-skill",
+"name": "58267944f921:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_58267944f921_command_development",
+"kind": "plugin-skill",
+"name": "58267944f921:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_58267944f921_hook_development",
+"kind": "plugin-skill",
+"name": "58267944f921:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_58267944f921_mcp_integration",
+"kind": "plugin-skill",
+"name": "58267944f921:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_58267944f921_plugin_settings",
+"kind": "plugin-skill",
+"name": "58267944f921:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_58267944f921_plugin_structure",
+"kind": "plugin-skill",
+"name": "58267944f921:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_58267944f921_skill_development",
+"kind": "plugin-skill",
+"name": "58267944f921:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_641d925db5a6_agent_development",
+"kind": "plugin-skill",
+"name": "641d925db5a6:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_641d925db5a6_command_development",
+"kind": "plugin-skill",
+"name": "641d925db5a6:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_641d925db5a6_hook_development",
+"kind": "plugin-skill",
+"name": "641d925db5a6:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_641d925db5a6_mcp_integration",
+"kind": "plugin-skill",
+"name": "641d925db5a6:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_641d925db5a6_plugin_settings",
+"kind": "plugin-skill",
+"name": "641d925db5a6:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_641d925db5a6_plugin_structure",
+"kind": "plugin-skill",
+"name": "641d925db5a6:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_641d925db5a6_skill_development",
+"kind": "plugin-skill",
+"name": "641d925db5a6:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_8f814f49002f_agent_development",
+"kind": "plugin-skill",
+"name": "8f814f49002f:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_8f814f49002f_command_development",
+"kind": "plugin-skill",
+"name": "8f814f49002f:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_8f814f49002f_hook_development",
+"kind": "plugin-skill",
+"name": "8f814f49002f:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_8f814f49002f_mcp_integration",
+"kind": "plugin-skill",
+"name": "8f814f49002f:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_8f814f49002f_plugin_settings",
+"kind": "plugin-skill",
+"name": "8f814f49002f:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_8f814f49002f_plugin_structure",
+"kind": "plugin-skill",
+"name": "8f814f49002f:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_8f814f49002f_skill_development",
+"kind": "plugin-skill",
+"name": "8f814f49002f:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_a0b04d9ddcca_agent_development",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_a0b04d9ddcca_command_development",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_a0b04d9ddcca_hook_development",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_a0b04d9ddcca_mcp_integration",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_a0b04d9ddcca_plugin_settings",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_a0b04d9ddcca_plugin_structure",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_a0b04d9ddcca_skill_development",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_c2bdb427efe8_agent_development",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_c2bdb427efe8_command_development",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_c2bdb427efe8_hook_development",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_c2bdb427efe8_mcp_integration",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_c2bdb427efe8_plugin_settings",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_c2bdb427efe8_plugin_structure",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_c2bdb427efe8_skill_development",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_ea10b213686c_agent_development",
+"kind": "plugin-skill",
+"name": "ea10b213686c:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_ea10b213686c_command_development",
+"kind": "plugin-skill",
+"name": "ea10b213686c:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_ea10b213686c_hook_development",
+"kind": "plugin-skill",
+"name": "ea10b213686c:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_ea10b213686c_mcp_integration",
+"kind": "plugin-skill",
+"name": "ea10b213686c:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_ea10b213686c_plugin_settings",
+"kind": "plugin-skill",
+"name": "ea10b213686c:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_ea10b213686c_plugin_structure",
+"kind": "plugin-skill",
+"name": "ea10b213686c:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_ea10b213686c_skill_development",
+"kind": "plugin-skill",
+"name": "ea10b213686c:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_f61e6d15fc03_agent_development",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_f61e6d15fc03_command_development",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_f61e6d15fc03_hook_development",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_f61e6d15fc03_mcp_integration",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_f61e6d15fc03_plugin_settings",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_f61e6d15fc03_plugin_structure",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_f61e6d15fc03_skill_development",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_58267944f921_receipts",
+"kind": "plugin-skill",
+"name": "58267944f921:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_641d925db5a6_receipts",
+"kind": "plugin-skill",
+"name": "641d925db5a6:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_8f814f49002f_receipts",
+"kind": "plugin-skill",
+"name": "8f814f49002f:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_a0b04d9ddcca_receipts",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_c2bdb427efe8_receipts",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_ea10b213686c_receipts",
+"kind": "plugin-skill",
+"name": "ea10b213686c:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_f61e6d15fc03_receipts",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_f8c5e7a1dcb7_receipts",
+"kind": "plugin-skill",
+"name": "f8c5e7a1dcb7:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_58267944f921_session_report",
+"kind": "plugin-skill",
+"name": "58267944f921:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_641d925db5a6_session_report",
+"kind": "plugin-skill",
+"name": "641d925db5a6:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_8f814f49002f_session_report",
+"kind": "plugin-skill",
+"name": "8f814f49002f:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_a0b04d9ddcca_session_report",
+"kind": "plugin-skill",
+"name": "a0b04d9ddcca:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_c2bdb427efe8_session_report",
+"kind": "plugin-skill",
+"name": "c2bdb427efe8:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_ea10b213686c_session_report",
+"kind": "plugin-skill",
+"name": "ea10b213686c:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_f61e6d15fc03_session_report",
+"kind": "plugin-skill",
+"name": "f61e6d15fc03:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_f8c5e7a1dcb7_session_report",
+"kind": "plugin-skill",
+"name": "f8c5e7a1dcb7:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_6_4_1_brainstorming",
+"kind": "plugin-skill",
+"name": "6.4.1:brainstorming",
+"origin": "plugin",
+"description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+},
+{
+"id": "plugin_6_4_1_diagnosing_superpowers",
+"kind": "plugin-skill",
+"name": "6.4.1:diagnosing-superpowers",
+"origin": "plugin",
+"description": "Use when a superpowers session went wrong and your human partner wants to know why \u2014 repeated work, ignored plans, stumbles, poor results, a skill that didn't fire, \"it took too long\", \"why is it so expensive\", \"what is it doing\" \u2014 or wants to build a bug report for the superpowers maintainers, for "
+},
+{
+"id": "plugin_6_4_1_dispatching_parallel_agents",
+"kind": "plugin-skill",
+"name": "6.4.1:dispatching-parallel-agents",
+"origin": "plugin",
+"description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies"
+},
+{
+"id": "plugin_6_4_1_executing_plans",
+"kind": "plugin-skill",
+"name": "6.4.1:executing-plans",
+"origin": "plugin",
+"description": "Use when executing an implementation plan in the current session as the implementer yourself \u2014 your human partner chose inline execution, or no subagent tool is available"
+},
+{
+"id": "plugin_6_4_1_finishing_a_development_branch",
+"kind": "plugin-skill",
+"name": "6.4.1:finishing-a-development-branch",
+"origin": "plugin",
+"description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work"
+},
+{
+"id": "plugin_6_4_1_receiving_code_review",
+"kind": "plugin-skill",
+"name": "6.4.1:receiving-code-review",
+"origin": "plugin",
+"description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation"
+},
+{
+"id": "plugin_6_4_1_requesting_code_review",
+"kind": "plugin-skill",
+"name": "6.4.1:requesting-code-review",
+"origin": "plugin",
+"description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements"
+},
+{
+"id": "plugin_6_4_1_subagent_driven_development",
+"kind": "plugin-skill",
+"name": "6.4.1:subagent-driven-development",
+"origin": "plugin",
+"description": "Use when executing implementation plans with independent tasks in the current session"
+},
+{
+"id": "plugin_6_4_1_systematic_debugging",
+"kind": "plugin-skill",
+"name": "6.4.1:systematic-debugging",
+"origin": "plugin",
+"description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"
+},
+{
+"id": "plugin_6_4_1_test_driven_development",
+"kind": "plugin-skill",
+"name": "6.4.1:test-driven-development",
+"origin": "plugin",
+"description": "Use when implementing any feature or bugfix, before writing implementation code"
+},
+{
+"id": "plugin_6_4_1_using_git_worktrees",
+"kind": "plugin-skill",
+"name": "6.4.1:using-git-worktrees",
+"origin": "plugin",
+"description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback"
+},
+{
+"id": "plugin_6_4_1_using_superpowers",
+"kind": "plugin-skill",
+"name": "6.4.1:using-superpowers",
+"origin": "plugin",
+"description": "Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions"
+},
+{
+"id": "plugin_6_4_1_verification_before_completion",
+"kind": "plugin-skill",
+"name": "6.4.1:verification-before-completion",
+"origin": "plugin",
+"description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always"
+},
+{
+"id": "plugin_6_4_1_writing_plans",
+"kind": "plugin-skill",
+"name": "6.4.1:writing-plans",
+"origin": "plugin",
+"description": "Use when you have a spec or requirements for a multi-step task, before touching code"
+},
+{
+"id": "plugin_6_4_1_writing_skills",
+"kind": "plugin-skill",
+"name": "6.4.1:writing-skills",
+"origin": "plugin",
+"description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment"
+},
+{
+"id": "plugin_7_0_0_brainstorming",
+"kind": "plugin-skill",
+"name": "7.0.0:brainstorming",
+"origin": "plugin",
+"description": "You MUST use this before any creative work - creating features, building components, adding functionality, modifying behavior, or planning anything new, in software or out of it (a talk, a business, a renovation)."
+},
+{
+"id": "plugin_7_0_0_diagnosing_superpowers",
+"kind": "plugin-skill",
+"name": "7.0.0:diagnosing-superpowers",
+"origin": "plugin",
+"description": "Use when a superpowers session went wrong and your human partner wants to know why \u2014 repeated work, ignored plans, stumbles, poor results, a skill that didn't fire, \"it took too long\", \"why is it so expensive\", \"what is it doing\" \u2014 or wants to build a bug report for the superpowers maintainers, for "
+},
+{
+"id": "plugin_7_0_0_dispatching_parallel_agents",
+"kind": "plugin-skill",
+"name": "7.0.0:dispatching-parallel-agents",
+"origin": "plugin",
+"description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies"
+},
+{
+"id": "plugin_7_0_0_executing_plans",
+"kind": "plugin-skill",
+"name": "7.0.0:executing-plans",
+"origin": "plugin",
+"description": "Use when executing an implementation plan in the current session as the implementer yourself \u2014 your human partner chose inline execution, or no subagent tool is available"
+},
+{
+"id": "plugin_7_0_0_finishing_a_development_branch",
+"kind": "plugin-skill",
+"name": "7.0.0:finishing-a-development-branch",
+"origin": "plugin",
+"description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work"
+},
+{
+"id": "plugin_7_0_0_receiving_code_review",
+"kind": "plugin-skill",
+"name": "7.0.0:receiving-code-review",
+"origin": "plugin",
+"description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation"
+},
+{
+"id": "plugin_7_0_0_requesting_code_review",
+"kind": "plugin-skill",
+"name": "7.0.0:requesting-code-review",
+"origin": "plugin",
+"description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements"
+},
+{
+"id": "plugin_7_0_0_subagent_driven_development",
+"kind": "plugin-skill",
+"name": "7.0.0:subagent-driven-development",
+"origin": "plugin",
+"description": "Use when executing implementation plans with independent tasks in the current session"
+},
+{
+"id": "plugin_7_0_0_systematic_debugging",
+"kind": "plugin-skill",
+"name": "7.0.0:systematic-debugging",
+"origin": "plugin",
+"description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"
+},
+{
+"id": "plugin_7_0_0_test_driven_development",
+"kind": "plugin-skill",
+"name": "7.0.0:test-driven-development",
+"origin": "plugin",
+"description": "Use when implementing any feature or bugfix, before writing implementation code"
+},
+{
+"id": "plugin_7_0_0_using_git_worktrees",
+"kind": "plugin-skill",
+"name": "7.0.0:using-git-worktrees",
+"origin": "plugin",
+"description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback"
+},
+{
+"id": "plugin_7_0_0_using_superpowers",
+"kind": "plugin-skill",
+"name": "7.0.0:using-superpowers",
+"origin": "plugin",
+"description": "Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions"
+},
+{
+"id": "plugin_7_0_0_verification_before_completion",
+"kind": "plugin-skill",
+"name": "7.0.0:verification-before-completion",
+"origin": "plugin",
+"description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always"
+},
+{
+"id": "plugin_7_0_0_writing_plans",
+"kind": "plugin-skill",
+"name": "7.0.0:writing-plans",
+"origin": "plugin",
+"description": "Use when you have a spec or requirements for a multi-step task, before touching code"
+},
+{
+"id": "plugin_7_0_0_writing_skills",
+"kind": "plugin-skill",
+"name": "7.0.0:writing-skills",
+"origin": "plugin",
+"description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment"
+},
+{
+"id": "plugin_0_12_1_build",
+"kind": "plugin-skill",
+"name": "0.12.1:build",
+"origin": "plugin",
+"description": "Build Snowflake demos with Next.js deployed to Cloud Run. Use when: creating new demo, building demo app, deploying dashboard. Triggers: new demo, build demo, create demo app, deploy to Cloud Run."
+},
+{
+"id": "plugin_0_12_1_deploy",
+"kind": "plugin-skill",
+"name": "0.12.1:deploy",
+"origin": "plugin",
+"description": "Provision a new evolv-demo as a Cloud Run service and run the initial deploy"
+},
+{
+"id": "plugin_0_12_1_destroy",
+"kind": "plugin-skill",
+"name": "0.12.1:destroy",
+"origin": "plugin",
+"description": "Tear down a demo (terraform destroy \u2014 removes Cloud Run service, mapping, DNS, runtime SA, bindings)"
+},
+{
+"id": "plugin_0_12_1_list",
+"kind": "plugin-skill",
+"name": "0.12.1:list",
+"origin": "plugin",
+"description": "List all demos with status, URL, and creator"
+},
+{
+"id": "plugin_0_12_1_revive",
+"kind": "plugin-skill",
+"name": "0.12.1:revive",
+"origin": "plugin",
+"description": "Revive a demo killed by the budget killswitch (re-grants allUsers invoker, restores max-instances)"
+},
+{
+"id": "plugin_0_12_1_secret_grant",
+"kind": "plugin-skill",
+"name": "0.12.1:secret-grant",
+"origin": "plugin",
+"description": "Bind an existing demo's runtime SA to an additional shared secret without redeploying app code"
+},
+{
+"id": "plugin_0_12_1_secret_list",
+"kind": "plugin-skill",
+"name": "0.12.1:secret-list",
+"origin": "plugin",
+"description": "List shared secrets in evolv-platform-ops and which demos consume each"
+},
+{
+"id": "plugin_0_12_1_secret_set",
+"kind": "plugin-skill",
+"name": "0.12.1:secret-set",
+"origin": "plugin",
+"description": "Add or rotate a shared secret in evolv-platform-ops Secret Manager"
+},
+{
+"id": "plugin_0_12_1_setup",
+"kind": "plugin-skill",
+"name": "0.12.1:setup",
+"origin": "plugin",
+"description": "One-time prereq + auth setup for new consultants. Verifies gh and gcloud, walks through gh and federated gcloud login, sanity-checks tf-runner access."
+},
+{
+"id": "plugin_0_12_1_update",
+"kind": "plugin-skill",
+"name": "0.12.1:update",
+"origin": "plugin",
+"description": "Re-deploy an existing demo from the local repo (no Terraform changes)"
+},
+{
+"id": "plugin_0_1_0_safari",
+"kind": "plugin-skill",
+"name": "0.1.0:safari",
+"origin": "plugin",
+"description": ">"
+},
+{
+"id": "plugin_0_1_0_frontend_ship_gate",
+"kind": "plugin-skill",
+"name": "0.1.0:frontend-ship-gate",
+"origin": "plugin",
+"description": "Run a countable pre-flight gate over a frontend and refuse a pass while any mechanical check fails. Catches the AI-slop tells: em-dashes in UI copy, eyebrow over-use, repeated layout families, hero line and word overruns, off-brand palette and fonts, filler verbs. Executes bundled gates instead of s"
+},
+{
+"id": "plugin_1_0_0_threejs_animation_system",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-animation-system",
+"origin": "plugin",
+"description": "Play, blend, and control clip-based animation on a loaded three.js model (AnimationMixer, AnimationClip, AnimationAction), and animate merged/generated geometry that can no longer move as separate objects (morph targets). Use for \"play a glTF animation\", \"AnimationMixer\", \"animation not advancing\", "
+},
+{
+"id": "plugin_1_0_0_threejs_debugging_diagnostics",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-debugging-diagnostics",
+"origin": "plugin",
+"description": "Work out systematically why a three.js scene shows nothing \u2014 instead of changing values at random until something appears. Trigger on \"three.js black screen / nothing renders\", \"canvas is blank\", \"object invisible\", \"scene renders nothing\", \"shader looks wrong\", \"GLSL bisect\", \"NaN in position\", \"ma"
+},
+{
+"id": "plugin_1_0_0_threejs_gltf_asset_pipeline",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-gltf-asset-pipeline",
+"origin": "plugin",
+"description": "Load a glTF/.glb model into a three.js scene with the right decoders wired first (GLTFLoader, Draco/KTX2/Meshopt), inspect its real hierarchy and bounds before touching transforms, fix the scale/orientation/material problems baked in at export (Blender scale-not-applied, Z-up vs Y-up wrapper nodes, "
+},
+{
+"id": "plugin_1_0_0_threejs_interaction_picking",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-interaction-picking",
+"origin": "plugin",
+"description": "Let a user orbit, hover, and click 3D objects in three.js reliably. Covers OrbitControls setup and its update()/dispose() lifecycle; CPU raycasting via pointer-to-NDC conversion and Raycaster.setFromCamera/intersectObjects; GPU picking (an id-encoded pickingScene, camera.setViewOffset, a 1x1 WebGLRe"
+},
+{
+"id": "plugin_1_0_0_threejs_materials_lighting_shadows",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-materials-lighting-shadows",
+"origin": "plugin",
+"description": "Choose a three.js material (MeshBasic/Lambert/Phong/Standard/Physical), budget texture VRAM, fix washed-out or too-dark colours, and light/shadow a scene at a cost a mid-range phone can hold. Trigger on \"which three.js material should I use\", \"texture memory budget\", \"colours washed out or too dark\""
+},
+{
+"id": "plugin_1_0_0_threejs_on_web_pages",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-on-web-pages",
+"origin": "plugin",
+"description": "Put three.js inline with real page content instead of a single full-bleed canvas \u2014 scroll-synced 3D diagram viewports down a long article, a hero canvas behind text, HTML labels pinned to moving 3D points \u2014 all on one shared WebGL context. Use for \"multiple three.js scenes on one page\", \"scroll-sync"
+},
+{
+"id": "plugin_1_0_0_threejs_performance_instancing",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-performance-instancing",
+"origin": "plugin",
+"description": "Hold a framerate and power budget in three.js on real hardware \u2014 collapse thousands of individual meshes into one draw call with BufferGeometryUtils.mergeGeometries, render many movable copies with InstancedMesh (setMatrixAt/setColorAt), author custom BufferGeometry by hand, decide when to render at"
+},
+{
+"id": "plugin_1_0_0_threejs_postprocessing_render_targets",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-postprocessing-render-targets",
+"origin": "plugin",
+"description": "Add bloom, film grain, custom fullscreen shaders, or render a scene into a texture (mirrors, screens, monitors, building facades) in three.js \u2014 without silently breaking colour management. Use for \"add bloom / post-processing to three.js\", EffectComposer, RenderPass, ShaderPass, OutputPass ordering,"
+},
+{
+"id": "plugin_1_0_0_threejs_scene_setup",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-scene-setup",
+"origin": "plugin",
+"description": "Go from empty HTML to a correctly sized, DPI-aware, colour-managed three.js canvas with a sane scene graph and a render loop that survives resize, mobile and tab-switching. Use for \"three.js scene setup\", \"new THREE.Scene\", \"WebGLRenderer\", blurry canvas, canvas fills the whole page (or doesn't), ca"
+},
+{
+"id": "plugin_1_0_0_threejs_webgpu_tsl",
+"kind": "plugin-skill",
+"name": "1.0.0:threejs-webgpu-tsl",
+"origin": "plugin",
+"description": "Decide whether and how to move a three.js project from WebGLRenderer to WebGPURenderer with TSL node materials, and report honestly what breaks on the way. Use for \"should I migrate to WebGPURenderer\", \"three/webgpu\" and \"three/tsl\" imports and importmap entries, \"TSL node materials\", \"WebGPU experi"
+},
+{
+"id": "plugin_discord_access",
+"kind": "plugin-skill",
+"name": "discord:access",
+"origin": "plugin",
+"description": "Manage Discord channel access \u2014 approve pairings, edit allowlists, set DM/group policy. Use when the user asks to pair, approve someone, check who's allowed, or change policy for the Discord channel."
+},
+{
+"id": "plugin_discord_configure",
+"kind": "plugin-skill",
+"name": "discord:configure",
+"origin": "plugin",
+"description": "Set up the Discord channel \u2014 save the bot token and review access policy. Use when the user pastes a Discord bot token, asks to configure Discord, asks \"how do I set this up\" or \"who can reach me,\" or wants to check channel status."
+},
+{
+"id": "plugin_imessage_access",
+"kind": "plugin-skill",
+"name": "imessage:access",
+"origin": "plugin",
+"description": "Manage iMessage channel access \u2014 approve pairings, edit allowlists, set DM/group policy. Use when the user asks to pair, approve someone, check who's allowed, or change policy for the iMessage channel."
+},
+{
+"id": "plugin_imessage_configure",
+"kind": "plugin-skill",
+"name": "imessage:configure",
+"origin": "plugin",
+"description": "Check iMessage channel setup and review access policy. Use when the user asks to configure iMessage, asks \"how do I set this up\" or \"who can reach me,\" or wants to know why texts aren't reaching the assistant."
+},
+{
+"id": "plugin_telegram_access",
+"kind": "plugin-skill",
+"name": "telegram:access",
+"origin": "plugin",
+"description": "Manage Telegram channel access \u2014 approve pairings, edit allowlists, set DM/group policy. Use when the user asks to pair, approve someone, check who's allowed, or change policy for the Telegram channel."
+},
+{
+"id": "plugin_telegram_configure",
+"kind": "plugin-skill",
+"name": "telegram:configure",
+"origin": "plugin",
+"description": "Set up the Telegram channel \u2014 save the bot token and review access policy. Use when the user pastes a Telegram bot token, asks to configure Telegram, asks \"how do I set this up\" or \"who can reach me,\" or wants to check channel status."
+},
+{
+"id": "plugin_claude_code_setup_claude_automation_recommender",
+"kind": "plugin-skill",
+"name": "claude-code-setup:claude-automation-recommender",
+"origin": "plugin",
+"description": "Analyze a codebase and recommend Claude Code automations (hooks, subagents, skills, plugins, MCP servers). Use when user asks for automation recommendations, wants to optimize their Claude Code setup, mentions improving Claude Code workflows, asks how to first set up Claude Code for a project, or wa"
+},
+{
+"id": "plugin_claude_md_management_claude_md_improver",
+"kind": "plugin-skill",
+"name": "claude-md-management:claude-md-improver",
+"origin": "plugin",
+"description": "Audit and improve CLAUDE.md files in repositories. Use when user asks to check, audit, update, improve, or fix CLAUDE.md files. Scans for all CLAUDE.md files, evaluates quality against templates, outputs quality report, then makes targeted updates. Also use when the user mentions \"CLAUDE.md maintena"
+},
+{
+"id": "plugin_claude_security_claude_security",
+"kind": "plugin-skill",
+"name": "claude-security:claude-security",
+"origin": "plugin",
+"description": "Claude Security: scan the codebase (the whole repository or a scoped part of it), scan changes (this branch's or a pull request's diff, or one commit), or suggest patches (findings turned into targeted patch files, each verified by a panel of agents, that you apply when you choose). Use when the use"
+},
+{
+"id": "plugin_cwc_makers_cardputer_buddy",
+"kind": "plugin-skill",
+"name": "cwc-makers:cardputer-buddy",
+"origin": "plugin",
+"description": "Iterate on the Cardputer-Adv MicroPython app bundle (Claude Buddy, Snake, Hello) after the device is already provisioned via m5-onboard. Use when the user wants to add a new app, push a single changed .py without re-flashing, watch device serial logs, or run a one-shot REPL command. Trigger on \"add "
+},
+{
+"id": "plugin_cwc_makers_m5_onboard",
+"kind": "plugin-skill",
+"name": "cwc-makers:m5-onboard",
+"origin": "plugin",
+"description": "End-to-end onboarding for a freshly-plugged-in M5Stack ESP32 device (Cardputer, Cardputer-Adv, Core, CoreS3, Stick) \u2014 detect on USB, flash UIFlow 2.0 firmware, and install the Claude Buddy MicroPython app bundle. Use whenever the user plugs in or wants to flash/provision/reset an M5Stack or ESP32 bo"
+},
+{
+"id": "plugin_example_plugin_example_command",
+"kind": "plugin-skill",
+"name": "example-plugin:example-command",
+"origin": "plugin",
+"description": "An example user-invoked skill that demonstrates frontmatter options and the skills/<name>/SKILL.md layout"
+},
+{
+"id": "plugin_example_plugin_example_skill",
+"kind": "plugin-skill",
+"name": "example-plugin:example-skill",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"demonstrate skills\", \"show skill format\", \"create a skill template\", or discusses skill development patterns. Provides a reference template for creating Claude Code plugin skills."
+},
+{
+"id": "plugin_frontend_design_frontend_design",
+"kind": "plugin-skill",
+"name": "frontend-design:frontend-design",
+"origin": "plugin",
+"description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making choices that don't read as templated defaults."
+},
+{
+"id": "plugin_hookify_writing_rules",
+"kind": "plugin-skill",
+"name": "hookify:writing-rules",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hookify rule\", \"write a hook rule\", \"configure hookify\", \"add a hookify rule\", or needs guidance on hookify rule syntax and patterns."
+},
+{
+"id": "plugin_math_olympiad_math_olympiad",
+"kind": "plugin-skill",
+"name": "math-olympiad:math-olympiad",
+"origin": "plugin",
+"description": ""
+},
+{
+"id": "plugin_math_proof_siege",
+"kind": "plugin-skill",
+"name": "math-proof:siege",
+"origin": "plugin",
+"description": "Work on one hard mathematics problem in rounds: each round a judge writes a few self-contained questions, independent workers answer them, and the judge keeps a ledger of what is proved, refuted and open, until the judge concludes or the rounds run out, and then a proof.md says plainly what is and i"
+},
+{
+"id": "plugin_math_proof_solo",
+"kind": "plugin-skill",
+"name": "math-proof:solo",
+"origin": "plugin",
+"description": "Work on one hard mathematics problem in this session yourself, with no sub-agents: reason in stages, record each settled step in a notes file so that nothing written is lost if a response is cut off, and end with a self-contained proof.md. Usage: /math-proof:solo <the problem, stated in full, or the"
+},
+{
+"id": "plugin_mcp_server_dev_build_mcp_app",
+"kind": "plugin-skill",
+"name": "mcp-server-dev:build-mcp-app",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to build an \"MCP app\", add \"interactive UI\" or \"widgets\" to an MCP server, \"render components in chat\", build \"MCP UI resources\", make a tool that shows a \"form\", \"picker\", \"dashboard\" or \"confirmation dialog\" inline in the conversation, or mentions \"app"
+},
+{
+"id": "plugin_mcp_server_dev_build_mcp_server",
+"kind": "plugin-skill",
+"name": "mcp-server-dev:build-mcp-server",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"build an MCP server\", \"create an MCP\", \"make an MCP integration\", \"wrap an API for Claude\", \"expose tools to Claude\", \"make an MCP app\", or discusses building something with the Model Context Protocol. It is the entry point for MCP server development "
+},
+{
+"id": "plugin_mcp_server_dev_build_mcpb",
+"kind": "plugin-skill",
+"name": "mcp-server-dev:build-mcpb",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"package an MCP server\", \"bundle an MCP\", \"make an MCPB\", \"ship a local MCP server\", \"distribute a local MCP\", discusses \".mcpb files\", mentions bundling a Node or Python runtime with their MCP server, or needs an MCP server that interacts with the lo"
+},
+{
+"id": "plugin_playground_playground",
+"kind": "plugin-skill",
+"name": "playground:playground",
+"origin": "plugin",
+"description": "Creates interactive HTML playgrounds \u2014 self-contained single-file explorers that let users configure something visually through controls, see a live preview, and copy out a prompt. Use when the user asks to make a playground, explorer, or interactive tool for a topic."
+},
+{
+"id": "plugin_plugin_dev_agent_development",
+"kind": "plugin-skill",
+"name": "plugin-dev:agent-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create an agent\", \"add an agent\", \"write a subagent\", \"agent frontmatter\", \"when to use description\", \"agent examples\", \"agent tools\", \"agent colors\", \"autonomous agent\", or needs guidance on agent structure, system prompts, triggering conditions, or "
+},
+{
+"id": "plugin_plugin_dev_command_development",
+"kind": "plugin-skill",
+"name": "plugin-dev:command-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a slash command\", \"add a command\", \"write a custom command\", \"define command arguments\", \"use command frontmatter\", \"organize commands\", \"create command with file references\", \"interactive command\", \"use AskUserQuestion in command\", or needs gu"
+},
+{
+"id": "plugin_plugin_dev_hook_development",
+"kind": "plugin-skill",
+"name": "plugin-dev:hook-development",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a hook\", \"add a PreToolUse/PostToolUse/Stop hook\", \"validate tool use\", \"implement prompt-based hooks\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"set up event-driven automation\", \"block dangerous commands\", or mentions hook events (PreToolUse, PostToolUse,"
+},
+{
+"id": "plugin_plugin_dev_mcp_integration",
+"kind": "plugin-skill",
+"name": "plugin-dev:mcp-integration",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"add MCP server\", \"integrate MCP\", \"configure MCP in plugin\", \"use .mcp.json\", \"set up Model Context Protocol\", \"connect external service\", mentions \"${CLAUDE_PLUGIN_ROOT} with MCP\", or discusses MCP server types (SSE, stdio, HTTP, WebSocket). Provides"
+},
+{
+"id": "plugin_plugin_dev_plugin_settings",
+"kind": "plugin-skill",
+"name": "plugin-dev:plugin-settings",
+"origin": "plugin",
+"description": "This skill should be used when the user asks about \"plugin settings\", \"store plugin configuration\", \"user-configurable plugin\", \".local.md files\", \"plugin state files\", \"read YAML frontmatter\", \"per-project plugin settings\", or wants to make plugin behavior configurable. Documents the .claude/plugin"
+},
+{
+"id": "plugin_plugin_dev_plugin_structure",
+"kind": "plugin-skill",
+"name": "plugin-dev:plugin-structure",
+"origin": "plugin",
+"description": "This skill should be used when the user asks to \"create a plugin\", \"scaffold a plugin\", \"understand plugin structure\", \"organize plugin components\", \"set up plugin.json\", \"use ${CLAUDE_PLUGIN_ROOT}\", \"add commands/agents/skills/hooks\", \"configure auto-discovery\", or needs guidance on plugin director"
+},
+{
+"id": "plugin_plugin_dev_skill_development",
+"kind": "plugin-skill",
+"name": "plugin-dev:skill-development",
+"origin": "plugin",
+"description": "This skill should be used when the user wants to \"create a skill\", \"add a skill to plugin\", \"write a new skill\", \"improve skill description\", \"organize skill content\", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins."
+},
+{
+"id": "plugin_project_artifact_project_artifact",
+"kind": "plugin-skill",
+"name": "project-artifact:project-artifact",
+"origin": "plugin",
+"description": "Generate and publish a project status artifact \u2014 an opinionated, tabbed status page for a project too big for one update (overview & success criteria, the workstream sequence, next steps, plus background, plan, risks & open questions, and decisions/FAQ when they earn a tab) \u2014 published with the buil"
+},
+{
+"id": "plugin_receipts_receipts",
+"kind": "plugin-skill",
+"name": "receipts:receipts",
+"origin": "plugin",
+"description": "Generate a personal Claude Code usage & impact report (\"receipts\") from this machine's local session transcripts \u2014 for justifying Claude Code usage/spend to a manager, self-review, or \"what have I been using this for\" check-ins. Mines ~/.claude/projects locally (no extra API calls beyond one final w"
+},
+{
+"id": "plugin_session_report_session_report",
+"kind": "plugin-skill",
+"name": "session-report:session-report",
+"origin": "plugin",
+"description": "Generate an explorable HTML report of Claude Code session usage (tokens, cache, subagents, skills, expensive prompts) from ~/.claude/projects transcripts."
+},
+{
+"id": "plugin_skill_creator_skill_creator",
+"kind": "plugin-skill",
+"name": "skill-creator:skill-creator",
+"origin": "plugin",
+"description": "Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better t"
+},
+{
+"id": "plugin_evolv_brand_evolv_brand",
+"kind": "plugin-skill",
+"name": "evolv-brand:evolv-brand",
+"origin": "plugin",
+"description": "evolv Consulting brand guidelines. Authoritative colors, typography, and asset usage for any evolv-branded deliverable. Use this skill whenever producing or styling an evolv presentation, deck, slide, document, report, one-pager, proposal, flyer, marketing asset, social post, web page, letterhead, o"
+},
+{
+"id": "plugin_evolv_rpe_rpe_components",
+"kind": "plugin-skill",
+"name": "evolv-rpe:rpe-components",
+"origin": "plugin",
+"description": ""
+},
+{
+"id": "plugin_data_analyze",
+"kind": "plugin-skill",
+"name": "data:analyze",
+"origin": "plugin",
+"description": "Answer data questions -- from quick lookups to full analyses. Use when looking up a single metric, investigating what's driving a trend or drop, comparing segments over time, or preparing a formal data report for stakeholders."
+},
+{
+"id": "plugin_data_build_dashboard",
+"kind": "plugin-skill",
+"name": "data:build-dashboard",
+"origin": "plugin",
+"description": "Build an interactive HTML dashboard with charts, filters, and tables. Use when creating an executive overview with KPI cards, turning query results into a shareable self-contained report, building a team monitoring snapshot, or needing multiple charts with filters in one browser-openable file."
+},
+{
+"id": "plugin_data_create_viz",
+"kind": "plugin-skill",
+"name": "data:create-viz",
+"origin": "plugin",
+"description": "Create publication-quality visualizations with Python. Use when turning query results or a DataFrame into a chart, selecting the right chart type for a trend or comparison, generating a plot for a report or presentation, or needing an interactive chart with hover and zoom."
+},
+{
+"id": "plugin_data_data_context_extractor",
+"kind": "plugin-skill",
+"name": "data:data-context-extractor",
+"origin": "plugin",
+"description": "Generate or improve a company-specific data analysis skill by extracting tribal knowledge from analysts.\\nBOOTSTRAP MODE - Triggers: \\\"Create a data context skill\\\", \\\"Set up data analysis for our warehouse\\\", \\\"Help me create a skill for our database\\\", \\\"Generate a data skill for [company]\\\" \u2192 Dis"
+},
+{
+"id": "plugin_data_data_visualization",
+"kind": "plugin-skill",
+"name": "data:data-visualization",
+"origin": "plugin",
+"description": "Create effective data visualizations with Python (matplotlib, seaborn, plotly). Use when building charts, choosing the right chart type for a dataset, creating publication-quality figures, or applying design principles like accessibility and color theory."
+},
+{
+"id": "plugin_data_explore_data",
+"kind": "plugin-skill",
+"name": "data:explore-data",
+"origin": "plugin",
+"description": "Profile and explore a dataset to understand its shape, quality, and patterns. Use when encountering a new table or file, checking null rates and column distributions, spotting data quality issues like duplicates or suspicious values, or deciding which dimensions and metrics to analyze."
+},
+{
+"id": "plugin_data_sql_queries",
+"kind": "plugin-skill",
+"name": "data:sql-queries",
+"origin": "plugin",
+"description": "Write correct, performant SQL across all major data warehouse dialects (Snowflake, BigQuery, Databricks, PostgreSQL, etc.). Use when writing queries, optimizing slow SQL, translating between dialects, or building complex analytical queries with CTEs, window functions, or aggregations."
+},
+{
+"id": "plugin_data_statistical_analysis",
+"kind": "plugin-skill",
+"name": "data:statistical-analysis",
+"origin": "plugin",
+"description": "Apply statistical methods including descriptive stats, trend analysis, outlier detection, and hypothesis testing. Use when analyzing distributions, testing for significance, detecting anomalies, computing correlations, or interpreting statistical results."
+},
+{
+"id": "plugin_data_validate_data",
+"kind": "plugin-skill",
+"name": "data:validate-data",
+"origin": "plugin",
+"description": "QA an analysis before sharing -- methodology, accuracy, and bias checks. Use when reviewing an analysis before a stakeholder presentation, spot-checking calculations and aggregation logic, verifying a SQL query's results look right, or assessing whether conclusions are actually supported by the data"
+},
+{
+"id": "plugin_data_write_query",
+"kind": "plugin-skill",
+"name": "data:write-query",
+"origin": "plugin",
+"description": "Write optimized SQL for your dialect with best practices. Use when translating a natural-language data need into SQL, building a multi-CTE query with joins and aggregations, optimizing a query against a large partitioned table, or getting dialect-specific syntax for Snowflake, BigQuery, Postgres, et"
+},
+{
+"id": "plugin_engineering_architecture",
+"kind": "plugin-skill",
+"name": "engineering:architecture",
+"origin": "plugin",
+"description": "Create or evaluate an architecture decision record (ADR). Use when choosing between technologies (e.g., Kafka vs SQS), documenting a design decision with trade-offs and consequences, reviewing a system design proposal, or designing a new component from requirements and constraints."
+},
+{
+"id": "plugin_engineering_code_review",
+"kind": "plugin-skill",
+"name": "engineering:code-review",
+"origin": "plugin",
+"description": "Review code changes for security, performance, and correctness. Trigger with a PR URL or diff, \"review this before I merge\", \"is this code safe?\", or when checking a change for N+1 queries, injection risks, missing edge cases, or error handling gaps."
+},
+{
+"id": "plugin_engineering_debug",
+"kind": "plugin-skill",
+"name": "engineering:debug",
+"origin": "plugin",
+"description": "Structured debugging session \u2014 reproduce, isolate, diagnose, and fix. Trigger with an error message or stack trace, \"this works in staging but not prod\", \"something broke after the deploy\", or when behavior diverges from expected and the cause isn't obvious."
+},
+{
+"id": "plugin_engineering_deploy_checklist",
+"kind": "plugin-skill",
+"name": "engineering:deploy-checklist",
+"origin": "plugin",
+"description": "Pre-deployment verification checklist. Use when about to ship a release, deploying a change with database migrations or feature flags, verifying CI status and approvals before going to production, or documenting rollback triggers ahead of time."
+},
+{
+"id": "plugin_engineering_documentation",
+"kind": "plugin-skill",
+"name": "engineering:documentation",
+"origin": "plugin",
+"description": "Write and maintain technical documentation. Trigger with \"write docs for\", \"document this\", \"create a README\", \"write a runbook\", \"onboarding guide\", or when the user needs help with any form of technical writing \u2014 API docs, architecture docs, or operational runbooks."
+},
+{
+"id": "plugin_engineering_incident_response",
+"kind": "plugin-skill",
+"name": "engineering:incident-response",
+"origin": "plugin",
+"description": "Run an incident response workflow \u2014 triage, communicate, and write postmortem. Trigger with \"we have an incident\", \"production is down\", an alert that needs severity assessment, a status update mid-incident, or when writing a blameless postmortem after resolution."
+},
+{
+"id": "plugin_engineering_standup",
+"kind": "plugin-skill",
+"name": "engineering:standup",
+"origin": "plugin",
+"description": "Generate a standup update from recent activity. Use when preparing for daily standup, summarizing yesterday's commits and PRs and ticket moves, formatting work into yesterday/today/blockers, or structuring a few rough notes into a shareable update."
+},
+{
+"id": "plugin_engineering_system_design",
+"kind": "plugin-skill",
+"name": "engineering:system-design",
+"origin": "plugin",
+"description": "Design systems, services, and architectures. Trigger with \"design a system for\", \"how should we architect\", \"system design for\", \"what's the right architecture for\", or when the user needs help with API design, data modeling, or service boundaries."
+},
+{
+"id": "plugin_engineering_tech_debt",
+"kind": "plugin-skill",
+"name": "engineering:tech-debt",
+"origin": "plugin",
+"description": "Identify, categorize, and prioritize technical debt. Trigger with \"tech debt\", \"technical debt audit\", \"what should we refactor\", \"code health\", or when the user asks about code quality, refactoring priorities, or maintenance backlog."
+},
+{
+"id": "plugin_engineering_testing_strategy",
+"kind": "plugin-skill",
+"name": "engineering:testing-strategy",
+"origin": "plugin",
+"description": "Design test strategies and test plans. Trigger with \"how should we test\", \"test strategy for\", \"write tests for\", \"test plan\", \"what tests do we need\", or when the user needs help with testing approaches, coverage, or test architecture."
+},
+{
+"id": "plugin_figma_figma_code_connect",
+"kind": "plugin-skill",
+"name": "figma:figma-code-connect",
+"origin": "plugin",
+"description": "Creates and maintains Figma Code Connect template files that map Figma components to code snippets. Use when the user mentions Code Connect, Figma component mapping, design-to-code translation, or asks to create/update .figma.ts or .figma.js files."
+},
+{
+"id": "plugin_figma_figma_create_new_file",
+"kind": "plugin-skill",
+"name": "figma:figma-create-new-file",
+"origin": "plugin",
+"description": "Always use this skill when the user wants to create a new Figma Design, FigJam, or Slides file. You MUST invoke this skill BEFORE every `create_new_file` tool call."
+},
+{
+"id": "plugin_figma_figma_design_to_code",
+"kind": "plugin-skill",
+"name": "figma:figma-design-to-code",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 you MUST invoke this skill BEFORE calling the `get_design_context` Figma MCP tool. You MUST trigger this skill whenever the user wants to implement, build, port, or code up a Figma design as code. Example prompts (not exhaustive) are 'implement this Figma design', 'build"
+},
+{
+"id": "plugin_figma_figma_generate_design",
+"kind": "plugin-skill",
+"name": "figma:figma-generate-design",
+"origin": "plugin",
+"description": "Use this skill alongside figma-use when the task involves translating an application page, view, or multi-section layout into Figma. Triggers: 'write to Figma', 'create in Figma from code', 'push page to Figma', 'take this app/page and build it in Figma', 'create a screen', 'build a landing page in "
+},
+{
+"id": "plugin_figma_figma_generate_diagram",
+"kind": "plugin-skill",
+"name": "figma:figma-generate-diagram",
+"origin": "plugin",
+"description": "MANDATORY prerequisite \u2014 load this skill BEFORE every `generate_diagram` tool call. NEVER call `generate_diagram` directly without loading this skill first. Trigger whenever the user asks to create, generate, draw, render, sketch, or build a diagram \u2014 flowchart, architecture diagram, sequence diagra"
+},
+{
+"id": "plugin_figma_figma_generate_library",
+"kind": "plugin-skill",
+"name": "figma:figma-generate-library",
+"origin": "plugin",
+"description": "Build or update a professional-grade design system in Figma from a codebase. Use when the user wants to create variables/tokens, build component libraries, create individual components with proper variant sets and variable bindings, set up theming (light/dark modes), document foundations, or reconci"
+},
+{
+"id": "plugin_figma_figma_generative_plugins",
+"kind": "plugin-skill",
+"name": "figma:figma-generative-plugins",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 load this skill before calling `create_generative_plugin` or `update_generative_plugin`. Use when the user asks to create, author, change, fix, or extend a reusable generative Figma plugin."
+},
+{
+"id": "plugin_figma_figma_implement_motion",
+"kind": "plugin-skill",
+"name": "figma:figma-implement-motion",
+"origin": "plugin",
+"description": "Translates Figma motion and animations into production-ready application code. Use when implementing animation/motion from a Figma design \u2014 user mentions \"implement this motion\", \"add animation from Figma\", \"animate this component\", provides a Figma URL whose node is animated, or when `get_design_co"
+},
+{
+"id": "plugin_figma_figma_shaders",
+"kind": "plugin-skill",
+"name": "figma:figma-shaders",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 load this skill before calling `create_shader` or `update_shader`. Use when the user asks to create, author, change, fix, or iterate on a shader effect, shader fill, custom effect, custom fill, or procedural shader in Figma."
+},
+{
+"id": "plugin_figma_figma_swiftui",
+"kind": "plugin-skill",
+"name": "figma:figma-swiftui",
+"origin": "plugin",
+"description": "SwiftUI \u2194 Figma translation. Use whenever the user mentions Swift, SwiftUI, iOS, iPhone, or iPad \u2014 in EITHER direction \u2014 translating a Figma design into SwiftUI (design \u2192 code), or pushing SwiftUI views / screens / tokens back into a Figma file (code \u2192 design). Triggers on phrases like 'implement th"
+},
+{
+"id": "plugin_figma_figma_use",
+"kind": "plugin-skill",
+"name": "figma:figma-use",
+"origin": "plugin",
+"description": "**MANDATORY prerequisite** \u2014 you MUST invoke this skill BEFORE every `use_figma` tool call. NEVER call `use_figma` directly without loading this skill first. Skipping it causes common, hard-to-debug failures. Trigger whenever the user wants to perform a write action or a unique read action that requ"
+},
+{
+"id": "plugin_figma_figma_use_figjam",
+"kind": "plugin-skill",
+"name": "figma:figma-use-figjam",
+"origin": "plugin",
+"description": "This skill helps agents use Figma's use_figma MCP tool in the FigJam context. Can be used alongside figma-use which has foundational context for using the use_figma tool."
+},
+{
+"id": "plugin_figma_figma_use_motion",
+"kind": "plugin-skill",
+"name": "figma:figma-use-motion",
+"origin": "plugin",
+"description": "Motion / animation context for the `use_figma` MCP tool \u2014 animating Figma nodes via manual keyframes, animation styles, easing, and timeline duration. Load alongside figma-use whenever a task involves adding, editing, or inspecting animation on a node."
+},
+{
+"id": "plugin_figma_figma_use_slides",
+"kind": "plugin-skill",
+"name": "figma:figma-use-slides",
+"origin": "plugin",
+"description": "This skill helps agents use Figma's use_figma MCP tool in the Slides context. Can be used alongside figma-use which has foundational context for using the use_figma tool."
+},
+{
+"id": "plugin_pdf_viewer_view_pdf",
+"kind": "plugin-skill",
+"name": "pdf-viewer:view-pdf",
+"origin": "plugin",
+"description": "Interactive PDF viewer. Use when the user wants to open, show, or view a PDF and collaborate on it visually \u2014 annotate, highlight, stamp, fill form fields, place signature/initials, or review markup together. Not for summarization or text extraction (use native Read instead)."
+},
+{
+"id": "plugin_productivity_memory_management",
+"kind": "plugin-skill",
+"name": "productivity:memory-management",
+"origin": "plugin",
+"description": "Two-tier memory system that makes Claude a true workplace collaborator. Decodes shorthand, acronyms, nicknames, and internal language so Claude understands requests like a colleague would. CLAUDE.md for working memory, memory/ directory for the full knowledge base."
+},
+{
+"id": "plugin_productivity_start",
+"kind": "plugin-skill",
+"name": "productivity:start",
+"origin": "plugin",
+"description": "Initialize the productivity system and open the dashboard. Use when setting up the plugin for the first time, bootstrapping working memory from your existing task list, or decoding the shorthand (nicknames, acronyms, project codenames) you use in your todos."
+},
+{
+"id": "plugin_productivity_task_management",
+"kind": "plugin-skill",
+"name": "productivity:task-management",
+"origin": "plugin",
+"description": "Simple task management using a shared TASKS.md file. Reference this when the user asks about their tasks, wants to add/complete tasks, or needs help tracking commitments."
+},
+{
+"id": "plugin_productivity_update",
+"kind": "plugin-skill",
+"name": "productivity:update",
+"origin": "plugin",
+"description": "Sync tasks and refresh memory from your current activity. Use when pulling new assignments from your project tracker into TASKS.md, triaging stale or overdue tasks, filling memory gaps for unknown people or projects, or running a comprehensive scan to catch todos buried in chat and email."
+},
+{
+"id": "plugin_cert_safari_quiz_safari",
+"kind": "plugin-skill",
+"name": "cert-safari-quiz:safari",
+"origin": "plugin",
+"description": ">"
+},
+{
+"id": "plugin_evolv_taste_pilot_frontend_ship_gate",
+"kind": "plugin-skill",
+"name": "evolv-taste-pilot:frontend-ship-gate",
+"origin": "plugin",
+"description": "Run a countable pre-flight gate over a frontend and refuse a pass while any mechanical check fails. Catches the AI-slop tells: em-dashes in UI copy, eyebrow over-use, repeated layout families, hero line and word overruns, off-brand palette and fonts, filler verbs. Executes bundled gates instead of s"
+},
+{
+"id": "plugin_threejs_threejs_animation_system",
+"kind": "plugin-skill",
+"name": "threejs:threejs-animation-system",
+"origin": "plugin",
+"description": "Play, blend, and control clip-based animation on a loaded three.js model (AnimationMixer, AnimationClip, AnimationAction), and animate merged/generated geometry that can no longer move as separate objects (morph targets). Use for \"play a glTF animation\", \"AnimationMixer\", \"animation not advancing\", "
+},
+{
+"id": "plugin_threejs_threejs_debugging_diagnostics",
+"kind": "plugin-skill",
+"name": "threejs:threejs-debugging-diagnostics",
+"origin": "plugin",
+"description": "Work out systematically why a three.js scene shows nothing \u2014 instead of changing values at random until something appears. Trigger on \"three.js black screen / nothing renders\", \"canvas is blank\", \"object invisible\", \"scene renders nothing\", \"shader looks wrong\", \"GLSL bisect\", \"NaN in position\", \"ma"
+},
+{
+"id": "plugin_threejs_threejs_gltf_asset_pipeline",
+"kind": "plugin-skill",
+"name": "threejs:threejs-gltf-asset-pipeline",
+"origin": "plugin",
+"description": "Load a glTF/.glb model into a three.js scene with the right decoders wired first (GLTFLoader, Draco/KTX2/Meshopt), inspect its real hierarchy and bounds before touching transforms, fix the scale/orientation/material problems baked in at export (Blender scale-not-applied, Z-up vs Y-up wrapper nodes, "
+},
+{
+"id": "plugin_threejs_threejs_interaction_picking",
+"kind": "plugin-skill",
+"name": "threejs:threejs-interaction-picking",
+"origin": "plugin",
+"description": "Let a user orbit, hover, and click 3D objects in three.js reliably. Covers OrbitControls setup and its update()/dispose() lifecycle; CPU raycasting via pointer-to-NDC conversion and Raycaster.setFromCamera/intersectObjects; GPU picking (an id-encoded pickingScene, camera.setViewOffset, a 1x1 WebGLRe"
+},
+{
+"id": "plugin_threejs_threejs_materials_lighting_shadows",
+"kind": "plugin-skill",
+"name": "threejs:threejs-materials-lighting-shadows",
+"origin": "plugin",
+"description": "Choose a three.js material (MeshBasic/Lambert/Phong/Standard/Physical), budget texture VRAM, fix washed-out or too-dark colours, and light/shadow a scene at a cost a mid-range phone can hold. Trigger on \"which three.js material should I use\", \"texture memory budget\", \"colours washed out or too dark\""
+},
+{
+"id": "plugin_threejs_threejs_on_web_pages",
+"kind": "plugin-skill",
+"name": "threejs:threejs-on-web-pages",
+"origin": "plugin",
+"description": "Put three.js inline with real page content instead of a single full-bleed canvas \u2014 scroll-synced 3D diagram viewports down a long article, a hero canvas behind text, HTML labels pinned to moving 3D points \u2014 all on one shared WebGL context. Use for \"multiple three.js scenes on one page\", \"scroll-sync"
+},
+{
+"id": "plugin_threejs_threejs_performance_instancing",
+"kind": "plugin-skill",
+"name": "threejs:threejs-performance-instancing",
+"origin": "plugin",
+"description": "Hold a framerate and power budget in three.js on real hardware \u2014 collapse thousands of individual meshes into one draw call with BufferGeometryUtils.mergeGeometries, render many movable copies with InstancedMesh (setMatrixAt/setColorAt), author custom BufferGeometry by hand, decide when to render at"
+},
+{
+"id": "plugin_threejs_threejs_postprocessing_render_targets",
+"kind": "plugin-skill",
+"name": "threejs:threejs-postprocessing-render-targets",
+"origin": "plugin",
+"description": "Add bloom, film grain, custom fullscreen shaders, or render a scene into a texture (mirrors, screens, monitors, building facades) in three.js \u2014 without silently breaking colour management. Use for \"add bloom / post-processing to three.js\", EffectComposer, RenderPass, ShaderPass, OutputPass ordering,"
+},
+{
+"id": "plugin_threejs_threejs_scene_setup",
+"kind": "plugin-skill",
+"name": "threejs:threejs-scene-setup",
+"origin": "plugin",
+"description": "Go from empty HTML to a correctly sized, DPI-aware, colour-managed three.js canvas with a sane scene graph and a render loop that survives resize, mobile and tab-switching. Use for \"three.js scene setup\", \"new THREE.Scene\", \"WebGLRenderer\", blurry canvas, canvas fills the whole page (or doesn't), ca"
+},
+{
+"id": "plugin_threejs_threejs_webgpu_tsl",
+"kind": "plugin-skill",
+"name": "threejs:threejs-webgpu-tsl",
+"origin": "plugin",
+"description": "Decide whether and how to move a three.js project from WebGLRenderer to WebGPURenderer with TSL node materials, and report honestly what breaks on the way. Use for \"should I migrate to WebGPURenderer\", \"three/webgpu\" and \"three/tsl\" imports and importmap entries, \"TSL node materials\", \"WebGPU experi"
+},
+{
+"id": "builtin_claude_api",
+"kind": "builtin-skill",
+"name": "claude-api",
+"origin": "builtin",
+"description": "Claude API / Anthropic SDK reference: model ids, pricing, params, streaming, tool use, MCP, agents, prompt caching, token counting, batches, migration."
+},
+{
+"id": "builtin_code_review",
+"kind": "builtin-skill",
+"name": "code-review",
+"origin": "builtin",
+"description": "Review a diff or PR for correctness bugs at an effort level."
+},
+{
+"id": "builtin_simplify",
+"kind": "builtin-skill",
+"name": "simplify",
+"origin": "builtin",
+"description": "Review changed code for reuse/simplification and apply fixes."
+},
+{
+"id": "builtin_security_review",
+"kind": "builtin-skill",
+"name": "security-review",
+"origin": "builtin",
+"description": "Security review of pending changes."
+},
+{
+"id": "builtin_init",
+"kind": "builtin-skill",
+"name": "init",
+"origin": "builtin",
+"description": "Generate a CLAUDE.md for a repo."
+},
+{
+"id": "builtin_update_config",
+"kind": "builtin-skill",
+"name": "update-config",
+"origin": "builtin",
+"description": "Configure settings.json: hooks, permissions, env vars."
+},
+{
+"id": "builtin_plugin_authoring",
+"kind": "builtin-skill",
+"name": "plugin-authoring",
+"origin": "builtin",
+"description": "Make a Claude Code mod: pane, status line, slash command, hooks on tool calls or prompts."
+},
+{
+"id": "builtin_workflow_authoring",
+"kind": "builtin-skill",
+"name": "workflow-authoring",
+"origin": "builtin",
+"description": "Write multi-agent Workflow tool scripts."
+},
+{
+"id": "builtin_run",
+"kind": "builtin-skill",
+"name": "run",
+"origin": "builtin",
+"description": "Launch and drive the project app to verify a change."
+},
+{
+"id": "builtin_loop",
+"kind": "builtin-skill",
+"name": "loop",
+"origin": "builtin",
+"description": "Run a prompt on a recurring interval."
+},
+{
+"id": "builtin_schedule",
+"kind": "builtin-skill",
+"name": "schedule",
+"origin": "builtin",
+"description": "Create scheduled cloud agents (routines)."
+},
+{
+"id": "builtin_fewer_permission_prompts",
+"kind": "builtin-skill",
+"name": "fewer-permission-prompts",
+"origin": "builtin",
+"description": "Build a permission allowlist from transcripts."
+},
+{
+"id": "builtin_artifact_design",
+"kind": "builtin-skill",
+"name": "artifact-design",
+"origin": "builtin",
+"description": "Design guidance for Artifacts."
+},
+{
+"id": "builtin_dataviz",
+"kind": "builtin-skill",
+"name": "dataviz",
+"origin": "builtin",
+"description": "Charts and data visualization method."
+}
+]

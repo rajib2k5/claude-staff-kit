@@ -1,0 +1,1062 @@
+[
+ {
+  "id": "S1",
+  "verdict": "CONFIRMED",
+  "probe": "AS WRITTEN -> PROBE_INVALID (needs a model answer; OAuth expired). CORRECTED: fixture fx_s1/.claude/skills/{probe-dir/SKILL.md, probe-loose.md}; `claude -p --model claude-fable-5-1 --output-format stream-json --verbose \"List the skill names you have, comma separated.\"` against mock API; read init.skills and the captured /v1/messages body.",
+  "output": "init skills containing 'probe': ['probe-dir']; request body counts: probe-dir=2, probe-loose=0, PROBE_LOOSE_BODY=0; request listing line: '- probe-dir: EGV probe skill in a directory. Use when asked about probe-dir.'",
+  "rc": 0,
+  "falsifier": "mv probe-loose.md -> probe-loose/SKILL.md, rerun (model claude-opus-5-5). Assertion 'probe-loose not listed' must trip.",
+  "falsifier_rc": 1,
+  "note": "Falsifier run: init probe skills ['probe-dir','probe-loose']; body probe-loose=2 -> assertion tripped. Tested at project scope (.claude/skills), per the ledger's amended probe, not ~/.claude/skills. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "S2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "`claude -p --model <id> --max-turns 3 --no-session-persistence \"Reply with OK\"` (real API) for haiku-5-5 and falsifier haiku-9-9; opus-5-5 / sonnet-5-5 exercised in mock runs s1b / p4; binary catalog count.",
+  "output": "real API: claude-haiku-5-5 rc=1 stdout 'Failed to authenticate: OAuth session expired and could not be refreshed'; stderr '\"claude-haiku-5-5\" isn't described by this version's model catalog; update Claude Code, or map it with behavesAs ... [claude-code:unrecognized_model] {\"model\":\"claude-haiku-5-5\",\"query_source\":\"sdk\"}'. Binary counts: claude-opus-5-5=52, claude-sonnet-5-5=35, claude-haiku-5-5=0. opus-5-5/sonnet-5-5 mock runs: stderr empty, modelUsage contextWindow 1000000, costBasis 'list'.",
+  "rc": 1,
+  "falsifier": "`--model claude-haiku-9-9` (real API)",
+  "falsifier_rc": 1,
+  "note": "Probe cannot discriminate: the fabricated haiku-9-9 produced the SAME CLI warning and the same auth failure (rc=1) as haiku-5-5, and the CLI passes any id through to the API. So API acceptance is undecidable here. Machine fact: CLI 2.1.287's catalog knows opus-5-5 and sonnet-5-5 but NOT haiku-5-5 (0 occurrences, unrecognized_model warning, modelUsage costBasis 'unknown', contextWindow 200000). The alias 'haiku' resolves to claude-haiku-4-5-20251001 (sub run)."
+ },
+ {
+  "id": "S3",
+  "verdict": "CONFIRMED",
+  "probe": "grep -n -i -E 'latest.*(claude-opus-5|claude-sonnet-5|claude-haiku-4-5-20251001)' on repo + live rules/agent-models.md and skills/cost-conscious-orchestration/SKILL.md",
+  "output": "repo+live agent-models.md: '30:- latest Opus: `claude-opus-5`' '31:- latest Sonnet: `claude-sonnet-5`'; repo+live SKILL.md: '67:latest Opus `claude-opus-5`, latest Sonnet `claude-sonnet-5`, latest Fable `claude-fable-5`,'",
+  "rc": 0,
+  "falsifier": "same grep on temp copies with ids replaced by *-X",
+  "falsifier_rc": 1,
+  "note": "Haiku is NOT paired with the word 'latest': agent-models.md:33 '- Haiku: `claude-haiku-4-5-20251001`' and SKILL.md:68 'Haiku `claude-haiku-4-5-20251001`'. 'Older generation' premise supported: binary catalog holds claude-opus-5-5 / claude-sonnet-5-5."
+ },
+ {
+  "id": "S4",
+  "verdict": "REFUTED",
+  "probe": "AS WRITTEN -> PROBE_INVALID (the ledger never names the 6 pairs). CORRECTED: diff -rq every repo item in rules/ agents/ commands/ contexts/ hooks/ memory/ skills/ against ~/.claude/<same path>; for each differing pair compare `git log -1 --format=%cs` with the newest live mtime.",
+  "output": "DIFF agents/snowflake-architect.md (repo 2026-10-12, live 2026-10-19); commands/sf-audit.md (10-12/10-19); commands/sf-tune.md (10-12/10-19); hooks/evolv-skills-enforcer.js (repo 2026-10-12, 180 lines; LIVE 2026-10-03, 137 lines); memory/MEMORY.md (10-12/10-19); skills/data-cost, data-snowflake-audit, data-snowflake-tune (10-12/10-19). Also MISSING-LIVE: hooks/evolv-skills-enforcer.test.js, hooks/hooks.json, 10 new skills/claude-*.",
+  "rc": 0,
+  "falsifier": "diff -q repo skills/staff-tdd vs live",
+  "falsifier_rc": 1,
+  "note": "8 pairs differ, not 6, and in one (hooks/evolv-skills-enforcer.js) the LIVE copy is OLDER. If the intended 6 were the snowflake-architect, sf-audit, sf-tune and 3 data-* skills, those 6 do differ with live newer. Falsifier staff-tdd: no difference (rc 0) as required. [falsifier_rc=1: the pass assertion tripped on the falsifier input; the raw falsifier command itself exited 0.]"
+ },
+ {
+  "id": "S5",
+  "verdict": "REFUTED",
+  "probe": "AS WRITTEN: grep -n sf_deploy ~/.claude/skills/snowflake-sql/SKILL.md; test -e scripts/sf_deploy.py in that dir. CORRECTED (premise): read the hit's context; find /Users/rajibbahar/dev -maxdepth 5 -name sf_deploy.py",
+  "output": "grep: '112:  `scripts/sf_deploy.py`). A destructive statement follows...' with line 111 'DQ accelerator: only BRONZE, SILVER, APP, ML, CONFIG; ... deploy only through its'; test -e (skill dir) rc=1; find: /Users/rajibbahar/dev/evolv-dq-ai-accelerator/scripts/sf_deploy.py",
+  "rc": 0,
+  "falsifier": "test -e SKILL.md in the skill dir",
+  "falsifier_rc": 1,
+  "note": "Pre-registered probe 'passes' but tests the wrong directory. The skill references the DQ accelerator project's own `scripts/sf_deploy.py` ('deploy only through its ...'), and that file exists. Not a dangling reference. [falsifier_rc=1: the pass assertion tripped on the falsifier input; the raw falsifier command itself exited 0.]"
+ },
+ {
+  "id": "S6",
+  "verdict": "CONFIRMED",
+  "probe": "wc -l ~/.claude/skills/graphify/SKILL.md ; assertion > 500",
+  "output": "793 /Users/rajibbahar/.claude/skills/graphify/SKILL.md (python splitlines also 793)",
+  "rc": 0,
+  "falsifier": "wc -l ~/.claude/skills/staff-tdd/SKILL.md -> assertion '>500' must trip",
+  "falsifier_rc": 1,
+  "note": "Measured 793 lines, claim says 794 (off by one; file ends with a newline). staff-tdd = 52. The 'Anthropic guidance' half is a docs claim; `claude plugin validate` did not warn on a 600-line SKILL.md, so the CLI does not enforce it."
+ },
+ {
+  "id": "P1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "CORRECTED: --model claude-fable-5-1 in mock run s1a (real API unreachable); binary catalog count",
+  "output": "init model 'claude-fable-5-1'; stderr only 'Warning: no stdin data received in 3s' (no unrecognized_model); request model 'claude-fable-5-1', output_config {'effort':'high'}, max_tokens 64000; modelUsage contextWindow 1000000, maxOutputTokens 64000, costBasis 'list'; binary count claude-fable-5-1=37, claude-fable-9-9=0",
+  "rc": 0,
+  "falsifier": "`--model claude-fable-9-9` not run separately: the haiku-9-9 control showed the CLI passes unknown ids to the API with only a warning, so a CLI-level falsifier cannot trip",
+  "falsifier_rc": null,
+  "note": "The installed CLI's catalog does describe claude-fable-5-1. Whether the API accepts it is not testable (OAuth expired). [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "P2",
+  "verdict": "CONFIRMED",
+  "probe": "`claude --help` lists modes; CORRECTED to mock API: mock answers with Bash tool_use 'touch /tmp/claude-502/egv-p2'; `claude -p --model claude-haiku-5-5 --output-format json` with NO --permission-mode; test -e file",
+  "output": "help: '--permission-mode <mode> ... (choices: \"acceptEdits\", \"auto\", \"bypassPermissions\", \"manual\", \"dontAsk\", \"plan\")'; code: 'function Tg(e){return e===\"manual\"?\"default\":e}'; run: init permissionMode 'default'; file absent (test rc=1); permission_denials [{tool_name:'Bash', tool_input:{command:'touch /tmp/claude-502/egv-p2'}}]; tool_result \"touch in '/tmp/claude-502/egv-p2' needs approval. The path is outside the working directories...\"",
+  "rc": 0,
+  "falsifier": "same with --permission-mode bypassPermissions -> file must be present",
+  "falsifier_rc": 1,
+  "note": "Falsifier: file present (test -e rc=0), so the default-mode denial is discriminating. Stream/init report the mode as 'default'; 'manual' is an alias mapped to 'default' in code. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour. [falsifier_rc=1: the pass assertion tripped on the falsifier input; the raw falsifier command itself exited 0.]"
+ },
+ {
+  "id": "P3",
+  "verdict": "CONFIRMED",
+  "probe": "CORRECTED (mock): schema {city:string,count:integer, required both, additionalProperties:false}; mock answers by calling the CLI-supplied tool 'StructuredOutput' with {city:'Paris',count:3}; `claude -p --json-schema <schema> --output-format json`",
+  "output": "rc=0 is_error False subtype success structured_output {'city': 'Paris', 'count': 3} result '{\"city\":\"Paris\",\"count\":3}' -> validates. Request tools include 'StructuredOutput' with the exact schema; output_config only {'effort':'high'}",
+  "rc": 0,
+  "falsifier": "mock emits {city:'Paris'} (missing count) every turn",
+  "falsifier_rc": 1,
+  "note": "Falsifier: tool_result 'Output does not match required schema: root: must have required property 'count'', subtype error_max_turns, structured_output None, rc=1. The CLI validates locally via a StructuredOutput tool; it does not use output_config.format. Real-model conformance not tested. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "P4",
+  "verdict": "REFUTED",
+  "probe": "AS WRITTEN (init event parsed from mock run): `claude -p --output-format stream-json --verbose \"List the exact names of the tools you can call, comma separated\"`; assert 'Agent' in init.tools and 'Task' not in init.tools",
+  "output": "INIT tools: Agent False, Task True -> pre-registered assertion False. Model-facing tools in the captured /v1/messages body: Agent True, Task False. (Same split in the real-API auth-failed run: init tools start ['Task','Bash',...].)",
+  "rc": 0,
+  "falsifier": "assertion on synthetic ['Bash','Task','Read']",
+  "falsifier_rc": 1,
+  "note": "Pre-registered probe fails: the SDK/stream init event names the tool 'Task'. The model is sent 'Agent'. So 'named Agent, not Task' is true only for the model-facing name; stream consumers see 'Task'. Env CLAUDE_CODE_ENABLE_ASK_USER_QUESTION_TOOL=true added (no effect on this assertion). [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "P5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none (by construction)",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI evidence only: requests carry anthropic-version '2023-06-01' and no temperature/top_p; string '2026-10-21' occurs 0 times in the binary (absence in a client does not refute a server claim)."
+ },
+ {
+  "id": "P6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none (by construction)",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI evidence: 'structured-outputs-2025-11-13' occurs 0 times in the binary; the CLI's --json-schema uses a StructuredOutput tool, and output_config carries only effort."
+ },
+ {
+  "id": "P7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none (by construction); captured CLI request headers inspected",
+  "output": "anthropic-beta: claude-code-20250219,interleaved-thinking-2025-05-14,...,context-management-2025-06-27,...; body context_management {\"edits\": [{\"type\": \"clear_thinking_20251015\", \"keep\": \"all\"}]}",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. The CLI does send context-management-2025-06-27 with a top-level context_management.edits array (consistent). 'compact-2026-09-04' occurs 0 times in the binary."
+ },
+ {
+  "id": "P8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none (future date)",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "A retirement date in the future cannot be observed. Binary contains 'claude-sonnet-4-5-20250929' (10 occurrences)."
+ },
+ {
+  "id": "K-claude-agent-orchestration-1",
+  "verdict": "CONFIRMED",
+  "probe": "mock runs p4 + alias2: compare init.tools (stream) with model-facing tools in /v1/messages; `--disallowedTools Task`",
+  "output": "p4: init has 'Task' not 'Agent'; request has 'Agent' not 'Task'. alias2 (--disallowedTools Task): request Agent False, Task False; init Agent False, Task False.",
+  "rc": 0,
+  "falsifier": "p4 baseline without --disallowedTools: Agent present in request (assertion 'Agent absent' trips)",
+  "falsifier_rc": 1,
+  "note": "Model-facing name is Agent; 'Task' works as an alias (disallowing Task removed Agent); the stream shows 'Task', so 'match both' is correct advice. The 'renamed in v2.1.63' history is not checkable. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-agent-orchestration-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "not exercised (needs a --agent main-thread run with Agent(type) in tools; no invocation budget left)",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "No probe run."
+ },
+ {
+  "id": "K-claude-agent-orchestration-3",
+  "verdict": "CONFIRMED",
+  "probe": "binary code context for both env vars (strings counted in /Users/rajibbahar/.local/share/claude/versions/2.1.287 (Mach-O) with a Python mmap count; fabricated control token 'ZZ_NOT_A_KEY_egv' -> 0)",
+  "output": "depth: 'var n=3;var _=\"tengu_hazel_trellis\";function Pv(){let o=a.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH;if(o!==void 0)return o;... r(_,n)'; concurrency: 'var Gro=20;function MWn(){return a.CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS??Gro}'",
+  "rc": 0,
+  "falsifier": "count 'CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTHX' -> 0",
+  "falsifier_rc": 1,
+  "note": "Defaults 3 and 20 are in code. Depth falls back to a remote feature flag (GrowthBook 'tengu_hazel_trellis', default 3) when the env var is unset, so the effective depth can be changed server-side."
+ },
+ {
+  "id": "K-claude-agent-orchestration-4",
+  "verdict": "CONFIRMED",
+  "probe": "fx_s1/.claude/agents/probe-agent.md (name+description only) and probe-nodesc.md (name only); init.agents; frontmatter allowlist and schema in binary; subagent request in mock run 'sub'",
+  "output": "init agents with 'probe': ['probe-agent'] (probe-nodesc absent); built-ins in init: 'Explore','general-purpose','Plan'; code allowlist includes \"tools\",\"disallowedTools\",\"color\",\"permissionMode\",\"maxTurns\",...,\"isolation\",\"hooks\"; model describe: 'Model override (`haiku`, `sonnet`, `opus`, `fable`, or a full ID). Use `inherit`...'; subagent request nmsg=1; main received only 'SUBDONE' text",
+  "rc": 0,
+  "falsifier": "probe-nodesc.md (no description) must not load -> it did not",
+  "falsifier_rc": 1,
+  "note": "Description is required (file without it is silently ignored). [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-agent-orchestration-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "introspect installed Python SDK /Users/rajibbahar/dev/.venv claude_agent_sdk; stream-json parent_tool_use_id in mock run 'sub'",
+  "output": "SDK 0.1.23: ClaudeAgentOptions.agents True, allowed_tools True, max_budget_usd True; AgentDefinition fields: description required, prompt required, tools optional, model optional. Stream: subagent assistant message parent_tool_use_id='toolu_80ceeff9a1ee4a2fabe0'",
+  "rc": 0,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Sub-claims seen: AgentDefinition required fields, agents option, parent_tool_use_id. Not exercised: query() with agents, default subagent_type when omitted. The installed SDK (0.1.23) is older than CLI 2.1.287."
+ },
+ {
+  "id": "K-claude-agent-orchestration-6",
+  "verdict": "REFUTED",
+  "probe": "mock run 'sub' (Agent call, run_in_background unset) and 'sub2' (foreground general-purpose + Explore); captured Agent tool input_schema",
+  "output": "sub: tool_use_result {isAsync:true, status:'async_launched', agentId:'aa45850405b99b3cb'}; subagent_stats requested unset 1, started_in_background 1. sub2 general-purpose result text: '...SUBDONE\\nagentId: ab60ff2e5dc19f97d (use SendMessage with to: 'ab60ff2e5dc19f97d', summary: ...) to continue this agent)'; Explore result text: '...The report follows:\\n  SUBDONE' (no agentId). Agent schema props: ['description','prompt','subagent_type','model','run_in_background','isolation'] (no 'resume').",
+  "rc": 0,
+  "falsifier": "sub2 foreground (run_in_background:false): requested foreground 2, started_in_background 0 -> the 'background' assertion trips",
+  "falsifier_rc": 1,
+  "note": "Background default, async_launched, agentId in a completed result, and Explore with no agentId are all observed. REFUTED part: in 2.1.287 the agentId is continued with SendMessage(to: agentId); the Agent tool has no `resume` parameter. The bypassPermissions sub-claim was not tested. SDK session-level resume not tested. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-agent-orchestration-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "claude --help; result.session_id in mock runs; init.memory_paths; ls ~/.claude/projects/-Users-rajibbahar-dev/*.jsonl",
+  "output": "help: '-c, --continue  Continue the most recent conversation', '--fork-session  When resuming, create a new session ID', '-r, --resume [value]'; result session_id present; memory_paths.auto '/Users/rajibbahar/.claude/projects/-private-tmp-claude-502--Users-...-fx-cfg-proj/memory/'; 37 *.jsonl files under ~/.claude/projects/-Users-rajibbahar-dev/",
+  "rc": 0,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "CLI equivalents and the <encoded-cwd> layout are consistent. Not exercised: SDK resume/continue/forkSession, 'conversation not filesystem', forked edits being shared."
+ },
+ {
+  "id": "K-claude-agent-orchestration-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "binary counts; installed Python SDK introspection",
+  "output": "binary: listSessions=11, getSessionMessages=2, list_sessions=7, get_session_messages=0; Python SDK 0.1.23: list_sessions False, get_session_messages False",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "The installed Python SDK is stale (0.1.23), so its absence does not refute; the TS names appear in the CLI binary. No call made."
+ },
+ {
+  "id": "K-claude-agent-orchestration-9",
+  "verdict": "UNVERIFIABLE",
+  "probe": "binary counts; Python SDK introspection",
+  "output": "binary: persistSession=20, enableFileCheckpointing=4, rewindFiles=21, code 'sessionStore cannot be used with persistSession: false'; Python SDK 0.1.23: enable_file_checkpointing True, persist_session False",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Claim defers to docs; nothing to assert beyond names. Names exist in the TS code path."
+ },
+ {
+  "id": "K-claude-agent-orchestration-10",
+  "verdict": "UNVERIFIABLE",
+  "probe": "init.tools and request tools in mock run p4 with CLAUDE_CODE_ENABLE_ASK_USER_QUESTION_TOOL=true",
+  "output": "p4: init AskUserQuestion False, request AskUserQuestion False; help: '--permission-prompts <target> ... \"none\" (nobody: anything that would prompt is denied automatically...)'",
+  "rc": 0,
+  "falsifier": "none possible",
+  "falsifier_rc": null,
+  "note": "AskUserQuestion is absent from the -p tool set even without --permission-prompts none, so removal cannot be shown; canUseTool routing and dontAsk denial were not exercised."
+ },
+ {
+  "id": "K-claude-agent-orchestration-11",
+  "verdict": "CONFIRMED",
+  "probe": "mock run 'sub': main sonnet-5-5 usage 100 in/10 out per call, subagent (haiku alias) 7000 in/700 out; read result usage, modelUsage, total_cost_usd",
+  "output": "result usage.input_tokens 200; modelUsage {'claude-sonnet-5-5': (200 in, $0.0006), 'claude-haiku-4-5-20251001': (7000 in, $0.0105)}; total_cost_usd 0.0111",
+  "rc": 0,
+  "falsifier": "assertion 'usage.input_tokens includes subagent (>=7000)' -> 200, trips",
+  "falsifier_rc": 1,
+  "note": "usage = main loop only; modelUsage and total_cost_usd include the subagent; cost is computed client-side (mock returned no cost; costBasis 'list'). The 'on resume includes earlier spend' part was not tested. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-api-ops-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Binary contains 'pause_turn' (6), 'model_context_window_exceeded' (6)."
+ },
+ {
+  "id": "K-claude-api-ops-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'output-300k-2026-03-24' occurs 0 times in the binary (not used by the CLI)."
+ },
+ {
+  "id": "K-claude-api-ops-4",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI 2.1.287 catalog: opus-5-5 / sonnet-5-5 contextWindow 1000000, maxOutputTokens 128000; fable-5-1 contextWindow 1000000 but maxOutputTokens 64000 (CLI sent max_tokens 64000); claude-haiku-5-5 is NOT in the catalog (0 occurrences, costBasis 'unknown'). CLI-computed costs matched the claimed fable/opus/sonnet list prices for a 10:1 input:output mix, which does not identify the two rates uniquely."
+ },
+ {
+  "id": "K-claude-api-ops-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. All five ids occur in the CLI binary (claude-fable-5 80, claude-opus-5 137, claude-opus-4-8 63, claude-sonnet-5 98, claude-haiku-4-5-20251001 18); API availability not testable."
+ },
+ {
+  "id": "K-claude-api-ops-6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI evidence: --effort accepts low, medium, high, xhigh, max ('Valid values: low, medium, high, xhigh, max'). The CLI sends output_config.effort explicitly: fable-5-1 'high', opus-5-5 'medium', sonnet-5-5 'medium' (claim says API default 'high' on Sonnet 5.5). That is the CLI's default, not proof of the API default."
+ },
+ {
+  "id": "K-claude-api-ops-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Binary contains 'claude-sonnet-4-5-20250929' (10)."
+ },
+ {
+  "id": "K-claude-api-ops-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI requests carry no temperature/top_p; anthropic-version '2023-06-01'."
+ },
+ {
+  "id": "K-claude-api-ops-9",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-10",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-11",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-12",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-13",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-14",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-15",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-16",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-api-ops-17",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. The claim itself defers to docs."
+ },
+ {
+  "id": "K-claude-code-config-1",
+  "verdict": "CONFIRMED",
+  "probe": "fixture fx_cfg: parent CLAUDE.md (PARENT), proj/CLAUDE.md (PROJ + @imp1.md), imp1->...->imp6 chain, proj/sub/CLAUDE.md (SUB); fx_ag: proj/AGENTS.md only, parent CLAUDE.md excluded with claudeMdExcludes; marker counts in captured request",
+  "output": "cfg: PARENT 1, PROJ 1, IMP1 1, IMP2 1, IMP3 1, IMP4 1, IMP5 0, IMP6 0, SUB 0; order PARENT(90892) < PROJ(91098) < IMP1 < IMP4; ag: AGENTS 1, AGPARENT_EXCLUDED 0; slash_commands includes 'init'",
+  "rc": 0,
+  "falsifier": "cfg run without claudeMdExcludes: parent marker present (exclusion assertion trips); IMP5 absent shows the hop cap is real",
+  "falsifier_rc": 1,
+  "note": "Root-first concatenation, on-demand subdirectory files, @import cap at 4 hops, AGENTS.md fallback, claudeMdExcludes all observed. /init is listed but was not run. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-code-config-2",
+  "verdict": "CONFIRMED",
+  "probe": "same cfg run: markers for ./CLAUDE.md, ./.claude/CLAUDE.md, ./CLAUDE.local.md; user file heading; binary for managed path",
+  "output": "PROJ 1, DOTCLAUDE 1, LOCAL 1; request contains 'Contents of /Users/rajibbahar/.claude/CLAUDE.md' (1); binary '/etc/claude-code' 7 occurrences",
+  "rc": 0,
+  "falsifier": "SUB marker (not a scope at start) -> 0, shows markers are not loaded indiscriminately",
+  "falsifier_rc": 1,
+  "note": "The managed Linux/WSL path could not be exercised on macOS (string present only). Both ./CLAUDE.md and ./.claude/CLAUDE.md load together. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-code-config-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "fx_cfg: .claude/settings.json model claude-sonnet-5-5, .claude/settings.local.json model claude-opus-5-5, no --model; init.model",
+  "output": "cfg: init model claude-opus-5-5 (local wins); ag (project only, sonnet-5-5): init model claude-sonnet-5-5",
+  "rc": 0,
+  "falsifier": "ag run shows the project value is honoured when no local file exists, so the cfg result is discriminating",
+  "falsifier_rc": 1,
+  "note": "local > project observed. Not tested: local > user (user settings set no model), --settings/managed outranking, and the v2.1.211 'repository root in a git repo' location."
+ },
+ {
+  "id": "K-claude-code-config-4",
+  "verdict": "CONFIRMED",
+  "probe": "`claude --permission-mode <m> --version` for each name (choice validation runs at parse); code mapping; project permissions.defaultMode",
+  "output": "default/manual/acceptEdits/auto/dontAsk/plan/bypassPermissions: all '2.1.287 (Claude Code)' rc=0; code 'var KF=[\"acceptEdits\",\"auto\",\"bypassPermissions\",\"default\",\"dontAsk\",\"plan\"]...YF=\"manual\";function Tg(e){return e===\"manual\"?\"default\":e}'; ag run with defaultMode 'plan' -> init permissionMode 'plan'",
+  "rc": 0,
+  "falsifier": "`--permission-mode bogus --version`",
+  "falsifier_rc": 1,
+  "note": "Falsifier: \"error: option '--permission-mode <mode>' argument 'bogus' is invalid. Allowed choices are acceptEdits, auto, bypassPermissions, manual, dontAsk, plan.\" Note: --help lists 'manual' and hides 'default'. Shift+Tab cycling (interactive) not tested."
+ },
+ {
+  "id": "K-claude-code-config-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "mock runs: -p with no mode (p2); project defaultMode bypassPermissions (cfg) vs plan (ag)",
+  "output": "p2: init permissionMode 'default', Bash touch denied ('needs approval'); cfg (project defaultMode bypassPermissions): init permissionMode 'default'; ag (project defaultMode plan): 'plan'",
+  "rc": 0,
+  "falsifier": "ag shows project defaultMode is honoured for 'plan', so ignoring 'bypassPermissions' is discriminating",
+  "falsifier_rc": 1,
+  "note": "Project-level bypassPermissions ignored: observed. Project-level auto: not tested. On 2.1.287 (< 2.1.302), -p ALREADY starts in default/manual and denies, so the 'v2.1.302 and later' gate cannot be checked here. Interactive default 'auto' on >= 2.1.283 not testable headless."
+ },
+ {
+  "id": "K-claude-code-config-6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "mock run p2f: --permission-mode bypassPermissions + --settings permissions.deny ['Bash(touch /tmp/claude-502/egv-p2-deny*)']; binary for org switch",
+  "output": "egv-p2 created (rc 0); egv-p2-deny absent; tool_result 'Permission to use Bash with command touch /tmp/claude-502/egv-p2-deny has been denied.'; binary 'disableBypassPermissionsMode' (17), e.g. 'disableBypassPermissionsMode` setting from the `permissions` section of Claude Code's [managed settings]'",
+  "rc": 0,
+  "falsifier": "first touch without a deny rule ran under bypass",
+  "falsifier_rc": 1,
+  "note": "Deny rules apply under bypass: observed. Not tested: explicit ask rules still apply; allow rules have no effect. [falsifier_rc=1: the pass assertion tripped on the falsifier input; the raw falsifier command itself exited 0.]"
+ },
+ {
+  "id": "K-claude-code-config-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "parse check, ag run init, binary count",
+  "output": "`--permission-mode plan --version` rc=0; ag init permissionMode 'plan'; 'ExitPlanMode' 30 occurrences; '/plan' NOT in -p init slash_commands",
+  "rc": 0,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Plan mode exists. Not tested: PreToolUse allow not approving edits in plan mode; /plan was not listed among -p slash_commands."
+ },
+ {
+  "id": "K-claude-code-config-8",
+  "verdict": "CONFIRMED",
+  "probe": "claude --help; mock runs alias2 (--disallowedTools Task) and p2f (--settings permissions.deny)",
+  "output": "help lists '--allowedTools, --allowed-tools <tools...>', '--disallowedTools, --disallowed-tools <tools...>', '--tools <tools...>'; alias2 removed Agent; p2f deny rule blocked the matching command",
+  "rc": 0,
+  "falsifier": "p4 without --disallowedTools: Agent present",
+  "falsifier_rc": 1,
+  "note": "permissions.allow is in use in ~/.claude/settings.local.json; permissions.ask was not exercised. Gotcha seen: '--disallowedTools' is variadic and swallowed a trailing prompt ('Error: Input must be provided either through stdin or as a prompt argument when using --print')."
+ },
+ {
+  "id": "K-claude-code-config-9",
+  "verdict": "CONFIRMED",
+  "probe": "fx_hook/.claude/settings.json PreToolUse(Bash) python hook logging stdin; mock issues 3 Bash touches under bypassPermissions: block (hook exit 2), rewrite-src (hook returns updatedInput -> rewrite-dst), control (exit 0)",
+  "output": "hook input keys ['cwd','effort','hook_event_name','permission_mode','prompt_id','session_id','tool_input','tool_name','tool_use_id','transcript_path']; egv-hook-block absent (tool_result 'PreToolUse:Bash hook error: [...]: blocked by egv hook'); rewrite-src absent, rewrite-dst present; control present; code enum 'AJ=f(()=>B([\"allow\",\"deny\",\"ask\",\"defer\"]))' and doc string '\"allow\" | \"deny\" | \"ask\" | \"defer\" (optional)'",
+  "rc": 0,
+  "falsifier": "control touch (exit 0) ran -> 'blocked' assertion trips on it",
+  "falsifier_rc": 1,
+  "note": "Exit 2 blocks even in bypassPermissions. 'defer' exists in the schema but its runtime effect was not exercised. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-code-config-10",
+  "verdict": "CONFIRMED",
+  "probe": "binary: skill/command frontmatter allowlist and schema; `claude plugin validate` on fixture skills",
+  "output": "allowlist 'var M=[\"name\",\"description\",\"model\",\"allowed-tools\",\"argument-hint\",\"arguments\",\"disable-model-invocation\",\"user-invocable\",...,\"paths\",\"hooks\",\"context\",\"agent\",...]'; schema '\"disallowed-tools\":uR().optional().describe(\"Tools removed from the model while this file is active...\")'; reader 'function _le(e){return G_(e[\"disallowed-tools\"]??e.disallowedTools)}'; 'executionContext:e.context===\"fork\"?\"fork\":void 0'",
+  "rc": 0,
+  "falsifier": "fabricated key token -> 0 occurrences",
+  "falsifier_rc": 1,
+  "note": "All 8 keys exist. The 500-line guidance is not enforced: `claude plugin validate` passed a 600-line SKILL.md and an unknown key 'frobnicate-level' with no warning."
+ },
+ {
+  "id": "K-claude-code-config-11",
+  "verdict": "CONFIRMED",
+  "probe": "claude --help; mock run p3f with --max-turns 3",
+  "output": "help: '-p, --print', '--bare ... Anthropic auth is strictly ANTHROPIC_API_KEY or apiKeyHelper via --settings (OAuth and keychain are never read)', '--max-budget-usd <amount>', '--no-session-persistence', '-r, --resume [value]', '--append-system-prompt <prompt>'; p3f result subtype 'error_max_turns'",
+  "rc": 0,
+  "falsifier": "none needed for flag existence; --max-turns limit tripped in p3f",
+  "falsifier_rc": 1,
+  "note": "Machine difference: --max-turns is NOT listed in `claude --help` (2.1.287), but it is accepted and enforced (error_max_turns; num_turns 4 with --max-turns 3)."
+ },
+ {
+  "id": "K-claude-code-config-12",
+  "verdict": "CONFIRMED",
+  "probe": "help; mock run sjnoverbose (stream-json without --verbose); json result keys from p2",
+  "output": "help: '(choices: \"text\", \"json\", \"stream-json\")'; sjnoverbose rc=1 'Error: When using --print, --output-format=stream-json requires --verbose'; p2 json keys include result, session_id, usage, total_cost_usd, modelUsage (per model: inputTokens, costUSD, contextWindow...), permission_denials",
+  "rc": 1,
+  "falsifier": "`--output-format xml --version` -> invalid choice error",
+  "falsifier_rc": 1,
+  "note": "All named fields observed."
+ },
+ {
+  "id": "K-claude-code-config-13",
+  "verdict": "CONFIRMED",
+  "probe": "same as P3",
+  "output": "structured_output {'city':'Paris','count':3}",
+  "rc": 0,
+  "falsifier": "invalid structured output -> structured_output None, rc=1",
+  "falsifier_rc": 1,
+  "note": "See P3. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-context-management-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI sends anthropic-beta 'context-management-2025-06-27' and top-level context_management {edits:[{type:'clear_thinking_20251015',keep:'all'}]} (consistent)."
+ },
+ {
+  "id": "K-claude-context-management-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Both strategy names occur in the binary (clear_tool_uses_20250919 5, clear_thinking_20251015 2)."
+ },
+ {
+  "id": "K-claude-context-management-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-context-management-4",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-context-management-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'compact-2026-09-04' occurs 0 times in the CLI binary."
+ },
+ {
+  "id": "K-claude-context-management-6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-context-management-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "help; init slash_commands; binary counts",
+  "output": "help '--autocompact <auto|tokens>  Auto-compact window size (auto, or 100k–1M tokens)'; slash_commands includes 'compact'; PreCompact 40, PostCompact 41",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Claim makes no assertion (defers to docs). Evidence: /compact, auto-compaction and PreCompact/PostCompact hook names exist in 2.1.287."
+ },
+ {
+  "id": "K-claude-context-management-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'memory_20250818' occurs 0 times in the CLI binary."
+ },
+ {
+  "id": "K-claude-context-management-9",
+  "verdict": "CONFIRMED",
+  "probe": "same as K-claude-agent-orchestration-11 (mock run 'sub')",
+  "output": "usage.input_tokens 200 (main only); modelUsage includes claude-haiku-4-5-20251001 7000 in",
+  "rc": 0,
+  "falsifier": "assertion 'usage includes subagent' -> trips",
+  "falsifier_rc": 1,
+  "note": "[harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-context-management-10",
+  "verdict": "UNVERIFIABLE",
+  "probe": "mock run 'sub' (subagent request) + CLI flags",
+  "output": "subagent first request nmsg=1 (fresh); main received only final 'SUBDONE'; help has --resume/--fork-session",
+  "rc": 0,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Subagent fresh start and final-message-only return: observed. 'Conversation not filesystem' persistence and SDK resume/fork: not tested."
+ },
+ {
+  "id": "K-claude-evals-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: meta-claim about the skill's own content or a 'confirm in docs' directive",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-evals-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: meta-claim about the skill's own content or a 'confirm in docs' directive",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-governance-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none (claude.ai console and plan/role)",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Cloud console; not observable from the CLI. Binary has managed-settings strings (managed-settings.json 49)."
+ },
+ {
+  "id": "K-claude-governance-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "binary counts",
+  "output": "allowedMcpServers 64, deniedMcpServers 51, managed-mcp.json 30",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Key names exist; the delivery restriction through server-managed settings is not observable."
+ },
+ {
+  "id": "K-claude-governance-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "binary counts; init slash_commands",
+  "output": "managed-settings.json 49, requiredMinimumVersion 9, com.anthropic.claudecode 2; '/status' not in -p slash_commands",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Names exist; MDM delivery not testable; the claim is partly about what a doc mentions."
+ },
+ {
+  "id": "K-claude-governance-4",
+  "verdict": "CONFIRMED",
+  "probe": "cfg run: project .claude/settings.json env {CLAUDE_CODE_ENABLE_TELEMETRY:'1', OTEL_METRICS_EXPORTER:'console', OTEL_LOGS_EXPORTER:'console', OTEL_METRIC_EXPORT_INTERVAL:'1000'} -> look for console telemetry",
+  "output": "cfg: non-JSON stdout lines 0, stderr 0 bytes, no 'claude_code.' strings -> project-level telemetry vars ignored",
+  "rc": 0,
+  "falsifier": "otel run: same vars in the SHELL env -> console export must appear",
+  "falsifier_rc": 1,
+  "note": "Falsifier: 71421 bytes of console export (descriptor name 'claude_code.session.count' ...), so the project-level null result is discriminating. Prompt redacted by default: user_prompt event 'prompt: \"<REDACTED>\"', prompt_length '17'; assistant_response 'response: \"<REDACTED>\"'. OTEL_LOG_USER_PROMPTS / OTEL_LOG_ASSISTANT_RESPONSES exist in the code env list. User-settings and managed routes not exercised. [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour. [falsifier_rc=1: the pass assertion tripped on the falsifier input; the raw falsifier command itself exited 0.]"
+ },
+ {
+  "id": "K-claude-governance-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "binary: code window around the OTLP reader setup",
+  "output": "string literals in that window: 'console','none','otlp','prometheus','grpc','http/json','http/protobuf'",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Value names present. 'No default protocol' and 'managed generic endpoint strips per-signal endpoints' not exercised."
+ },
+ {
+  "id": "K-claude-governance-6",
+  "verdict": "CONFIRMED",
+  "probe": "otel run (shell env, console exporter); binary default",
+  "output": "console export names: claude_code.session.count (4), claude_code.cost.usage (2), claude_code.token.usage (2); code 'xt=60000' with 'let r=a.OTEL_METRIC_EXPORT_INTERVAL??xt'",
+  "rc": 0,
+  "falsifier": "cfg run (telemetry not enabled) -> 0 metric names",
+  "falsifier_rc": 1,
+  "note": "[harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-governance-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none (Admin API)",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-governance-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Defers to docs; no assertion to test."
+ },
+ {
+  "id": "K-claude-prompt-engineering-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Claude Code's --json-schema does not use output_config.format (StructuredOutput tool)."
+ },
+ {
+  "id": "K-claude-prompt-engineering-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-4",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'structured-outputs-2025-11-13' occurs 0 times in the CLI binary."
+ },
+ {
+  "id": "K-claude-prompt-engineering-6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI 2.1.287 catalog lacks claude-haiku-5-5; fable-5-1 maxOutputTokens 64000 in the CLI catalog (claim: 128K for all); requests use thinking {type:'adaptive'}."
+ },
+ {
+  "id": "K-claude-prompt-engineering-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. --effort accepts low/medium/high/xhigh/max; CLI request thinking {'type':'adaptive','display':'updates'}."
+ },
+ {
+  "id": "K-claude-prompt-engineering-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. CLI requests carry no sampling params."
+ },
+ {
+  "id": "K-claude-prompt-engineering-9",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-prompt-engineering-10",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Defers to docs. The Claude Code JSON-schema flag does exist (--json-schema, see P3)."
+ },
+ {
+  "id": "K-claude-rag-and-citations-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-4",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-7",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-rag-and-citations-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'search_result_location' occurs 6 times in the binary."
+ },
+ {
+  "id": "K-claude-rag-and-citations-9",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-solution-design-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: meta-claim about the skill's own content or a 'confirm in docs' directive",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-solution-design-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: meta-claim about the skill's own content or a 'confirm in docs' directive",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "No runtime surface. Checking whether the skill asserts identifiers would need reading skills/claude-*/, which Channel B's charter forbids."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-1",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-2",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-3",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-4",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Binary contains 'pause_turn' 6, 'model_context_window_exceeded' 6."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-5",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'tool_search_tool_regex_20251119' and '_bm25_' occur 0 times in the CLI binary; 'defer_loading' occurs 54 times."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-6",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. Claim defers to docs. CLI tool_result blocks seen in captured requests use 'is_error': true."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-7",
+  "verdict": "CONFIRMED",
+  "probe": "fx_mcp/.mcp.json with 5 entries + `claude mcp get <name>`; then mock run 'mcp' with --mcp-config: stdio command/args/env and http url/headers written as ${VAR:-default}, EGV_ARG set in env",
+  "output": "mcp get: egv-stdio-notype 'Type: stdio'; egv-http 'Type: http'; egv-ws listed; egv-url-notype 'No MCP server named \"egv-url-notype\"' (rejected); fake stdio server launch log {\"argv\":[\".../fake_mcp.py\",\"argfromenv\"],\"EGV_E\":\"envdefault\"} (command default /usr/bin/python3 used); mock received path '/mcpdefaultpath' with header x-egv 'hdrdefault'",
+  "rc": 0,
+  "falsifier": "egv-bogus-type (type 'carrierpigeon') -> also rejected; EGV_ARG set -> env value replaced the default",
+  "falsifier_rc": 1,
+  "note": "mcpServers key, stdio default, url-without-type rejection, ws type, and expansion in command/args/env/url/headers all observed. 'mcp get' displays '${EGV_PATH}' unexpanded. Fields timeout/oauth not exercised; headersHelper exists in binary (205). [harness] Real API unreachable: every `claude -p` to api.anthropic.com returned 'Failed to authenticate: OAuth session expired and could not be refreshed' (rc=1, inherited env and sanitized env alike). Corrected probes therefore run the real 2.1.287 CLI against a local mock Messages API (scratchpad egv-b/mock_api.py, ANTHROPIC_BASE_URL=http://127.0.0.1:18765, dummy key). The mock shows CLI-side behaviour only, never model or server behaviour."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-8",
+  "verdict": "UNVERIFIABLE",
+  "probe": "claude mcp help add; mcp get on .mcp.json",
+  "output": "'-s, --scope <scope>  Configuration scope (local, user, or project) (default: \"local\")'; .mcp.json entries 'Status: ⏸ Pending approval (run `claude` to approve)'",
+  "rc": 0,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Default scope and project approval: observed. Precedence order and no-field-merging: not tested (would write local scope into ~/.claude.json)."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-9",
+  "verdict": "UNVERIFIABLE",
+  "probe": "claude mcp help add / mcp --help; init tool names",
+  "output": "'-t, --transport <transport>  Transport type (stdio, sse, http). Defaults to stdio if not specified.' (no deprecation note); '-H, --header <header...>'; 'login [options] <name>  Authenticate with an MCP server (HTTP, SSE, or claude.ai connector)'; init tools e.g. 'mcp__blender__execute_blender_code'",
+  "rc": 0,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "Header flag, mcp login and mcp__<server>__<tool> naming: observed. 'sse is deprecated' is not shown by the CLI help; OAuth via /mcp not exercised."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-10",
+  "verdict": "UNVERIFIABLE",
+  "probe": "none: claim is only visible through the Messages API / platform docs",
+  "output": "",
+  "rc": null,
+  "falsifier": "none",
+  "falsifier_rc": null,
+  "note": "UNVERIFIABLE by construction: Messages-API / server behaviour; no API key, and the CLI's OAuth session is expired, so no real API call was possible. 'mcp-client-2025-11-20' occurs 0 times in the CLI binary."
+ }
+]

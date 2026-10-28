@@ -1,0 +1,994 @@
+{
+ "skill": "claude-agent-orchestration",
+ "gap_concepts": [
+  {
+   "label": "hub-and-spoke coordination",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Put shared fault-handling and observability rules in the coordinator so workers only report outcomes."
+   ]
+  },
+  {
+   "label": "centralized error policy",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Put shared fault-handling and observability rules in the coordinator so workers only report outcomes."
+   ]
+  },
+  {
+   "label": "explicit context passing to subagents",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Hand findings to a downstream subagent inside its prompt because subagents do not share the coordinator's memory."
+   ]
+  },
+  {
+   "label": "goal-over-procedure subagent prompts",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Write subagent briefs that state the goal and quality bar rather than a rigid step list."
+   ]
+  },
+  {
+   "label": "subagent task briefing",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Write subagent briefs that state the goal and quality bar rather than a rigid step list."
+   ]
+  },
+  {
+   "label": "structured escalation handoff",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Design a handoff record with required fields so a human with no chat history can act on it."
+   ]
+  },
+  {
+   "label": "human handoff context",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Design a handoff record with required fields so a human with no chat history can act on it."
+   ]
+  },
+  {
+   "label": "session resume limits",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Explain that resuming restores conversation but not file contents, so rollback needs checkpointing."
+   ]
+  },
+  {
+   "label": "file checkpointing",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Explain that resuming restores conversation but not file contents, so rollback needs checkpointing."
+   ]
+  },
+  {
+   "label": "SDK session management",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Pick the SDK calls that enumerate stored sessions and read one transcript programmatically."
+   ]
+  },
+  {
+   "label": "session persistence APIs",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Pick the SDK calls that enumerate stored sessions and read one transcript programmatically."
+   ]
+  },
+  {
+   "label": "partial-failure handling",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Treat a partial result with a known blocker differently from a silent crash when coordinating parallel workers."
+   ]
+  },
+  {
+   "label": "structured error propagation",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Treat a partial result with a known blocker differently from a silent crash when coordinating parallel workers.",
+    "Keep transient retries inside the subagent and report only the final outcome upward."
+   ]
+  },
+  {
+   "label": "subagent local recovery",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Keep transient retries inside the subagent and report only the final outcome upward."
+   ]
+  },
+  {
+   "label": "escalation criteria",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Decide escalation on policy coverage and capability, not on how many steps a task has.",
+    "Honor an explicit user demand for a human immediately, per the stated rule."
+   ]
+  },
+  {
+   "label": "policy-driven autonomy",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Decide escalation on policy coverage and capability, not on how many steps a task has."
+   ]
+  },
+  {
+   "label": "segment-level accuracy review",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Route to human review only the slice of data where measured accuracy is low."
+   ]
+  },
+  {
+   "label": "human review routing",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Route to human review only the slice of data where measured accuracy is low.",
+    "Send documents with internally contradictory values to a human regardless of model confidence."
+   ]
+  },
+  {
+   "label": "conflicting source detection",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Send documents with internally contradictory values to a human regardless of model confidence."
+   ]
+  },
+  {
+   "label": "error type distinction",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Report an access failure as retryable and an empty valid answer as success."
+   ]
+  },
+  {
+   "label": "explicit human request handling",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Honor an explicit user demand for a human immediately, per the stated rule."
+   ]
+  },
+  {
+   "label": "orchestrator-workers vs sectioning",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Distinguish runtime-determined subtasks from predefined parallel sections.",
+    "Decompose an audit into focused subagents each with its own tools and scope."
+   ]
+  },
+  {
+   "label": "workflow pattern selection",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Distinguish runtime-determined subtasks from predefined parallel sections.",
+    "Match an open-ended multi-file change to the dynamic delegation pattern."
+   ]
+  },
+  {
+   "label": "agent framework comparison",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Compare third-party agent frameworks on provider support, observability and workflow modelling."
+   ]
+  },
+  {
+   "label": "model-agnostic frameworks",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Compare third-party agent frameworks on provider support, observability and workflow modelling."
+   ]
+  },
+  {
+   "label": "graph-based workflow control",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Compare third-party agent frameworks on provider support, observability and workflow modelling."
+   ]
+  },
+  {
+   "label": "OpenTelemetry tracing",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Compare third-party agent frameworks on provider support, observability and workflow modelling."
+   ]
+  },
+  {
+   "label": "parallelization by voting",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Name the workflow pattern that repeats an identical task and takes the majority result."
+   ]
+  },
+  {
+   "label": "voting versus sectioning",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Name the workflow pattern that repeats an identical task and takes the majority result."
+   ]
+  },
+  {
+   "label": "majority-verdict confidence",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Name the workflow pattern that repeats an identical task and takes the majority result."
+   ]
+  },
+  {
+   "label": "session resume",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Carry context across separate SDK calls by saving the session id and resuming it."
+   ]
+  },
+  {
+   "label": "capturing session id",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Carry context across separate SDK calls by saving the session id and resuming it."
+   ]
+  },
+  {
+   "label": "init system message",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Carry context across separate SDK calls by saving the session id and resuming it."
+   ]
+  },
+  {
+   "label": "built-in shell tool",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Identify the built-in tool that lets an agent run git commands."
+   ]
+  },
+  {
+   "label": "version control automation",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Identify the built-in tool that lets an agent run git commands."
+   ]
+  },
+  {
+   "label": "stateless sessions",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Configure throwaway SDK calls as memory-only so no session file is saved or resumable."
+   ]
+  },
+  {
+   "label": "disabling session persistence",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Configure throwaway SDK calls as memory-only so no session file is saved or resumable."
+   ]
+  },
+  {
+   "label": "TypeScript-only option",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Configure throwaway SDK calls as memory-only so no session file is saved or resumable."
+   ]
+  },
+  {
+   "label": "subagent nesting depth",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Control and cap recursive subagent spawning through settings and tool lists."
+   ]
+  },
+  {
+   "label": "blocking child spawning",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Control and cap recursive subagent spawning through settings and tool lists."
+   ]
+  },
+  {
+   "label": "unattended CI permissions",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Configure a headless agent so only approved tools run and everything else fails fast."
+   ]
+  },
+  {
+   "label": "automatic denial of unlisted tools",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Configure a headless agent so only approved tools run and everything else fails fast."
+   ]
+  },
+  {
+   "label": "fixed tool allowlist",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Configure a headless agent so only approved tools run and everything else fails fast."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Build an agentic loop that keeps iterating while the stop reason signals a tool request and ends when the model signals it is done, feeding tool results back each turn.",
+   "concepts": [
+    "agentic loop",
+    "stop_reason",
+    "tool results in history",
+    "model-driven control"
+   ],
+   "features": [
+    "Claude API",
+    "stop_reason"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Structure a hub-and-spoke multi-agent system in which a coordinator decomposes the query, picks subagents dynamically, aggregates results, and refines until coverage is adequate.",
+   "concepts": [
+    "coordinator-subagent",
+    "hub-and-spoke",
+    "task decomposition",
+    "iterative refinement"
+   ],
+   "features": [
+    "Claude Agent SDK"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Configure subagent spawning and context passing, remembering that subagents start with isolated context and need findings passed explicitly, with parallel spawns in a single response.",
+   "concepts": [
+    "isolated subagent context",
+    "explicit context passing",
+    "parallel spawn",
+    "content vs metadata"
+   ],
+   "features": [
+    "Task tool",
+    "allowedTools",
+    "AgentDefinition",
+    "fork_session"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Enforce multi-step workflow ordering and escalation handoffs with programmatic prerequisites rather than prompt wording, and compile structured handoff summaries for human agents.",
+   "concepts": [
+    "programmatic enforcement",
+    "prerequisite gates",
+    "structured handoff",
+    "multi-concern requests"
+   ],
+   "features": [
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Use SDK hooks to normalize tool results before the model sees them and to intercept outgoing tool calls that violate business rules, redirecting to an alternative workflow.",
+   "concepts": [
+    "PostToolUse normalization",
+    "call interception",
+    "deterministic vs probabilistic compliance"
+   ],
+   "features": [
+    "PostToolUse hook",
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Choose between fixed prompt chains and adaptive decomposition for a workflow, including per-file review passes plus a cross-file integration pass.",
+   "concepts": [
+    "prompt chaining",
+    "adaptive decomposition",
+    "attention dilution",
+    "prioritized plan"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Manage session state by resuming named sessions, forking from a shared baseline, and deciding between resume and a fresh session seeded with a summary when tool results are stale.",
+   "concepts": [
+    "session resumption",
+    "fork_session",
+    "stale tool results",
+    "informing about file changes"
+   ],
+   "features": [
+    "--resume",
+    "fork_session"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Give each agent a scoped tool set, avoid tool overload, and use tool_choice (auto, any, forced) to control whether and which tool is called.",
+   "concepts": [
+    "scoped tools",
+    "tool overload",
+    "tool_choice",
+    "constrained alternatives"
+   ],
+   "features": [
+    "tool_choice"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Decide between plan mode and direct execution by task complexity and use the Explore subagent to keep verbose discovery out of the main context.",
+   "concepts": [
+    "plan mode",
+    "direct execution",
+    "Explore subagent",
+    "plan then execute"
+   ],
+   "features": [
+    "plan mode",
+    "Explore subagent"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Define escalation and ambiguity rules: escalate on explicit human request, policy gaps or stalled progress, ask for more identifiers on multiple matches, and distrust sentiment or self-confidence proxies.",
+   "concepts": [
+    "escalation triggers",
+    "policy gaps",
+    "multiple matches",
+    "unreliable proxies"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Propagate errors across agents with structured context (failure type, attempt, partial results, alternatives), avoiding both silent suppression and whole-workflow aborts.",
+   "concepts": [
+    "structured error context",
+    "access failure vs empty",
+    "local recovery",
+    "coverage annotations"
+   ],
+   "features": [],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Manage context in large-codebase exploration with scratchpad files, subagent delegation, phase summaries, manifest-based crash recovery, and compaction.",
+   "concepts": [
+    "context degradation",
+    "scratchpad files",
+    "state manifests",
+    "compaction"
+   ],
+   "features": [
+    "/compact",
+    "Explore subagent"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Choose among workflow, agentic and augmented-LLM architectural patterns for a given use case.",
+   "concepts": [
+    "workflow vs agent",
+    "augmented LLM",
+    "pattern selection"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Design multi-agent systems and the orchestration strategy that coordinates them.",
+   "concepts": [
+    "multi-agent",
+    "orchestration"
+   ],
+   "features": [],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Assess an agent or tool configuration for capability bloat and excess permissions.",
+   "concepts": [
+    "capability bloat",
+    "least privilege"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Choose the integration mechanism (MCP, API/CLI, agent-to-agent) for a situation.",
+   "concepts": [
+    "protocol selection",
+    "MCP vs API vs agent-to-agent"
+   ],
+   "features": [
+    "MCP"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Apply human-in-the-loop validation strategies.",
+   "concepts": [
+    "human-in-the-loop",
+    "validation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Document architectures and give implementation guidance.",
+   "concepts": [
+    "architecture documentation",
+    "handoff guidance"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Support lifecycle phases from discovery and design through handoff, monitoring and iteration.",
+   "concepts": [
+    "lifecycle phases",
+    "iteration"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Decide when human review or extra verification is required.",
+   "concepts": [
+    "human review",
+    "escalation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Agents and Workflows",
+   "weight_pct": 14.7,
+   "task": "Decide when to use a workflow versus an agent and structure manager/supervisor hierarchies with subagents.",
+   "concepts": [
+    "workflow vs agent",
+    "supervisor hierarchy",
+    "subagents"
+   ],
+   "features": [
+    "subagents"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Agents and Workflows",
+   "weight_pct": 14.7,
+   "task": "Construct agents with the Claude Agent SDK or custom loops and harnesses, choose self-hosted or Anthropic-hosted deployment, and use hooks for deterministic actions.",
+   "concepts": [
+    "Agent SDK",
+    "custom loop",
+    "managed agents",
+    "hooks"
+   ],
+   "features": [
+    "Claude Agent SDK",
+    "Managed Agents",
+    "hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Agents and Workflows",
+   "weight_pct": 14.7,
+   "task": "Apply common agent patterns (tool-use loops, subagents, memory, context management) and agentic frameworks such as Strands, LangGraph and PydanticAI.",
+   "concepts": [
+    "agent patterns",
+    "memory",
+    "agent frameworks"
+   ],
+   "features": [
+    "Strands",
+    "LangGraph",
+    "PydanticAI"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Claude Code",
+   "weight_pct": 3.1,
+   "task": "Operate Claude Code core pieces (rules, skills, commands, agents, agent memory) and features such as sessions, slash commands, headless and streaming modes and auto mode, plus repo initialization and settings.json.",
+   "concepts": [
+    "Claude Code components",
+    "headless mode",
+    "CLAUDE.md hierarchy",
+    "settings"
+   ],
+   "features": [
+    "Claude Code",
+    "CLAUDE.md",
+    "settings.json",
+    "slash commands",
+    "Agent Skills",
+    "auto mode"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Control context with window management, drift and bloat prevention (tool-output pruning, compaction) and isolation via subagents or multi-step workflows.",
+   "concepts": [
+    "context window",
+    "compaction",
+    "tool output pruning",
+    "context isolation"
+   ],
+   "features": [
+    "compaction",
+    "subagents"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Tools and MCPs",
+   "weight_pct": 10.6,
+   "task": "Implement tools well: function calling, tool descriptions, error handling, dispatch in an agentic harness, client-side vs server-side tools, approval patterns and tool set construction.",
+   "concepts": [
+    "tool use",
+    "client vs server tools",
+    "approval patterns"
+   ],
+   "features": [
+    "tool use",
+    "function calling"
+   ],
+   "kind": "claude-api"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "Subagents",
+   "feature": "Agent tool",
+   "doc_url": "https://code.claude.com/docs/en/sub-agents",
+   "fact": "The tool that spawns subagents is named Agent; it was renamed from Task in v2.1.63 and old Task(...) references still work as aliases. In SDK streams tool_use blocks say Agent while the system:init tools list may still say Task, so match both. Restrict spawnable types with Agent(agent_type) in tools (only for an agent running as main thread via claude --agent). A subagent can spawn further subagents up to depth 3 by default (CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH); 20 concurrent by default (CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS).",
+   "identifiers": [
+    "Agent",
+    "Task",
+    "Agent(agent_type)",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS",
+    "subagent_type",
+    "claude --agent"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Task to Agent rename (v2.1.63) and nested-subagent support; older material says subagents cannot spawn subagents."
+  },
+  {
+   "topic": "Subagents",
+   "feature": "Subagent files and frontmatter",
+   "doc_url": "https://code.claude.com/docs/en/sub-agents",
+   "fact": "Markdown with YAML frontmatter; body is the system prompt. Only name and description required. Fields: tools, disallowedTools, model (sonnet, opus, haiku, fable, full ID, inherit), permissionMode, maxTurns, skills, mcpServers, hooks, memory (user/project/local), background, omitClaudeMd, effort, isolation (worktree), color, initialPrompt. Priority on name clash: managed, --agents flag, .claude/agents/, ~/.claude/agents/, plugin agents/. Each subagent starts with fresh context; only its final message returns to the parent. Built-ins: Explore, Plan, general-purpose.",
+   "identifiers": [
+    "name",
+    "description",
+    "tools",
+    "disallowedTools",
+    "model",
+    "permissionMode",
+    "maxTurns",
+    "skills",
+    "mcpServers",
+    "hooks",
+    "memory",
+    "omitClaudeMd",
+    "isolation",
+    "--agents",
+    ".claude/agents/",
+    "~/.claude/agents/",
+    "Explore",
+    "Plan",
+    "general-purpose"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "Agent SDK subagents",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/subagents",
+   "fact": "Define subagents with the agents option on query() (AgentDefinition: description and prompt required; tools, disallowedTools, model, skills, memory, mcpServers, maxTurns, background, effort, permissionMode optional), or via .claude/agents files; programmatic ones win on name clash. Include Agent in allowedTools. Subagent messages carry parent_tool_use_id. Parent sees only the subagent's final message. Cap runaway fan-out with the two env vars plus maxBudgetUsd/max_budget_usd. Without a subagent_type, the built-in general-purpose agent is used.",
+   "identifiers": [
+    "agents",
+    "AgentDefinition",
+    "allowedTools",
+    "Agent",
+    "parent_tool_use_id",
+    "subagent_type",
+    "maxBudgetUsd",
+    "max_budget_usd",
+    "CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS",
+    "Agent(fork)"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "Claude Agent SDK: subagents",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/subagents",
+   "fact": "Same page as above. Subagent spawned by the main agent runs in the background by default (Agent tool result status async_launched) unless Claude waits or background is set; a completed subagent's result text includes agentId, used with resume to continue it. Explore and Plan are one-shot and return no agentId. In-subagent permissions: plan/acceptEdits/auto/bypassPermissions inherit from the main session, but bypassPermissions is never applied to a subagent (v2.1.267+).",
+   "identifiers": [
+    "async_launched",
+    "agentId",
+    "resume",
+    "permissionMode",
+    "agent_id"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Background-by-default subagents and fork subagents (v2.1.302) are recent behaviours."
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "Agent SDK session resume",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+   "fact": "Capture session_id from the result message (also on the init system message in TypeScript), pass it as resume to continue that session with full context. continue (TS continue: true / Python continue_conversation=True) picks the most recent session in the directory. Fork a session with forkSession / fork_session to branch history under a new ID. Sessions persist the conversation, not the filesystem; stored under ~/.claude/projects/<encoded-cwd>/*.jsonl and resumable on the same machine, or across hosts via a session store adapter. Python ClaudeSDKClient tracks the session automatically.",
+   "identifiers": [
+    "resume",
+    "continue",
+    "continue_conversation",
+    "forkSession",
+    "fork_session",
+    "session_id",
+    "persistSession",
+    "sessionStore",
+    "session_store",
+    "ClaudeSDKClient",
+    "CLAUDE_CONFIG_DIR",
+    "error_max_turns",
+    "error_max_budget_usd"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "Agent SDK listSessions",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+   "fact": "Enumerates sessions on disk: listSessions() in TypeScript, list_sessions() in Python. Companion helpers: getSessionInfo/renameSession/tagSession (TS) and get_session_info/rename_session/tag_session (Python). Use for session pickers and cleanup.",
+   "identifiers": [
+    "listSessions",
+    "list_sessions",
+    "getSessionInfo",
+    "renameSession",
+    "tagSession"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "Agent SDK getSessionMessages",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+   "fact": "Reads a session's stored messages: getSessionMessages() in TypeScript, get_session_messages() in Python. Useful for transcript viewers.",
+   "identifiers": [
+    "getSessionMessages",
+    "get_session_messages"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "file checkpointing",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/sessions",
+   "fact": "The sessions page states sessions persist the conversation only and points to file checkpointing to snapshot and revert files the agent changed; forked agents' edits are real and shared. Option names and API of file checkpointing itself: not verified (its own page was not fetched).",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "total_cost_usd",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+   "fact": "Field on the SDK result message (success and error results alike): the cumulative estimated cost of the query() call, including subagent requests. It is a client-side estimate from a bundled price table, not billing data; use the Usage and Cost API or Console for billing. A resumed session's result already includes earlier spend, so read the latest result rather than summing. In Python the field is optional.",
+   "identifiers": [
+    "total_cost_usd",
+    "costUSD",
+    "result",
+    "SDKResultMessage",
+    "ResultMessage"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Resumed-session accounting changed at v2.1.277 (earlier, totals restarted at zero)."
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "modelUsage",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+   "fact": "Result-message map of model name to per-model token counts and cost (model_usage in Python); includes subagent requests, unlike the top-level usage field, which counts only the main loop. Entries carry costUSD, inputTokens, outputTokens, cacheReadInputTokens, cacheCreationInputTokens, plus costBasis (list, managed, unknown; v2.1.246+). Per-step assistant-message output_tokens is a placeholder; read output totals from the result. Dedupe per-step usage by message id for parallel tool calls.",
+   "identifiers": [
+    "modelUsage",
+    "model_usage",
+    "costUSD",
+    "inputTokens",
+    "outputTokens",
+    "cacheReadInputTokens",
+    "cacheCreationInputTokens",
+    "costBasis",
+    "usage"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Agent SDK",
+   "feature": "AskUserQuestion tool",
+   "doc_url": "https://code.claude.com/docs/en/agent-sdk/permissions",
+   "fact": "A built-in tool Claude uses to ask clarifying questions; in the SDK it always falls through to the canUseTool callback even if an allow rule matches, and is denied in dontAsk mode. It is removed entirely when --permission-prompts none is used. Handling details live on the user-input page (not fetched).",
+   "identifiers": [
+    "AskUserQuestion",
+    "canUseTool",
+    "--permission-prompts none"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__multi-agent-orchestration-in-managed-agents-the-agent-sdk-and-claude-code.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__spawning-subagents-the-agent-task-tool-and-agentdefinition.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__programmatic-approval-flows-agent-sdk-and-managed-agents.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__escalation-triggers-and-ambiguity-resolution-for-support-agents.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__agent-sdk-hooks-and-managed-agent-deployment.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__claude-agent-sdk-build-paths-and-the-query-agent-loop.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__mcp-tools-descriptions-and-resources-in-agent-workflows.txt"
+ ],
+ "lesson_words": 24579
+}
