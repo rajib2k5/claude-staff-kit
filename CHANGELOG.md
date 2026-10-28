@@ -5,6 +5,7 @@ All notable changes to staff-kit. Format follows Keep a Changelog; versions foll
 ## [Unreleased]
 
 ### Added
+- `learn-as-you-build` skill: teaches the user the code while it is built. It builds one milestone, writes a walkthrough doc and concept notes, then runs a checkpoint of lessons, each followed by its own quiz question with every option explained, and 5 to 8 explain-it-back questions. Four modes (`full`, `lite`, `deferred`, `off`) with switch phrases and a per-project default let a user on a deadline bypass it. It uses an inline widget when the host has one and plain markdown otherwise. The kit now has 26 skills.
 - `third-party/`: vendored `threejs` 1.0.0, `cert-safari-quiz` 0.1.0, `evolv-taste-pilot` 0.1.0 plugins and the `code-mods-essentials` skill, with provenance in `third-party/README.md`. The three plugins are listed in the marketplace. The `staff-kit` plugin itself is unchanged.
 
 ## [1.0.0] - 2026-10-11
