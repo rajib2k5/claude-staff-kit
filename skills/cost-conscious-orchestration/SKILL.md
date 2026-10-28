@@ -64,8 +64,8 @@ Never let a subagent inherit the session model silently. Pass `model:` on every 
 
 Model ids in this environment: prefer the aliases `sonnet` / `opus` / `haiku` / `fable` — they
 track the current generation without edits. Canonical ids when a pin is genuinely required:
-latest Opus `claude-opus-5`, latest Sonnet `claude-sonnet-5`, latest Fable `claude-fable-5`,
-Haiku `claude-haiku-4-5-20251001`. **Use version 5 or higher.** Model ids are not guessable and
+latest Opus `claude-opus-5-5`, latest Sonnet `claude-sonnet-5-5`, latest Fable `claude-fable-5-1`,
+latest Haiku `claude-haiku-5-5` (Claude Code v2.1.293+), as of 2026-10-28. **Use version 5 or higher.** Model ids are not guessable and
 roll forward — confirm from `/model` or the session banner before pinning, and never silently
 fall back to a weaker model for validation; say the intended model was unavailable instead.
 

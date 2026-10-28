@@ -1,0 +1,934 @@
+{
+ "skill": "claude-solution-design",
+ "gap_concepts": [
+  {
+   "label": "scope agreement before synthesis",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Settle the comparison's rows and columns before merging scattered answers into one deliverable."
+   ]
+  },
+  {
+   "label": "consolidating separate outputs",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Settle the comparison's rows and columns before merging scattered answers into one deliverable."
+   ]
+  },
+  {
+   "label": "comparison matrix design",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Settle the comparison's rows and columns before merging scattered answers into one deliverable."
+   ]
+  },
+  {
+   "label": "web search sourcing",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Trace each cited figure back to its source page before anything goes public."
+   ]
+  },
+  {
+   "label": "context limit handling",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Decide when letting the conversation condense itself is acceptable versus persisting knowledge elsewhere."
+   ]
+  },
+  {
+   "label": "disposable versus durable work",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Decide when letting the conversation condense itself is acceptable versus persisting knowledge elsewhere."
+   ]
+  },
+  {
+   "label": "automatic context management",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Decide when letting the conversation condense itself is acceptable versus persisting knowledge elsewhere."
+   ]
+  },
+  {
+   "label": "research mode usage",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Match multi-source research and collaborative editing needs to the right claude.ai capabilities."
+   ]
+  },
+  {
+   "label": "artifacts for shared editing",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Match multi-source research and collaborative editing needs to the right claude.ai capabilities."
+   ]
+  },
+  {
+   "label": "feature-to-task matching",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Match multi-source research and collaborative editing needs to the right claude.ai capabilities."
+   ]
+  },
+  {
+   "label": "need versus solution framing",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Use Claude to recover the underlying outcome behind solution-shaped requests and surface ambiguity."
+   ]
+  },
+  {
+   "label": "flagging unclear outcomes",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Use Claude to recover the underlying outcome behind solution-shaped requests and surface ambiguity."
+   ]
+  },
+  {
+   "label": "vague feedback diagnosis",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Collect specific failing cases before changing a pilot in response to nonspecific complaints."
+   ]
+  },
+  {
+   "label": "pilot triage",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Collect specific failing cases before changing a pilot in response to nonspecific complaints."
+   ]
+  },
+  {
+   "label": "change communication",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Announce an AI-assisted process by clarifying what changes, what stays human, and where review remains."
+   ]
+  },
+  {
+   "label": "human and AI responsibility split",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Announce an AI-assisted process by clarifying what changes, what stays human, and where review remains."
+   ]
+  },
+  {
+   "label": "review checkpoints",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Announce an AI-assisted process by clarifying what changes, what stays human, and where review remains."
+   ]
+  },
+  {
+   "label": "AI-assisted research planning",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Combine Claude's research output with source checking and human refinement for a decision-grade study."
+   ]
+  },
+  {
+   "label": "team refinement of plans",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Combine Claude's research output with source checking and human refinement for a decision-grade study."
+   ]
+  },
+  {
+   "label": "stakeholder buy-in evidence",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Select the evidence that convinces sceptical business audiences about an AI workflow."
+   ]
+  },
+  {
+   "label": "human review rationale",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Select the evidence that convinces sceptical business audiences about an AI workflow."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Build an agentic loop that keeps iterating while the stop reason signals a tool request and ends when the model signals it is done, feeding tool results back each turn.",
+   "concepts": [
+    "agentic loop",
+    "stop_reason",
+    "tool results in history",
+    "model-driven control"
+   ],
+   "features": [
+    "Claude API",
+    "stop_reason"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Structure a hub-and-spoke multi-agent system in which a coordinator decomposes the query, picks subagents dynamically, aggregates results, and refines until coverage is adequate.",
+   "concepts": [
+    "coordinator-subagent",
+    "hub-and-spoke",
+    "task decomposition",
+    "iterative refinement"
+   ],
+   "features": [
+    "Claude Agent SDK"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Configure subagent spawning and context passing, remembering that subagents start with isolated context and need findings passed explicitly, with parallel spawns in a single response.",
+   "concepts": [
+    "isolated subagent context",
+    "explicit context passing",
+    "parallel spawn",
+    "content vs metadata"
+   ],
+   "features": [
+    "Task tool",
+    "allowedTools",
+    "AgentDefinition",
+    "fork_session"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Enforce multi-step workflow ordering and escalation handoffs with programmatic prerequisites rather than prompt wording, and compile structured handoff summaries for human agents.",
+   "concepts": [
+    "programmatic enforcement",
+    "prerequisite gates",
+    "structured handoff",
+    "multi-concern requests"
+   ],
+   "features": [
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Use SDK hooks to normalize tool results before the model sees them and to intercept outgoing tool calls that violate business rules, redirecting to an alternative workflow.",
+   "concepts": [
+    "PostToolUse normalization",
+    "call interception",
+    "deterministic vs probabilistic compliance"
+   ],
+   "features": [
+    "PostToolUse hook",
+    "Claude Agent SDK hooks"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Choose between fixed prompt chains and adaptive decomposition for a workflow, including per-file review passes plus a cross-file integration pass.",
+   "concepts": [
+    "prompt chaining",
+    "adaptive decomposition",
+    "attention dilution",
+    "prioritized plan"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Manage session state by resuming named sessions, forking from a shared baseline, and deciding between resume and a fresh session seeded with a summary when tool results are stale.",
+   "concepts": [
+    "session resumption",
+    "fork_session",
+    "stale tool results",
+    "informing about file changes"
+   ],
+   "features": [
+    "--resume",
+    "fork_session"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Write tool descriptions and boundaries (inputs, examples, edge cases, when-not-to-use) that disambiguate similar tools, and rename or split overlapping tools.",
+   "concepts": [
+    "tool descriptions",
+    "tool selection",
+    "overlap and misrouting",
+    "system prompt keyword effects"
+   ],
+   "features": [
+    "tool descriptions"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Return structured MCP tool errors that distinguish transient, validation, business and permission failures with retryability metadata, and separate access failures from valid empty results.",
+   "concepts": [
+    "isError",
+    "error categories",
+    "retryable vs non-retryable",
+    "local recovery"
+   ],
+   "features": [
+    "MCP isError flag"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Give each agent a scoped tool set, avoid tool overload, and use tool_choice (auto, any, forced) to control whether and which tool is called.",
+   "concepts": [
+    "scoped tools",
+    "tool overload",
+    "tool_choice",
+    "constrained alternatives"
+   ],
+   "features": [
+    "tool_choice"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Integrate MCP servers with Claude Code using project-scoped and user-scoped configuration, environment-variable expansion for secrets, and resources for content catalogs.",
+   "concepts": [
+    "MCP scoping",
+    "env var expansion",
+    "MCP resources",
+    "community vs custom servers"
+   ],
+   "features": [
+    ".mcp.json",
+    "~/.claude.json",
+    "MCP resources"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Pick the right built-in tool (Grep, Glob, Read, Write, Edit, Bash) for each job and build codebase understanding incrementally, with Read+Write as the fallback when Edit anchors are not unique.",
+   "concepts": [
+    "Grep vs Glob",
+    "Edit uniqueness",
+    "incremental exploration",
+    "tracing wrappers"
+   ],
+   "features": [
+    "Read",
+    "Write",
+    "Edit",
+    "Bash",
+    "Grep",
+    "Glob"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Design multi-instance and multi-pass reviews: independent reviewer without generator reasoning, per-file passes plus integration pass, and confidence reporting for routing.",
+   "concepts": [
+    "self-review limits",
+    "independent instance",
+    "multi-pass",
+    "confidence routing"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Translate a business problem into a Claude-based solution with clear scope and value.",
+   "concepts": [
+    "problem framing",
+    "business-to-solution mapping"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Design an end-to-end architecture covering input, processing, output and feedback loops.",
+   "concepts": [
+    "end-to-end design",
+    "feedback loops"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Choose among workflow, agentic and augmented-LLM architectural patterns for a given use case.",
+   "concepts": [
+    "workflow vs agent",
+    "augmented LLM",
+    "pattern selection"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Design multi-agent systems and the orchestration strategy that coordinates them.",
+   "concepts": [
+    "multi-agent",
+    "orchestration"
+   ],
+   "features": [],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Apply decomposition techniques to break complex problems into tractable parts.",
+   "concepts": [
+    "decomposition",
+    "complex problem solving"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Align a solution to business value pillars such as efficiency, transformation, productivity, cost and performance SLAs.",
+   "concepts": [
+    "business value pillars",
+    "SLAs"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Assess an agent or tool configuration for capability bloat and excess permissions.",
+   "concepts": [
+    "capability bloat",
+    "least privilege"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Analyze authentication and authorization requirements to find security gaps.",
+   "concepts": [
+    "authn/authz",
+    "security gaps"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Evaluate accuracy versus latency tradeoffs and justify the configuration chosen.",
+   "concepts": [
+    "accuracy-latency tradeoff",
+    "configuration justification"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Analyze observability challenges and pick monitoring strategies that work at scale.",
+   "concepts": [
+    "observability",
+    "monitoring at scale"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Design a RAG pipeline with suitable chunking and indexing strategies.",
+   "concepts": [
+    "RAG",
+    "chunking",
+    "indexing"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Match retrieval strategies to data shape and query pattern.",
+   "concepts": [
+    "retrieval strategy",
+    "query pattern"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Choose the integration mechanism (MCP, API/CLI, agent-to-agent) for a situation.",
+   "concepts": [
+    "protocol selection",
+    "MCP vs API vs agent-to-agent"
+   ],
+   "features": [
+    "MCP"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Compare progressive discovery against a monolithic context strategy.",
+   "concepts": [
+    "progressive discovery",
+    "monolithic context"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Run structured discovery and requirements gathering with stakeholders.",
+   "concepts": [
+    "discovery",
+    "requirements"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Communicate architectural decisions and their tradeoffs to varied audiences.",
+   "concepts": [
+    "decision communication",
+    "tradeoffs"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Manage stakeholder feedback loops and expectation alignment, including SLAs.",
+   "concepts": [
+    "feedback loops",
+    "expectations",
+    "SLAs"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Document architectures and give implementation guidance.",
+   "concepts": [
+    "architecture documentation",
+    "handoff guidance"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Stakeholder Communication & Lifecycle Management",
+   "weight_pct": 14,
+   "task": "Support lifecycle phases from discovery and design through handoff, monitoring and iteration.",
+   "concepts": [
+    "lifecycle phases",
+    "iteration"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Developer Productivity & Operational Enablement",
+   "weight_pct": 7,
+   "task": "Configure Claude tools and environments such as Claude Code for teams.",
+   "concepts": [
+    "team configuration",
+    "environment setup"
+   ],
+   "features": [
+    "Claude Code"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Developer Productivity & Operational Enablement",
+   "weight_pct": 7,
+   "task": "Improve developer workflows with AI-assisted tooling.",
+   "concepts": [
+    "developer workflow",
+    "AI-assisted tooling"
+   ],
+   "features": [
+    "Claude Code"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Developer Productivity & Operational Enablement",
+   "weight_pct": 7,
+   "task": "Support debugging and operational issue resolution.",
+   "concepts": [
+    "debugging",
+    "operations"
+   ],
+   "features": [],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Select the right Claude product feature, such as Projects, research mode, chat or Artifacts.",
+   "concepts": [
+    "feature selection",
+    "Projects vs chat vs Research"
+   ],
+   "features": [
+    "Projects",
+    "Research",
+    "Artifacts"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Tell Haiku, Sonnet and Opus apart by their use cases.",
+   "concepts": [
+    "model tiers",
+    "Haiku vs Sonnet vs Opus"
+   ],
+   "features": [
+    "Haiku",
+    "Sonnet",
+    "Opus"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Match model choice to cost, speed and quality needs.",
+   "concepts": [
+    "cost-speed-quality",
+    "model fit"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Handle context limits and memory by knowing when to restart, summarize or persist.",
+   "concepts": [
+    "context limits",
+    "memory",
+    "restart vs persist"
+   ],
+   "features": [
+    "Memory"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Workflow Integration and Solution Design",
+   "weight_pct": 16,
+   "task": "Use Claude to analyze requirements and use cases.",
+   "concepts": [
+    "requirements analysis",
+    "use-case analysis"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Workflow Integration and Solution Design",
+   "weight_pct": 16,
+   "task": "Use Claude for research, planning and process optimization.",
+   "concepts": [
+    "research",
+    "planning",
+    "process optimization"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Workflow Integration and Solution Design",
+   "weight_pct": 16,
+   "task": "Use Claude to support solution design, development and iteration.",
+   "concepts": [
+    "solution design",
+    "iteration"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Workflow Integration and Solution Design",
+   "weight_pct": 16,
+   "task": "Integrate Claude into existing workflows to augment or redesign them.",
+   "concepts": [
+    "workflow integration",
+    "augment vs redesign"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Workflow Integration and Solution Design",
+   "weight_pct": 16,
+   "task": "Explain Claude's value and limitations to stakeholders.",
+   "concepts": [
+    "stakeholder communication",
+    "limitations"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Governance, Risk, and Responsible Use",
+   "weight_pct": 15,
+   "task": "Recognize appropriate and inappropriate use cases.",
+   "concepts": [
+    "use-case suitability",
+    "inappropriate use"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Derive functional and infrastructure requirements from business needs and solution architecture.",
+   "concepts": [
+    "requirements",
+    "infrastructure"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Apply systems life cycle concepts to develop, deploy, operate and maintain systems.",
+   "concepts": [
+    "systems life cycle",
+    "develop-operate-maintain"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Use Claude API mechanics: messages, tools, streaming, vision, thinking, caching, third-party vendor access, batch use and the realtime-vs-batch tradeoff.",
+   "concepts": [
+    "Messages API",
+    "streaming and vision",
+    "thinking",
+    "caching",
+    "batch vs realtime"
+   ],
+   "features": [
+    "Messages API",
+    "Message Batches API",
+    "prompt caching",
+    "extended thinking"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Apply software engineering foundations: REST, JSON, async programming, version control, SDLC integration, code review and refactoring.",
+   "concepts": [
+    "REST",
+    "JSON",
+    "async",
+    "code review",
+    "refactoring"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Design Claude applications with attention to how instructions are interpreted across interfaces, content boundaries, schema design, session hygiene and plugin management.",
+   "concepts": [
+    "cross-interface behavior",
+    "schema design",
+    "session hygiene",
+    "plugins"
+   ],
+   "features": [
+    "Claude Code",
+    "claude.ai",
+    "Claude API",
+    "plugins"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Manage configuration: CLAUDE.md, settings.json, model version pinning, prompt versioning and plugin dependencies.",
+   "concepts": [
+    "config management",
+    "version pinning",
+    "prompt versioning"
+   ],
+   "features": [
+    "CLAUDE.md",
+    "settings.json",
+    "plugins"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Eval, Testing, and Debugging",
+   "weight_pct": 2.6,
+   "task": "Debug Claude applications by classifying errors, picking recovery strategies, analyzing traces, and isolating whether the fault is in the integration layer or the model output.",
+   "concepts": [
+    "error types",
+    "trace analysis",
+    "fault isolation"
+   ],
+   "features": [],
+   "kind": "claude-api"
+  }
+ ],
+ "docs_facts": [],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__from-business-problem-to-claude-solution-design.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__ai-solution-lifecycle-discovery-design-and-handoff.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__documenting-an-ai-solution-architecture-for-engineering-teams.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__end-to-end-claude-architecture-input-processing-output-and-feedback-loops.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__agentic-loop-lifecycle-stop-reason-control-flow-and-tool-results.txt"
+ ],
+ "lesson_words": 24774
+}

@@ -1,0 +1,462 @@
+[
+ {
+  "id": "K-claude-agent-orchestration-1",
+  "skill": "claude-agent-orchestration",
+  "claim": "Spawning tool is named `Agent`. It was renamed from `Task` in v2.1.63. Old `Task(...)` still works as an alias. SDK streams may show either name, so match both. https://code.claude.com/docs/en/sub-agents"
+ },
+ {
+  "id": "K-claude-agent-orchestration-2",
+  "skill": "claude-agent-orchestration",
+  "claim": "`Agent(agent_type)` in `tools` restricts spawnable types, and applies only to an agent run as the main thread with `claude --agent`. https://code.claude.com/docs/en/sub-agents"
+ },
+ {
+  "id": "K-claude-agent-orchestration-3",
+  "skill": "claude-agent-orchestration",
+  "claim": "Depth 3 and 20 concurrent by default (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`). https://code.claude.com/docs/en/sub-agents"
+ },
+ {
+  "id": "K-claude-agent-orchestration-4",
+  "skill": "claude-agent-orchestration",
+  "claim": "Subagent files are Markdown with YAML frontmatter; the body is the system prompt. Only `name` and `description` are required. Others include `tools`, `disallowedTools`, `model` (`sonnet`, `opus`, `haiku`, `fable`, a full id or `inherit`), `permissionMode`, `maxTurns`, `hooks`, `isolation`. Built-ins: `Explore`, `Plan`, `general-purpose`. Each starts with fresh context; only its final message returns. https://code.claude.com/docs/en/sub-agents"
+ },
+ {
+  "id": "K-claude-agent-orchestration-5",
+  "skill": "claude-agent-orchestration",
+  "claim": "Agent SDK: define subagents with the `agents` option on `query()` (`AgentDefinition`: `description` and `prompt` required). Include `Agent` in `allowedTools`. Subagent messages carry `parent_tool_use_id`. Without a `subagent_type`, `general-purpose` is used. Cap fan-out with the two env vars plus `maxBudgetUsd` / `max_budget_usd`. https://code.claude.com/docs/en/agent-sdk/subagents"
+ },
+ {
+  "id": "K-claude-agent-orchestration-6",
+  "skill": "claude-agent-orchestration",
+  "claim": "A subagent spawned by the main agent runs in the background by default (result status `async_launched`). A completed subagent's result text includes `agentId`, usable with `resume`. `Explore` and `Plan` are one-shot and return no `agentId`. `bypassPermissions` is never applied to a subagent (v2.1.267+). https://code.claude.com/docs/en/agent-sdk/subagents"
+ },
+ {
+  "id": "K-claude-agent-orchestration-7",
+  "skill": "claude-agent-orchestration",
+  "claim": "Session resume: capture `session_id` from the result message, pass it as `resume`. `continue` picks the most recent session. `forkSession` / `fork_session` branches history under a new id. Sessions persist the conversation, not the filesystem, under `~/.claude/projects/<encoded-cwd>/*.jsonl`. Forked agents' edits are real and shared. https://code.claude.com/docs/en/agent-sdk/sessions"
+ },
+ {
+  "id": "K-claude-agent-orchestration-8",
+  "skill": "claude-agent-orchestration",
+  "claim": "Enumerate sessions: `listSessions()` / `list_sessions()`. Read one transcript: `getSessionMessages()` / `get_session_messages()` (TS / Python). https://code.claude.com/docs/en/agent-sdk/sessions"
+ },
+ {
+  "id": "K-claude-agent-orchestration-9",
+  "skill": "claude-agent-orchestration",
+  "claim": "File checkpointing snapshots and reverts files the agent changed; its API: confirm in docs. `persistSession` is named for memory-only throwaway sessions; scope (exam material says TypeScript-only) and Python equivalent: confirm in docs. https://code.claude.com/docs/en/agent-sdk/sessions"
+ },
+ {
+  "id": "K-claude-agent-orchestration-10",
+  "skill": "claude-agent-orchestration",
+  "claim": "`AskUserQuestion` always goes through the `canUseTool` callback, is denied in `dontAsk` mode, and is removed when `--permission-prompts none` is used. https://code.claude.com/docs/en/agent-sdk/permissions"
+ },
+ {
+  "id": "K-claude-agent-orchestration-11",
+  "skill": "claude-agent-orchestration",
+  "claim": "Cost: `total_cost_usd` is a client-side estimate that includes subagents and, on resume, earlier spend. `modelUsage` includes subagents; `usage` counts only the main loop. https://code.claude.com/docs/en/agent-sdk/cost-tracking"
+ },
+ {
+  "id": "K-claude-api-ops-1",
+  "skill": "claude-api-ops",
+  "claim": "Stop reasons: `end_turn`, `max_tokens`, `stop_sequence`, `tool_use`, `pause_turn`, `refusal`, `model_context_window_exceeded`; refusal detail lives in `stop_details`. https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons"
+ },
+ {
+  "id": "K-claude-api-ops-2",
+  "skill": "claude-api-ops",
+  "claim": "`pause_turn`: server-tool loop hit its default 10-iteration limit. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-3",
+  "skill": "claude-api-ops",
+  "claim": "Output cap: 128K tokens synchronous on the current models; Batches can reach 300k with beta header `output-300k-2026-03-24`; each batched request needs `max_tokens` of at least 1. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-4",
+  "skill": "claude-api-ops",
+  "claim": "Models (all 1M context, 128K output): `claude-fable-5-1` ($10/$50 per MTok), `claude-opus-5-5` ($4/$20), `claude-sonnet-5-5` ($2/$10), `claude-haiku-5-5` (from $0.10/$0.50). https://platform.claude.com/docs/en/models/overview"
+ },
+ {
+  "id": "K-claude-api-ops-5",
+  "skill": "claude-api-ops",
+  "claim": "Legacy but available: `claude-fable-5`, `claude-opus-5`, `claude-opus-4-8`, `claude-sonnet-5`, `claude-haiku-4-5-20251001`. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-6",
+  "skill": "claude-api-ops",
+  "claim": "Effort: `output_config.effort` with `low`, `medium`, `high`, `xhigh`, `max`. Default `high` on Fable 5.1 and Sonnet 5.5, `medium` on Opus 5.5 and Haiku 5.5. https://platform.claude.com/docs/en/build-with-claude/effort"
+ },
+ {
+  "id": "K-claude-api-ops-7",
+  "skill": "claude-api-ops",
+  "claim": "Deprecated: `claude-sonnet-4-5-20250929` retires 2026-11-30, replacement `claude-sonnet-5-5`. https://platform.claude.com/docs/en/about-claude/model-deprecations"
+ },
+ {
+  "id": "K-claude-api-ops-8",
+  "skill": "claude-api-ops",
+  "claim": "Sampling parameters `temperature`, `top_p`, `top_k` removed in API version `2026-10-21` (400 even at default). Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-9",
+  "skill": "claude-api-ops",
+  "claim": "Notice period: at least 60 days for publicly released models. Cloud-managed platforms set their own dates. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-10",
+  "skill": "claude-api-ops",
+  "claim": "Caching: `cache_control` of `{type: ephemeral, ttl: 5m|1h}`; up to 4 explicit breakpoints; 20-block lookback; 1h write costs 2x base input. https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+ },
+ {
+  "id": "K-claude-api-ops-11",
+  "skill": "claude-api-ops",
+  "claim": "Cache reads: Opus 5.5 $0.20 vs $4 base; Sonnet 5.5 $0.10 vs $2. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-12",
+  "skill": "claude-api-ops",
+  "claim": "Minimum cacheable prompt: 512 tokens on the 5.5 generation and Fable 5.1, 1,024 on Sonnet 5, 4,096 on Haiku 4.5. Shorter prompts skip caching silently. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-13",
+  "skill": "claude-api-ops",
+  "claim": "Cache counters: `cache_read_input_tokens`, `cache_creation_input_tokens`; `input_tokens` counts only tokens after the last breakpoint. Same URL as above."
+ },
+ {
+  "id": "K-claude-api-ops-14",
+  "skill": "claude-api-ops",
+  "claim": "Batches: `POST /v1/messages/batches`, `custom_id` 1-64 chars, up to 100,000 requests or 256 MB, expire after 24 hours, results kept 29 days at `results_url`, status `in_progress` then `ended`, counts in `request_counts`. https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+ },
+ {
+  "id": "K-claude-api-ops-15",
+  "skill": "claude-api-ops",
+  "claim": "Token counting: `POST /v1/messages/count_tokens`, returns `input_tokens`, an estimate, free but rate limited. https://platform.claude.com/docs/en/build-with-claude/token-counting"
+ },
+ {
+  "id": "K-claude-api-ops-16",
+  "skill": "claude-api-ops",
+  "claim": "Tool overhead: definitions and tool blocks count as input tokens, plus a per-model system overhead (286 tokens on Opus 5.5 with `auto` or `none`). https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
+ },
+ {
+  "id": "K-claude-api-ops-17",
+  "skill": "claude-api-ops",
+  "claim": "Rate-limit headers, error status mapping, `Retry-After` handling, exact `tool_choice` forcing semantics: confirm in docs."
+ },
+ {
+  "id": "K-claude-code-config-1",
+  "skill": "claude-code-config",
+  "claim": "CLAUDE.md files concatenate from the tree above the working directory (root first); subdirectory files load on demand. Imports use `@path/to/import`, max four hops. `/init` bootstraps one. `claudeMdExcludes` skips files. `AGENTS.md` can be read in place of CLAUDE.md. Source: https://code.claude.com/docs/en/memory"
+ },
+ {
+  "id": "K-claude-code-config-2",
+  "skill": "claude-code-config",
+  "claim": "Scopes: `~/.claude/CLAUDE.md`, `./CLAUDE.md` or `./.claude/CLAUDE.md`, `./CLAUDE.local.md`, managed `/etc/claude-code/CLAUDE.md` (Linux/WSL). Same page."
+ },
+ {
+  "id": "K-claude-code-config-3",
+  "skill": "claude-code-config",
+  "claim": "`.claude/settings.local.json` outranks `.claude/settings.json` and `~/.claude/settings.json`; only `--settings` and managed settings outrank it. Since v2.1.211 it sits at the repository root in a git repo. Source: https://code.claude.com/docs/en/settings"
+ },
+ {
+  "id": "K-claude-code-config-4",
+  "skill": "claude-code-config",
+  "claim": "Permission modes: `default` (alias `manual`), `acceptEdits`, `plan`, `auto`, `dontAsk`, `bypassPermissions`. Set by `--permission-mode`, Shift+Tab (not `dontAsk`) or `permissions.defaultMode`. Source: https://code.claude.com/docs/en/permission-modes"
+ },
+ {
+  "id": "K-claude-code-config-5",
+  "skill": "claude-code-config",
+  "claim": "Interactive default is `auto` on v2.1.283 and later. A `-p` run with no mode set starts in Manual on v2.1.302 and later, and denies calls that need approval. Project-level `auto` and `bypassPermissions` defaults are ignored. Same page."
+ },
+ {
+  "id": "K-claude-code-config-6",
+  "skill": "claude-code-config",
+  "claim": "`bypassPermissions`: deny and explicit ask rules still apply; allow rules have no effect. Org switch: `permissions.disableBypassPermissionsMode`. Same page."
+ },
+ {
+  "id": "K-claude-code-config-7",
+  "skill": "claude-code-config",
+  "claim": "Plan mode: `--permission-mode plan`, `/plan`, `ExitPlanMode`. A PreToolUse hook allow does not approve edits there. Same page."
+ },
+ {
+  "id": "K-claude-code-config-8",
+  "skill": "claude-code-config",
+  "claim": "`--disallowedTools` / `--allowedTools` / `--tools`; settings keys `permissions.allow`, `permissions.deny`, `permissions.ask`. Sources: https://code.claude.com/docs/en/cli-reference and https://code.claude.com/docs/en/permissions"
+ },
+ {
+  "id": "K-claude-code-config-9",
+  "skill": "claude-code-config",
+  "claim": "PreToolUse input fields: `tool_name`, `tool_input`, `tool_use_id`. Exit code 2 blocks. `permissionDecision` values: `allow`, `deny`, `ask`, `defer`. `updatedInput` rewrites arguments. Source: https://code.claude.com/docs/en/hooks"
+ },
+ {
+  "id": "K-claude-code-config-10",
+  "skill": "claude-code-config",
+  "claim": "Skill frontmatter: `allowed-tools`, `disallowed-tools`, `disable-model-invocation`, `user-invocable`, `context` (fork), `agent`, `paths`, `argument-hint`. Keep SKILL.md under 500 lines. Source: https://code.claude.com/docs/en/skills"
+ },
+ {
+  "id": "K-claude-code-config-11",
+  "skill": "claude-code-config",
+  "claim": "Print mode: `-p`, `--bare` (needs `ANTHROPIC_API_KEY`), `--max-turns`, `--max-budget-usd`, `--no-session-persistence`, `--resume`, `--append-system-prompt`. Source: https://code.claude.com/docs/en/headless"
+ },
+ {
+  "id": "K-claude-code-config-12",
+  "skill": "claude-code-config",
+  "claim": "`--output-format` takes `text`, `json`, `stream-json` (needs `--verbose`). JSON carries `result`, `session_id`, `usage`, `total_cost_usd` with a per-model breakdown, and `permission_denials`. Same page."
+ },
+ {
+  "id": "K-claude-code-config-13",
+  "skill": "claude-code-config",
+  "claim": "`--json-schema` with `--output-format json` fills `structured_output`; absent if the run ends without valid output. Same page."
+ },
+ {
+  "id": "K-claude-context-management-1",
+  "skill": "claude-context-management",
+  "claim": "Context editing: server-side clearing, beta header `context-management-2025-06-27`, set through the top-level `context_management` parameter with an `edits` array (`client.beta.messages` in SDKs). https://platform.claude.com/docs/en/build-with-claude/context-editing"
+ },
+ {
+  "id": "K-claude-context-management-2",
+  "skill": "claude-context-management",
+  "claim": "Two strategies: `clear_tool_uses_20250919` (oldest tool results) and `clear_thinking_20251015` (earlier thinking blocks). Use `clear_at_least`, because clearing invalidates cached prefixes. https://platform.claude.com/docs/en/build-with-claude/context-editing"
+ },
+ {
+  "id": "K-claude-context-management-3",
+  "skill": "claude-context-management",
+  "claim": "`clear_tool_uses_20250919` defaults: trigger 100,000 input tokens (or tool uses), keep the 3 most recent tool use and result pairs, `exclude_tools` none, `clear_tool_inputs` false. Cleared results become placeholder text. https://platform.claude.com/docs/en/build-with-claude/context-editing"
+ },
+ {
+  "id": "K-claude-context-management-4",
+  "skill": "claude-context-management",
+  "claim": "The docs call server-side compaction the primary strategy for long conversations and context editing the fine-grained option. https://platform.claude.com/docs/en/build-with-claude/context-editing"
+ },
+ {
+  "id": "K-claude-context-management-5",
+  "skill": "claude-context-management",
+  "claim": "Compaction replaces older turns with a summary. Two forms: on demand (put the returned compaction block first in `messages`; header `compact-2026-09-04`; top-level `compaction` parameter) and at a token threshold (the API compacts inside ordinary requests when input tokens reach your trigger). https://platform.claude.com/docs/en/build-with-claude/compaction"
+ },
+ {
+  "id": "K-claude-context-management-6",
+  "skill": "claude-context-management",
+  "claim": "Client-side compaction in the tool runner was removed in API version 2026-10-21. See the migration guide. https://platform.claude.com/docs/en/build-with-claude/compaction"
+ },
+ {
+  "id": "K-claude-context-management-7",
+  "skill": "claude-context-management",
+  "claim": "Claude Code `/compact`, auto-compaction and any pre-compaction hook event: confirm in docs."
+ },
+ {
+  "id": "K-claude-context-management-8",
+  "skill": "claude-context-management",
+  "claim": "Memory tool: client-side, `{type: memory_20250818, name: memory}`. Claude issues `view`, `create`, `str_replace`, `insert`, `delete`, `rename` against `/memories`; your code runs them and returns `tool_result`. Reject paths outside `/memories`. You own storage, size and expiry. https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool"
+ },
+ {
+  "id": "K-claude-context-management-9",
+  "skill": "claude-context-management",
+  "claim": "Usage reading: `modelUsage` on the SDK result includes subagent requests; `usage` counts the main loop only. https://code.claude.com/docs/en/agent-sdk/cost-tracking"
+ },
+ {
+  "id": "K-claude-context-management-10",
+  "skill": "claude-context-management",
+  "claim": "Sessions persist the conversation, not the filesystem. Resume with `resume`; branch with `forkSession` / `fork_session`. A subagent starts fresh and returns only its final message. https://code.claude.com/docs/en/agent-sdk/sessions"
+ },
+ {
+  "id": "K-claude-evals-1",
+  "skill": "claude-evals",
+  "claim": "No platform identifiers were retrieved for this skill's brief, so none are asserted here."
+ },
+ {
+  "id": "K-claude-evals-2",
+  "skill": "claude-evals",
+  "claim": "Model ids, snapshot pinning and deprecation dates: confirm in docs. The lineup checked for `claude-prompt-engineering` is the starting point."
+ },
+ {
+  "id": "K-claude-governance-1",
+  "skill": "claude-governance",
+  "claim": "Server-managed settings: Owners set Claude Code policy in claude.ai Organization settings, Claude Code, Managed settings. Clients fetch at startup and poll hourly. Needs a Teams or Enterprise plan, the Owner or Primary Owner role, and network access to api.anthropic.com. Managed settings sit at the top of the precedence stack. Docs: https://code.claude.com/docs/en/server-managed-settings"
+ },
+ {
+  "id": "K-claude-governance-2",
+  "skill": "claude-governance",
+  "claim": "Managed MCP control through this route uses `allowedMcpServers` and `deniedMcpServers`. A `managed-mcp.json` file cannot be delivered this way. Same doc."
+ },
+ {
+  "id": "K-claude-governance-3",
+  "skill": "claude-governance",
+  "claim": "Endpoint-managed alternatives: MDM or OS policy, or a `managed-settings.json` file. `requiredMinimumVersion` and `/status` also appear in this doc."
+ },
+ {
+  "id": "K-claude-governance-4",
+  "skill": "claude-governance",
+  "claim": "Telemetry: set `CLAUDE_CODE_ENABLE_TELEMETRY` to `1` to enable OpenTelemetry export. Exporter variables in a repository's `.claude/settings.json` or `settings.local.json` are ignored. Only user, managed or shell settings can enable or route telemetry. Prompt text is not logged unless `OTEL_LOG_USER_PROMPTS=1`. `OTEL_LOG_ASSISTANT_RESPONSES` also exists. Docs: https://code.claude.com/docs/en/monitoring-usage"
+ },
+ {
+  "id": "K-claude-governance-5",
+  "skill": "claude-governance",
+  "claim": "Exporters: `OTEL_METRICS_EXPORTER` takes `otlp`, `prometheus`, `console` or `none`. `OTEL_LOGS_EXPORTER` takes `otlp`, `console` or `none`. Choose a protocol with `OTEL_EXPORTER_OTLP_PROTOCOL` (`grpc`, `http/json`, `http/protobuf`); there is no default. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` set in managed settings strips developer-set per-signal endpoints. Same doc."
+ },
+ {
+  "id": "K-claude-governance-6",
+  "skill": "claude-governance",
+  "claim": "Metrics include `claude_code.cost.usage`, `claude_code.token.usage` and `claude_code.session.count`. `OTEL_METRIC_EXPORT_INTERVAL` defaults to 60000 ms. Same doc."
+ },
+ {
+  "id": "K-claude-governance-7",
+  "skill": "claude-governance",
+  "claim": "Usage and Cost Admin API: `GET /v1/organizations/usage_report/messages` (buckets 1m, 1h, 1d; filter and group by API key, workspace, model, service tier, context window, data residency, speed) and `GET /v1/organizations/cost_report` (USD as decimal strings in cents; excludes Priority Tier, which you read from the usage endpoint by service tier). Parameters include `bucket_width`, `group_by[]`, `starting_at`, `ending_at`, `service_tiers[]`. Needs an Admin API key (`sk-ant-admin01-...`), an `org:admin` OAuth token or an unscoped key. Workspace keys fail. Not available to individual accounts. Docs: https://platform.claude.com/docs/en/build-with-claude/usage-cost-api"
+ },
+ {
+  "id": "K-claude-governance-8",
+  "skill": "claude-governance",
+  "claim": "claude.ai Projects, project knowledge, Research mode, rating-feedback org settings, retention, HIPAA eligibility lists, BAA and zero-data-retention terms, fallback and retirement schedules: confirm in docs. No model ids are listed here. Take them from `claude-api`."
+ },
+ {
+  "id": "K-claude-prompt-engineering-1",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Structured outputs are generally available.** JSON output goes in `output_config.format` with type `json_schema`. Decoding is constrained, so output is valid and schema-conformant. Strict tool use (`strict: true`) is the sibling feature, and the two can be combined. https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+ },
+ {
+  "id": "K-claude-prompt-engineering-2",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Schema limits:** objects need `additionalProperties: false`. Recursive schemas, numeric and string-length constraints, external `$ref`, and `minItems` beyond 0 or 1 are unsupported. Move those checks into your validator. Same page."
+ },
+ {
+  "id": "K-claude-prompt-engineering-3",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Failure cases:** a `stop_reason` of `refusal`, or truncation at max tokens, can return output that does not match the schema. Structured outputs are incompatible with citations (HTTP 400) and with message prefilling. Same page."
+ },
+ {
+  "id": "K-claude-prompt-engineering-4",
+  "skill": "claude-prompt-engineering",
+  "claim": "**SDK helpers:** `client.messages.parse` with `output_format` (Pydantic), and `zodOutputFormat()` (Zod). Same page."
+ },
+ {
+  "id": "K-claude-prompt-engineering-5",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Deprecated:** the old `output_format` request parameter and the `structured-outputs-2025-11-13` beta header. Use `output_config.format`; no header is needed. Same page."
+ },
+ {
+  "id": "K-claude-prompt-engineering-6",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Models:** current lineup is `claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-haiku-5-5`. All list 1M context, 128K max output and adaptive thinking. https://platform.claude.com/docs/en/models/overview"
+ },
+ {
+  "id": "K-claude-prompt-engineering-7",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Effort:** set with `output_config.effort`. Levels named: `low`, `medium`, `high`, `xhigh`, `max` (confirm per-model availability in docs). Thinking is adaptive; manual `budget_tokens` is not accepted on later models. https://platform.claude.com/docs/en/build-with-claude/effort"
+ },
+ {
+  "id": "K-claude-prompt-engineering-8",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Sampling parameters:** `temperature`, `top_p` and `top_k` were removed in API version `2026-10-21` and return 400 even at the default. https://platform.claude.com/docs/en/about-claude/model-deprecations"
+ },
+ {
+  "id": "K-claude-prompt-engineering-9",
+  "skill": "claude-prompt-engineering",
+  "claim": "**Deprecation:** the Sonnet 4.5 snapshot retires 2026-11-30; the replacement named is `claude-sonnet-5-5`. Same deprecations page."
+ },
+ {
+  "id": "K-claude-prompt-engineering-10",
+  "skill": "claude-prompt-engineering",
+  "claim": "`tool_choice` modes, the Message Batches API and the Claude Code JSON-schema flag are not in the checked set: confirm in docs."
+ },
+ {
+  "id": "K-claude-rag-and-citations-1",
+  "skill": "claude-rag-and-citations",
+  "claim": "Citations are GA. Set `citations: {enabled: true}` on document blocks, on all or none in a request. https://platform.claude.com/docs/en/build-with-claude/citations"
+ },
+ {
+  "id": "K-claude-rag-and-citations-2",
+  "skill": "claude-rag-and-citations",
+  "claim": "Location types: `char_location` (plain text), `page_location` (PDF), `content_block_location` (custom content). Same URL as above."
+ },
+ {
+  "id": "K-claude-rag-and-citations-3",
+  "skill": "claude-rag-and-citations",
+  "claim": "`cited_text` does not count toward output tokens. Same URL as above."
+ },
+ {
+  "id": "K-claude-rag-and-citations-4",
+  "skill": "claude-rag-and-citations",
+  "claim": "Only text citations are supported. Citations are incompatible with structured outputs (400). Same URL as above."
+ },
+ {
+  "id": "K-claude-rag-and-citations-5",
+  "skill": "claude-rag-and-citations",
+  "claim": "Source documents can be cached, not citation blocks. Same URL as above."
+ },
+ {
+  "id": "K-claude-rag-and-citations-6",
+  "skill": "claude-rag-and-citations",
+  "claim": "API version `2026-10-21` rejects a non-empty `citations` array on text blocks in user messages (400); `enabled` on documents and search results is still accepted. Same URL as above."
+ },
+ {
+  "id": "K-claude-rag-and-citations-7",
+  "skill": "claude-rag-and-citations",
+  "claim": "`search_result` block: required `source` (a URL or any stable id), `title`, `content` (array of text blocks); optional `citations` with `enabled`. https://platform.claude.com/docs/en/build-with-claude/search-results"
+ },
+ {
+  "id": "K-claude-rag-and-citations-8",
+  "skill": "claude-rag-and-citations",
+  "claim": "It can come from a tool result or sit at the top level of user content; Claude cites it with `search_result_location`. Same URL as above."
+ },
+ {
+  "id": "K-claude-rag-and-citations-9",
+  "skill": "claude-rag-and-citations",
+  "claim": "No beta header; supported on all active models; the citations setting must match across results in a request. Same URL as above."
+ },
+ {
+  "id": "K-claude-solution-design-1",
+  "skill": "claude-solution-design",
+  "claim": "The brief for this skill contains no verified platform facts, so this skill states no identifiers."
+ },
+ {
+  "id": "K-claude-solution-design-2",
+  "skill": "claude-solution-design",
+  "claim": "API features, model tiers and model ids: confirm in docs, or use `claude-api`. Do not copy ids from this skill, from older designs or from exam material."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-1",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "A custom tool is `name`, `description`, `input_schema`; `strict: true` guarantees schema-valid inputs. Calls arrive as `tool_use` blocks and you reply with `tool_result` carrying the matching `tool_use_id`. Source: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-2",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "`tool_choice` values listed: `auto` (default), `any`, `tool`, `none`. `auto` accepts `disable_parallel_tool_use: true`. Source: same page. Exact semantics of `any` and `tool`, and their interaction with thinking: confirm in docs."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-3",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "Tool definitions count as input tokens, plus a per-model tool-use system prompt overhead. Same page."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-4",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "`stop_reason` values: `end_turn`, `max_tokens`, `stop_sequence`, `tool_use`, `pause_turn`, `refusal`, `model_context_window_exceeded`. Loop on `tool_use`. Source: https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-5",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "Tool search: `tool_search_tool_regex_20251119` and `tool_search_tool_bm25_20251119`. Mark hidden tools `defer_loading: true`; at least one tool must stay non-deferred or the request returns 400. Results are `tool_reference` blocks. Source: https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-6",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "The error flag on a tool result (commonly `is_error`): confirm in docs. JSON-encoding of results: confirm in docs."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-7",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "`.mcp.json` uses the key `mcpServers`. Entry fields: `type` (`http`, `stdio`, `sse`, `ws`), `url`, `headers`, `command`, `args`, `env`, `timeout`, `oauth`, `headersHelper`. No `type` means stdio; `url` without `type` is rejected. `${VAR}` and `${VAR:-default}` expand in `command`, `args`, `env`, `url` and `headers`. Source: https://code.claude.com/docs/en/mcp"
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-8",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "Scopes: local (default), project (`.mcp.json`, needs approval), user. Precedence: local, project, user, plugin, claude.ai connectors; no field merging. Set with `claude mcp add --scope` and `--transport`. Same page."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-9",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "`sse` is deprecated in favour of `http`. Auth routes: `--header`, OAuth via `/mcp` or `claude mcp login`, `headersHelper`. Tool names follow `mcp__<server>__<tool>`. Same page."
+ },
+ {
+  "id": "K-claude-tool-and-mcp-design-10",
+  "skill": "claude-tool-and-mcp-design",
+  "claim": "MCP connector in the Messages API: beta header `mcp-client-2025-11-20`; config is `mcp_servers` plus an `mcp_toolset` entry in `tools`. Remote HTTP servers only; no local stdio. Source: https://platform.claude.com/docs/en/agents-and-tools/mcp-connector"
+ }
+]

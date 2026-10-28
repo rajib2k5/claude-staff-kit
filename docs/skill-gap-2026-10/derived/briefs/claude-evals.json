@@ -1,0 +1,530 @@
+{
+ "skill": "claude-evals",
+ "gap_concepts": [
+  {
+   "label": "SMART success criteria",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Turn a vague quality goal into a measurable, sampled, thresholded criterion."
+   ]
+  },
+  {
+   "label": "evaluation design",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Turn a vague quality goal into a measurable, sampled, thresholded criterion.",
+    "Confirm a prompt winner on data kept aside from all tuning rounds to avoid overfitting."
+   ]
+  },
+  {
+   "label": "measurable quality targets",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Turn a vague quality goal into a measurable, sampled, thresholded criterion."
+   ]
+  },
+  {
+   "label": "realistic success criteria",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Spot an unattainable absolute target and restate it as a grounded, achievable one."
+   ]
+  },
+  {
+   "label": "feasible performance targets",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Spot an unattainable absolute target and restate it as a grounded, achievable one."
+   ]
+  },
+  {
+   "label": "held-out test set",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Confirm a prompt winner on data kept aside from all tuning rounds to avoid overfitting."
+   ]
+  },
+  {
+   "label": "overfitting to dev set",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Confirm a prompt winner on data kept aside from all tuning rounds to avoid overfitting."
+   ]
+  },
+  {
+   "label": "model-capability mismatch evidence",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Identify evidence that a task needs a stronger model rather than better prompts."
+   ]
+  },
+  {
+   "label": "relevance versus accuracy",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Separate correctness from responsiveness when judging whether an answer meets the ask."
+   ]
+  },
+  {
+   "label": "answering the actual question",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Separate correctness from responsiveness when judging whether an answer meets the ask."
+   ]
+  },
+  {
+   "label": "output assessment",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Separate correctness from responsiveness when judging whether an answer meets the ask."
+   ]
+  },
+  {
+   "label": "quotation verification",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Validate a claimed verbatim quote by locating it in the original document."
+   ]
+  },
+  {
+   "label": "source checking",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Validate a claimed verbatim quote by locating it in the original document."
+   ]
+  },
+  {
+   "label": "fabricated attribution",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Validate a claimed verbatim quote by locating it in the original document."
+   ]
+  },
+  {
+   "label": "citation verification against sources",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Trace each cited figure back to its source page before anything goes public.",
+    "Combine Claude's research output with source checking and human refinement for a decision-grade study."
+   ]
+  },
+  {
+   "label": "pre-publication fact check",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Trace each cited figure back to its source page before anything goes public."
+   ]
+  },
+  {
+   "label": "define quality first",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Sequence a tier decision as criteria, then a trial on the default, then escalation only if needed."
+   ]
+  },
+  {
+   "label": "sample-based tier validation",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Sequence a tier decision as criteria, then a trial on the default, then escalation only if needed."
+   ]
+  },
+  {
+   "label": "unchecked workload quality",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Weigh whether a downstream human check exists when choosing how capable a tier a workload needs."
+   ]
+  },
+  {
+   "label": "gather concrete failing examples",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Collect specific failing cases before changing a pilot in response to nonspecific complaints.",
+    "Turn vague complaints about omissions into diagnosable cases by naming specific misses."
+   ]
+  },
+  {
+   "label": "measured pilot outcome",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Select the evidence that convinces sceptical business audiences about an AI workflow."
+   ]
+  },
+  {
+   "label": "compare output against logs",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Turn vague complaints about omissions into diagnosable cases by naming specific misses."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Return structured MCP tool errors that distinguish transient, validation, business and permission failures with retryability metadata, and separate access failures from valid empty results.",
+   "concepts": [
+    "isError",
+    "error categories",
+    "retryable vs non-retryable",
+    "local recovery"
+   ],
+   "features": [
+    "MCP isError flag"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Drive iterative refinement using concrete input/output examples, test-first loops, the interview pattern, and a choice between batching interacting fixes and sequencing independent ones.",
+   "concepts": [
+    "I/O examples",
+    "test-driven iteration",
+    "interview pattern",
+    "interacting issues"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Build validation-retry loops that feed specific errors back to the model, recognize when retries cannot help because data is missing, and add self-check fields such as calculated vs stated totals.",
+   "concepts": [
+    "retry with error feedback",
+    "semantic vs syntax errors",
+    "detected_pattern",
+    "conflict_detected"
+   ],
+   "features": [
+    "Pydantic"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Evaluate accuracy versus latency tradeoffs and justify the configuration chosen.",
+   "concepts": [
+    "accuracy-latency tradeoff",
+    "configuration justification"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Match retrieval strategies to data shape and query pattern.",
+   "concepts": [
+    "retrieval strategy",
+    "query pattern"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Define evaluation metrics spanning accuracy, latency, cost, safety and security.",
+   "concepts": [
+    "eval metrics",
+    "multi-dimensional"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Build evaluation datasets and test frameworks that mix methodologies.",
+   "concepts": [
+    "eval datasets",
+    "mixed methods"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Run A/B tests and iterate on improvements.",
+   "concepts": [
+    "A/B testing",
+    "iteration"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Diagnose system faults such as prompt failure, hallucination and model mismatch.",
+   "concepts": [
+    "diagnosis",
+    "hallucination",
+    "model mismatch"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Optimize token usage, latency and cost-performance tradeoffs.",
+   "concepts": [
+    "token optimization",
+    "cost-latency"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Monitor system performance with logging and observability tooling.",
+   "concepts": [
+    "logging",
+    "observability"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Governance, Safety & Risk Management",
+   "weight_pct": 14,
+   "task": "Apply human-in-the-loop validation strategies.",
+   "concepts": [
+    "human-in-the-loop",
+    "validation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Prompting and Task Execution",
+   "weight_pct": 14,
+   "task": "Iterate on prompts to raise output quality.",
+   "concepts": [
+    "prompt iteration",
+    "quality"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Evaluate Claude outputs for accuracy and completeness.",
+   "concepts": [
+    "accuracy",
+    "completeness"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Spot hallucinations, inconsistencies and bias in responses.",
+   "concepts": [
+    "hallucination",
+    "bias",
+    "inconsistency"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Use fact-checking and validation techniques against authoritative sources.",
+   "concepts": [
+    "fact-checking",
+    "validation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Decide when human review or extra verification is required.",
+   "concepts": [
+    "human review",
+    "escalation"
+   ],
+   "features": [],
+   "kind": "governance"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Edit, refine and compare outputs for the target audience.",
+   "concepts": [
+    "editing",
+    "audience adaptation"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Output Evaluation and Validation",
+   "weight_pct": 21,
+   "task": "Organize information and pick an output format such as an artifact, inline text or structured data.",
+   "concepts": [
+    "output format",
+    "curation"
+   ],
+   "features": [
+    "Artifacts"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Match model choice to cost, speed and quality needs.",
+   "concepts": [
+    "cost-speed-quality",
+    "model fit"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Eval, Testing, and Debugging",
+   "weight_pct": 2.6,
+   "task": "Debug Claude applications by classifying errors, picking recovery strategies, analyzing traces, and isolating whether the fault is in the integration layer or the model output.",
+   "concepts": [
+    "error types",
+    "trace analysis",
+    "fault isolation"
+   ],
+   "features": [],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Choose between Opus, Sonnet and Haiku on quality, latency and cost, including breaking behavior changes between releases.",
+   "concepts": [
+    "model tiers",
+    "tradeoffs",
+    "release breaking changes"
+   ],
+   "features": [
+    "Opus",
+    "Sonnet",
+    "Haiku"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Prompt and Context Engineering",
+   "weight_pct": 11.0,
+   "task": "Produce, validate and consume Claude output using structured output, response validation, defensive parsing and skepticism toward confident answers.",
+   "concepts": [
+    "structured output",
+    "defensive parsing",
+    "response validation"
+   ],
+   "features": [
+    "structured outputs"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Security and Safety",
+   "weight_pct": 8.1,
+   "task": "Manage secrets, credentials and API keys with identity validation, access approval and monitoring of authorized access.",
+   "concepts": [
+    "secrets management",
+    "key management",
+    "access monitoring"
+   ],
+   "features": [],
+   "kind": "governance"
+  }
+ ],
+ "docs_facts": [],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__evaluation-datasets-test-cases-edge-cases-and-volume.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-associate-foundations__learn__developing-and-iterating-with-claude-plan-verify-judge-refine.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__a-b-testing-prompt-and-model-changes-against-a-baseline.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__contextual-retrieval-reranking-and-citable-search-results.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__prompting-claude-code-verification-context-and-the-explore-plan-implement-loop.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__evaluating-versioning-and-rolling-out-changes-to-claude-systems.txt"
+ ],
+ "lesson_words": 24881
+}

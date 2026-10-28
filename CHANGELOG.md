@@ -4,8 +4,17 @@ All notable changes to staff-kit. Format follows Keep a Changelog; versions foll
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-28
+
 ### Added
-- `learn-as-you-build` skill: teaches the user the code while it is built. It builds one milestone, writes a walkthrough doc and concept notes, then runs a checkpoint of lessons, each followed by its own quiz question with every option explained, and 5 to 8 explain-it-back questions. Four modes (`full`, `lite`, `deferred`, `off`) with switch phrases and a per-project default let a user on a deadline bypass it. It uses an inline widget when the host has one and plain markdown otherwise. The kit now has 26 skills.
+- 10 `claude-*` skills that close gaps found by mapping the four Anthropic certification blueprints (CCAR-F, CCAR-P, CCAO-F, CCDV-F) against every installed skill: `claude-agent-orchestration`, `claude-context-management`, `claude-prompt-engineering`, `claude-evals`, `claude-api-ops`, `claude-rag-and-citations`, `claude-code-config`, `claude-tool-and-mcp-design`, `claude-governance`, `claude-solution-design`. Written for model generation 5 and later; every identifier is sourced to current docs.
+- `docs/skill-gap-2026-10/`: the study that produced them (concept tags, coverage map, graphify graph, evidence-gated validation ledger and channel reports). Raw third-party text is not committed.
+- `learn-as-you-build` skill: teaches the user the code while it is built. It builds one milestone, writes a walkthrough doc and concept notes, then runs a checkpoint of lessons, each followed by its own quiz question with every option explained, and 5 to 8 explain-it-back questions. Four modes (`full`, `lite`, `deferred`, `off`) with switch phrases and a per-project default let a user on a deadline bypass it. It uses an inline widget when the host has one and plain markdown otherwise.
+
+### Changed
+- `rules/agent-models.md`, `skills/cost-conscious-orchestration`: model table moved to the 5.5 generation (`claude-opus-5-5`, `claude-sonnet-5-5`, `claude-fable-5-1`, `claude-haiku-5-5`); notes that Claude Code needs v2.1.293+ for Haiku 5.5.
+
+### Earlier (unreleased before 1.1.0)
 - `third-party/`: vendored `threejs` 1.0.0, `cert-safari-quiz` 0.1.0, `evolv-taste-pilot` 0.1.0 plugins and the `code-mods-essentials` skill, with provenance in `third-party/README.md`. The three plugins are listed in the marketplace. The `staff-kit` plugin itself is unchanged.
 
 ## [1.0.0] - 2026-10-11

@@ -1,0 +1,1011 @@
+{
+ "skill": "claude-api-ops",
+ "gap_concepts": [
+  {
+   "label": "stop_reason handling",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Branch explicitly on every stop reason so a cut-off response is not treated as a finished one."
+   ]
+  },
+  {
+   "label": "truncated output detection",
+   "certs": [
+    "claude-certified-architect-foundations",
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Branch explicitly on every stop reason so a cut-off response is not treated as a finished one.",
+    "Distinguish a length cutoff from malformed output when parsing model JSON."
+   ]
+  },
+  {
+   "label": "tool_choice modes",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Force a specific tool on turn one then relax to automatic selection for later turns.",
+    "Force a named tool for guaranteed structured output and know it limits text before the call."
+   ]
+  },
+  {
+   "label": "forced first tool call",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Force a specific tool on turn one then relax to automatic selection for later turns."
+   ]
+  },
+  {
+   "label": "schema-enforced extraction",
+   "certs": [
+    "claude-certified-architect-foundations"
+   ],
+   "competencies": [
+    "Force a named tool for guaranteed structured output and know it limits text before the call."
+   ]
+  },
+  {
+   "label": "context editing",
+   "certs": [
+    "claude-architect-professional",
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Combine automatic stale-result clearing with durable cross-session storage for a long-running agent.",
+    "Configure trigger, keep count and exclusions for automatic tool-result clearing."
+   ]
+  },
+  {
+   "label": "cross-session memory",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Combine automatic stale-result clearing with durable cross-session storage for a long-running agent.",
+    "Combine summarization, clearing and persistence to run sessions past the window limit."
+   ]
+  },
+  {
+   "label": "tool result clearing config",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Configure trigger, keep count and exclusions for automatic tool-result clearing."
+   ]
+  },
+  {
+   "label": "custom tool search",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Implement embedding-based tool discovery that returns tool references to Claude."
+   ]
+  },
+  {
+   "label": "progressive tool discovery",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Implement embedding-based tool discovery that returns tool references to Claude."
+   ]
+  },
+  {
+   "label": "server-side compaction",
+   "certs": [
+    "claude-architect-professional",
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Combine summarization, clearing and persistence to run sessions past the window limit.",
+    "Select the platform features that summarise history and prune old tool outputs automatically."
+   ]
+  },
+  {
+   "label": "effort parameter tuning",
+   "certs": [
+    "claude-architect-professional"
+   ],
+   "competencies": [
+    "Lower effort on easy turns to save tokens while keeping depth for hard ones.",
+    "Frame effort as a cost, latency and intelligence dial within one model before switching models."
+   ]
+  },
+  {
+   "label": "throughput versus depth tradeoff",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Give high-volume simple jobs the quickest low-cost tier and reserve the deepest tier for truly hard analysis."
+   ]
+  },
+  {
+   "label": "usage quota impact",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Give high-volume simple jobs the quickest low-cost tier and reserve the deepest tier for truly hard analysis."
+   ]
+  },
+  {
+   "label": "model tier characteristics",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Describe accurately how the tiers trade reasoning depth against speed and allowance."
+   ]
+  },
+  {
+   "label": "default tier suitability",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Describe accurately how the tiers trade reasoning depth against speed and allowance."
+   ]
+  },
+  {
+   "label": "allowance consumption",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Describe accurately how the tiers trade reasoning depth against speed and allowance."
+   ]
+  },
+  {
+   "label": "escalate tier on evidence",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Sequence a tier decision as criteria, then a trial on the default, then escalation only if needed."
+   ]
+  },
+  {
+   "label": "human review as safety net",
+   "certs": [
+    "claude-certified-associate-foundations"
+   ],
+   "competencies": [
+    "Weigh whether a downstream human check exists when choosing how capable a tier a workload needs."
+   ]
+  },
+  {
+   "label": "beta feature risk",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Explain why core production logic should not depend on a beta capability."
+   ]
+  },
+  {
+   "label": "beta versus GA readiness",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Explain why core production logic should not depend on a beta capability."
+   ]
+  },
+  {
+   "label": "feature availability table",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Explain why core production logic should not depend on a beta capability."
+   ]
+  },
+  {
+   "label": "retired model handling",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Predict how a resumed Claude Code session picks a model when the original is gone."
+   ]
+  },
+  {
+   "label": "speed and intelligence balance",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Choose the model that balances capability and latency for broad agentic and coding workloads."
+   ]
+  },
+  {
+   "label": "acceleration limits",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Diagnose rate-limit errors caused by sudden traffic growth and plan smoother ramp-up."
+   ]
+  },
+  {
+   "label": "429 under published limits",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Diagnose rate-limit errors caused by sudden traffic growth and plan smoother ramp-up."
+   ]
+  },
+  {
+   "label": "gradual traffic ramp",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Diagnose rate-limit errors caused by sudden traffic growth and plan smoother ramp-up."
+   ]
+  },
+  {
+   "label": "error code classification",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Map HTTP error types to whether streaming or a larger output cap would help."
+   ]
+  },
+  {
+   "label": "oversized payload errors",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Map HTTP error types to whether streaming or a larger output cap would help."
+   ]
+  },
+  {
+   "label": "auth and conflict errors",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Map HTTP error types to whether streaming or a larger output cap would help."
+   ]
+  },
+  {
+   "label": "streaming does not cure everything",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Map HTTP error types to whether streaming or a larger output cap would help."
+   ]
+  },
+  {
+   "label": "thinking block signature",
+   "certs": [
+    "claude-developer-foundations"
+   ],
+   "competencies": [
+    "Interpret the event sequence for a thinking block in a streamed reply."
+   ]
+  }
+ ],
+ "official_tasks": [
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Agentic Architecture & Orchestration",
+   "weight_pct": 27,
+   "task": "Build an agentic loop that keeps iterating while the stop reason signals a tool request and ends when the model signals it is done, feeding tool results back each turn.",
+   "concepts": [
+    "agentic loop",
+    "stop_reason",
+    "tool results in history",
+    "model-driven control"
+   ],
+   "features": [
+    "Claude API",
+    "stop_reason"
+   ],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Tool Design & MCP Integration",
+   "weight_pct": 18,
+   "task": "Return structured MCP tool errors that distinguish transient, validation, business and permission failures with retryability metadata, and separate access failures from valid empty results.",
+   "concepts": [
+    "isError",
+    "error categories",
+    "retryable vs non-retryable",
+    "local recovery"
+   ],
+   "features": [
+    "MCP isError flag"
+   ],
+   "kind": "mcp"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Claude Code Configuration & Workflows",
+   "weight_pct": 20,
+   "task": "Drive iterative refinement using concrete input/output examples, test-first loops, the interview pattern, and a choice between batching interacting fixes and sequencing independent ones.",
+   "concepts": [
+    "I/O examples",
+    "test-driven iteration",
+    "interview pattern",
+    "interacting issues"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Build validation-retry loops that feed specific errors back to the model, recognize when retries cannot help because data is missing, and add self-check fields such as calculated vs stated totals.",
+   "concepts": [
+    "retry with error feedback",
+    "semantic vs syntax errors",
+    "detected_pattern",
+    "conflict_detected"
+   ],
+   "features": [
+    "Pydantic"
+   ],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Prompt Engineering & Structured Output",
+   "weight_pct": 20,
+   "task": "Select between synchronous and batch processing by latency tolerance, handle batch failures by correlation id, and size submission windows against an SLA.",
+   "concepts": [
+    "Message Batches",
+    "50% discount",
+    "24h window",
+    "custom_id",
+    "SLA windowing"
+   ],
+   "features": [
+    "Message Batches API",
+    "custom_id"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-certified-architect-foundations",
+   "domain": "Context Management & Reliability",
+   "weight_pct": 15,
+   "task": "Propagate errors across agents with structured context (failure type, attempt, partial results, alternatives), avoiding both silent suppression and whole-workflow aborts.",
+   "concepts": [
+    "structured error context",
+    "access failure vs empty",
+    "local recovery",
+    "coverage annotations"
+   ],
+   "features": [],
+   "kind": "agent-sdk"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Solution Design & Architecture",
+   "weight_pct": 17,
+   "task": "Align a solution to business value pillars such as efficiency, transformation, productivity, cost and performance SLAs.",
+   "concepts": [
+    "business value pillars",
+    "SLAs"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Select a Claude model by weighing capability, latency and cost tradeoffs.",
+   "concepts": [
+    "model selection",
+    "tradeoffs"
+   ],
+   "features": [
+    "Claude models"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Optimize context windows and token usage.",
+   "concepts": [
+    "context window",
+    "token budget"
+   ],
+   "features": [],
+   "kind": "prompting"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Claude Models, Prompting & Context Engineering",
+   "weight_pct": 13,
+   "task": "Reuse prompts via caching, modular prompts and Skills.",
+   "concepts": [
+    "prompt caching",
+    "modular prompts",
+    "Skills"
+   ],
+   "features": [
+    "prompt caching",
+    "Agent Skills"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Integration",
+   "weight_pct": 19,
+   "task": "Evaluate accuracy versus latency tradeoffs and justify the configuration chosen.",
+   "concepts": [
+    "accuracy-latency tradeoff",
+    "configuration justification"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Define evaluation metrics spanning accuracy, latency, cost, safety and security.",
+   "concepts": [
+    "eval metrics",
+    "multi-dimensional"
+   ],
+   "features": [],
+   "kind": "general-architecture"
+  },
+  {
+   "cert": "claude-architect-professional",
+   "domain": "Evaluation, Testing & Optimization",
+   "weight_pct": 16,
+   "task": "Optimize token usage, latency and cost-performance tradeoffs.",
+   "concepts": [
+    "token optimization",
+    "cost-latency"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Select the right Claude product feature, such as Projects, research mode, chat or Artifacts.",
+   "concepts": [
+    "feature selection",
+    "Projects vs chat vs Research"
+   ],
+   "features": [
+    "Projects",
+    "Research",
+    "Artifacts"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Tell Haiku, Sonnet and Opus apart by their use cases.",
+   "concepts": [
+    "model tiers",
+    "Haiku vs Sonnet vs Opus"
+   ],
+   "features": [
+    "Haiku",
+    "Sonnet",
+    "Opus"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Match model choice to cost, speed and quality needs.",
+   "concepts": [
+    "cost-speed-quality",
+    "model fit"
+   ],
+   "features": [],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-certified-associate-foundations",
+   "domain": "Product and Model Selection",
+   "weight_pct": 12,
+   "task": "Handle context limits and memory by knowing when to restart, summarize or persist.",
+   "concepts": [
+    "context limits",
+    "memory",
+    "restart vs persist"
+   ],
+   "features": [
+    "Memory"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Applications and Integration",
+   "weight_pct": 33.1,
+   "task": "Use Claude API mechanics: messages, tools, streaming, vision, thinking, caching, third-party vendor access, batch use and the realtime-vs-batch tradeoff.",
+   "concepts": [
+    "Messages API",
+    "streaming and vision",
+    "thinking",
+    "caching",
+    "batch vs realtime"
+   ],
+   "features": [
+    "Messages API",
+    "Message Batches API",
+    "prompt caching",
+    "extended thinking"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Claude Code",
+   "weight_pct": 3.1,
+   "task": "Operate Claude Code core pieces (rules, skills, commands, agents, agent memory) and features such as sessions, slash commands, headless and streaming modes and auto mode, plus repo initialization and settings.json.",
+   "concepts": [
+    "Claude Code components",
+    "headless mode",
+    "CLAUDE.md hierarchy",
+    "settings"
+   ],
+   "features": [
+    "Claude Code",
+    "CLAUDE.md",
+    "settings.json",
+    "slash commands",
+    "Agent Skills",
+    "auto mode"
+   ],
+   "kind": "claude-code"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Eval, Testing, and Debugging",
+   "weight_pct": 2.6,
+   "task": "Debug Claude applications by classifying errors, picking recovery strategies, analyzing traces, and isolating whether the fault is in the integration layer or the model output.",
+   "concepts": [
+    "error types",
+    "trace analysis",
+    "fault isolation"
+   ],
+   "features": [],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Explain LLM fundamentals (tokens, context window, sampling, non-determinism), model modes (fast mode, extended and adaptive thinking, effort levels) and zero/single/multi-shot prompting.",
+   "concepts": [
+    "tokens",
+    "sampling",
+    "thinking modes",
+    "effort levels",
+    "multi-shot"
+   ],
+   "features": [
+    "extended thinking",
+    "adaptive thinking",
+    "effort levels",
+    "fast mode"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Integrate with SDKs that wrap REST APIs and understand basics such as websockets.",
+   "concepts": [
+    "SDKs over REST",
+    "websockets"
+   ],
+   "features": [
+    "Anthropic SDKs"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Choose between Opus, Sonnet and Haiku on quality, latency and cost, including breaking behavior changes between releases.",
+   "concepts": [
+    "model tiers",
+    "tradeoffs",
+    "release breaking changes"
+   ],
+   "features": [
+    "Opus",
+    "Sonnet",
+    "Haiku"
+   ],
+   "kind": "platform-ops"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Model Selection and Optimization",
+   "weight_pct": 16.8,
+   "task": "Track token usage, model costs and apply caching techniques including cache checkpoints.",
+   "concepts": [
+    "token tracking",
+    "cost modeling",
+    "cache checkpoints"
+   ],
+   "features": [
+    "prompt caching"
+   ],
+   "kind": "claude-api"
+  },
+  {
+   "cert": "claude-developer-foundations",
+   "domain": "Tools and MCPs",
+   "weight_pct": 10.6,
+   "task": "Implement tools well: function calling, tool descriptions, error handling, dispatch in an agentic harness, client-side vs server-side tools, approval patterns and tool set construction.",
+   "concepts": [
+    "tool use",
+    "client vs server tools",
+    "approval patterns"
+   ],
+   "features": [
+    "tool use",
+    "function calling"
+   ],
+   "kind": "claude-api"
+  }
+ ],
+ "docs_facts": [
+  {
+   "topic": "Messages API tool use",
+   "feature": "Messages API tool use",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "Client tools (your own, plus bash/text_editor/memory/computer use) run in your app: Claude returns stop_reason tool_use with tool_use blocks, you reply with a tool_result block carrying the matching tool_use_id. Server tools (web_search, web_fetch, code_execution, tool_search) run on Anthropic's side. A custom tool is name, description, input_schema; strict: true guarantees schema-valid inputs. Tool definitions and tool blocks all count as input tokens, plus a per-model tool-use system prompt overhead (e.g. 286 tokens on Opus 5.5 with auto/none).",
+   "identifiers": [
+    "tool_use",
+    "tool_result",
+    "tool_use_id",
+    "input_schema",
+    "strict",
+    "tools",
+    "web_search_20260209",
+    "server_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_choice",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "Request field controlling tool calling. Default {type: auto} lets Claude decide; values auto, none, any and tool appear in the docs (the pricing table keys on auto/none versus any/tool). auto accepts disable_parallel_tool_use: true to cap Claude at one tool call per turn. Exact semantics of any and tool and their interaction with thinking: not verified (define-tools page not fetched).",
+   "identifiers": [
+    "tool_choice",
+    "auto",
+    "any",
+    "tool",
+    "none",
+    "disable_parallel_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_choice: tool",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "The tool value is listed as a tool_choice option (it, like any, costs more tool-use system-prompt tokens than auto/none). That it forces one named tool is not stated on the fetched page: not verified.",
+   "identifiers": [
+    "tool_choice",
+    "tool"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_choice: auto",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "Default. Claude decides per turn whether to call a tool or answer directly. Can be steered with system-prompt wording; combine with disable_parallel_tool_use: true for at most one tool call per turn.",
+   "identifiers": [
+    "tool_choice",
+    "auto",
+    "disable_parallel_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "stop_reason",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "fact": "Seven values: end_turn, max_tokens, stop_sequence, tool_use, pause_turn (server-tool loop hit its default 10-iteration limit; resend the assistant content to continue), refusal (HTTP 200, read stop_details, can retry on a fallback model), model_context_window_exceeded (response filled the context window; treat as truncated). A client tool_use never yields pause_turn.",
+   "identifiers": [
+    "stop_reason",
+    "end_turn",
+    "max_tokens",
+    "stop_sequence",
+    "tool_use",
+    "pause_turn",
+    "refusal",
+    "model_context_window_exceeded",
+    "stop_details"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "refusal and model_context_window_exceeded are newer values; older lists name only the first four."
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "max_tokens",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "fact": "Request parameter capping output tokens; hitting it ends the response with stop_reason max_tokens, so raise it or continue the response. Sync output max is 128K tokens on the current models; Batches API can reach 300k with beta header output-300k-2026-03-24. Each batched request needs max_tokens of at least 1.",
+   "identifiers": [
+    "max_tokens",
+    "output-300k-2026-03-24"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "Tool search tool",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+   "fact": "Server-side tool letting Claude discover tools on demand. Two variants: tool_search_tool_regex_20251119 (Claude writes Python regex, 200-char cap) and tool_search_tool_bm25_20251119 (natural language, 500-char cap). Put the full definition of every tool in tools; mark the ones to hide with defer_loading: true; at least one tool (not the search tool) must stay non-deferred, else 400. Up to 10,000 deferred tools; 5 results by default (limit 1-10,000). Preserves prompt caching; a deferred tool cannot carry cache_control. Not metered separately.",
+   "identifiers": [
+    "tool_search_tool_regex_20251119",
+    "tool_search_tool_bm25_20251119",
+    "defer_loading",
+    "tool_reference",
+    "tool_search_tool_result",
+    "server_tool_use"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "tool_reference blocks",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+   "fact": "Blocks of type tool_reference returned inside the search result pointing at discovered tools by tool_name; the API expands them to full definitions server-side. Custom client-side search can also return tool_reference blocks inside a normal tool_result, and each must have a matching definition in top-level tools. Never return a tool_result for a srvtoolu_ id.",
+   "identifiers": [
+    "tool_reference",
+    "tool_name",
+    "tool_search_tool_search_result",
+    "tool_references"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "JSON-encoded tool results",
+   "doc_url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+   "fact": "The overview shows tool_result content as a plain string or content blocks. A specific recommendation about JSON-encoding tool results: not verified.",
+   "identifiers": [
+    "tool_result"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "Server-side fallback",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "fact": "The stop-reason page says a refusal can be retried on a fallback model and links a refusals-and-fallback page (not fetched). Claude Code separately has --fallback-model / fallbackModel for overloaded or retired models. What 'server-side fallback' specifically denotes: not verified.",
+   "identifiers": [
+    "refusal",
+    "--fallback-model",
+    "fallbackModel"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Prompt caching, batches, token counting",
+   "feature": "Prompt caching",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+   "fact": "Cache prompt prefixes via cache_control. Automatic caching: one top-level cache_control that moves its breakpoint forward. Explicit breakpoints on blocks: up to 4 per request; lookback window 20 blocks. TTL 5 minutes default, 1 hour at 2x base input write price. Reads cost a fraction of base (Opus 5.5 $0.20 vs $4 base per MTok; Sonnet 5.5 $0.10 vs $2). Minimum cacheable prompt is 512 tokens on Fable 5.1/Opus 5.5/Sonnet 5.5/Haiku 5.5, 1,024 on Opus 4.8 and Sonnet 5/4.6, 4,096 on Opus 4.6/4.5 and Haiku 4.5; shorter prompts silently skip caching. Check cache_read_input_tokens and cache_creation_input_tokens (both 0 means not cached); input_tokens counts only tokens after the last breakpoint. Caches are isolated per workspace on the Claude API.",
+   "identifiers": [
+    "cache_control",
+    "ephemeral",
+    "ttl",
+    "5m",
+    "1h",
+    "cache_read_input_tokens",
+    "cache_creation_input_tokens",
+    "input_tokens"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Minimum cacheable length differs sharply by model generation; older tables show 1,024/2,048 for everything."
+  },
+  {
+   "topic": "Prompt caching, batches, token counting",
+   "feature": "cache_control",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+   "fact": "Marker object, shape {type: ephemeral, ttl: 5m|1h}, placed on a content block (explicit breakpoint) or at the request top level (automatic caching). Put it on the last block whose prefix is identical across requests; marking content that changes every request pays cache writes and never reads. With 4 explicit breakpoints already, a top-level one returns 400. Changing any earlier block invalidates later cache entries.",
+   "identifiers": [
+    "cache_control",
+    "type",
+    "ephemeral",
+    "ttl"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Prompt caching, batches, token counting",
+   "feature": "Message Batches API",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+   "fact": "Asynchronous bulk Messages at a 50% discount. POST /v1/messages/batches with requests each carrying custom_id (1-64 chars, alphanumeric/hyphen/underscore) and params. Limits: 100,000 requests or 256 MB per batch; most finish within 1 hour, expire after 24 hours; results downloadable for 29 days via results_url. processing_status goes in_progress to ended; request_counts has succeeded, errored, canceled, expired. Results can return in any order, so match by custom_id. Prompt-cache hits are best-effort.",
+   "identifiers": [
+    "/v1/messages/batches",
+    "custom_id",
+    "processing_status",
+    "in_progress",
+    "ended",
+    "request_counts",
+    "results_url"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Prompt caching, batches, token counting",
+   "feature": "Token counting",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/token-counting",
+   "fact": "POST /v1/messages/count_tokens takes the same inputs as message creation (system, tools, images, PDFs, thinking) and returns input_tokens. The count is an estimate and can differ slightly from actual usage. Free to use but rate limited per usage tier.",
+   "identifiers": [
+    "/v1/messages/count_tokens",
+    "input_tokens"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "Model tiers",
+   "doc_url": "https://platform.claude.com/docs/en/models/overview",
+   "fact": "Current lineup per the overview page: Claude Fable 5.1 (claude-fable-5-1; demanding reasoning, long-horizon agentic work, $10/$50 per MTok), Claude Opus 5.5 (claude-opus-5-5; agentic coding and knowledge work, $4/$20), Claude Sonnet 5.5 (claude-sonnet-5-5; speed/intelligence balance, $2/$10), Claude Haiku 5.5 (claude-haiku-5-5; high-volume low-latency, from $0.10/$0.50). All: 1M context, 128K max output, adaptive thinking, knowledge cutoff Jun 2026. Default effort: high (Fable, Sonnet) or medium (Opus 5.5, Haiku 5.5). Mythos models appear on other pages as limited-availability. Legacy still available: claude-fable-5, claude-opus-5, claude-opus-4-8, claude-opus-4-7, claude-opus-4-6, claude-opus-4-5-20251101, claude-sonnet-5, claude-sonnet-4-6, claude-haiku-4-5-20251001.",
+   "identifiers": [
+    "claude-fable-5-1",
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-fable-5",
+    "claude-opus-5",
+    "claude-opus-4-8",
+    "claude-opus-4-7",
+    "claude-opus-4-6",
+    "claude-opus-4-5-20251101",
+    "claude-sonnet-5",
+    "claude-sonnet-4-6",
+    "claude-haiku-4-5-20251001"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "A fourth top tier (Fable) and the 5.5 generation exist; exam items built around 4.x Opus/Sonnet/Haiku name legacy models. Dateless IDs from the 4.6 generation on are themselves pinned snapshots."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "Claude Haiku 4.5",
+   "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "fact": "Legacy but Active; ID claude-haiku-4-5-20251001. Earliest possible retirement on the Anthropic-operated platforms: not sooner than October 15, 2026 (no deprecation notice yet in the table). Recommended replacement target in older deprecations was this model; Haiku 5.5 (claude-haiku-5-5) is the current Haiku. Minimum cacheable prompt 4,096 tokens.",
+   "identifiers": [
+    "claude-haiku-4-5-20251001",
+    "claude-haiku-5-5"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Retirement floor of Oct 15, 2026 is already passed as of 2026-10-28 while the table still shows Active; watch for a deprecation notice."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "Claude Opus 4.8",
+   "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "fact": "Legacy but Active; ID claude-opus-4-8; not sooner than May 28, 2027. It is now the replacement target named for retired Opus 4 / 4.1 / Opus 3 in the deprecations history. 1,024-token minimum for caching; supports tool search and structured outputs.",
+   "identifiers": [
+    "claude-opus-4-8"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Newer Opus (5, 5.5) exist; questions treating Opus 4.8 as newest are stale."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "model deprecations",
+   "doc_url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "fact": "Lifecycle states: Active, Legacy, Deprecated, Retired. At least 60 days notice for publicly released models. Deprecated now: claude-sonnet-4-5-20250929 (deprecated 2026-09-30, retires 2026-11-30, replacement claude-sonnet-5-5); claude-mythos-preview deprecated 2026-06-09. Retired: claude-opus-4-1-20250805 (2026-08-05), claude-opus-4-20250514 and claude-sonnet-4-20250514 (2026-06-15), claude-3-7-sonnet-20250219 and claude-3-5-haiku-20241022 (2026-02-19), claude-3-haiku-20240307 (2026-04-20). Parameter deprecation: temperature, top_p, top_k removed in API version 2026-10-21 (400 even at default). Bedrock and Google-managed set their own dates.",
+   "identifiers": [
+    "claude-sonnet-4-5-20250929",
+    "claude-mythos-preview",
+    "claude-opus-4-1-20250805",
+    "claude-opus-4-20250514",
+    "claude-sonnet-4-20250514",
+    "claude-3-7-sonnet-20250219",
+    "claude-3-5-haiku-20241022",
+    "claude-3-haiku-20240307",
+    "temperature",
+    "top_p",
+    "top_k",
+    "2026-10-21"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Sonnet 4.5 retires 2026-11-30 (30 days from today); sampling-parameter removal landed 2026-10-21."
+  },
+  {
+   "topic": "Models and deprecations",
+   "feature": "effort parameter",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/effort",
+   "fact": "Set via output_config.effort. Level names seen in the Claude Code docs: low, medium, high, xhigh, max (the effort page excerpt read here showed medium and max explicitly). Default is high on most models; Opus 5.5 and Haiku 5.5 default to medium (per this page; the models overview shows Fable 5.1 and Sonnet 5.5 as high). Passing the model's default is identical to omitting it. max is available on the Fable/Mythos models and Opus 5.5/5/4.8 among others. Thinking is adaptive on current models; manual budget_tokens extended thinking is not accepted on later models.",
+   "identifiers": [
+    "output_config.effort",
+    "low",
+    "medium",
+    "high",
+    "max",
+    "xhigh"
+   ],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": "Extended thinking with budget_tokens is deprecated on Opus 4.6/Sonnet 4.6 and rejected on later models; effort plus adaptive thinking replaces it."
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "few-shot prompting",
+   "doc_url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+   "fact": "Prompting best-practices page linked from models overview but not fetched: not verified.",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "system prompt policy",
+   "doc_url": null,
+   "fact": "No page fetched that defines a 'system prompt policy' feature: not verified. (Facts on system prompt flags such as --system-prompt and --append-system-prompt are in the headless/CLI entries.)",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  },
+  {
+   "topic": "Messages API tool use",
+   "feature": "prompt templates",
+   "doc_url": null,
+   "fact": "Not verified (no page fetched).",
+   "identifiers": [],
+   "retrieved": "2026-10-28",
+   "exam_era_risk": null
+  }
+ ],
+ "lesson_files": [
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-certified-architect-foundations__learn__mcp-tool-errors-iserror-vs-protocol-errors.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__claude-api-cost-and-scale-prompt-caching-batch-processing-and-cloud-platforms.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__prompt-caching-breakpoints-ttls-and-cache-cost-savings.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__effort-and-model-choice-trading-accuracy-for-latency-and-cost.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-architect-professional__learn__latency-cost-safety-and-security-metrics.txt",
+  "/Users/rajibbahar/dev/claude-staff-kit/.cache/certsafari/lessons_txt/claude-developer-foundations__learn__handling-claude-tool-calls-the-agentic-loop-errors-and-approvals.txt"
+ ],
+ "lesson_words": 24756
+}
