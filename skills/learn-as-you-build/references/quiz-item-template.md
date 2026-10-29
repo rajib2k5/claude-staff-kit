@@ -34,6 +34,8 @@ Review lesson N: [<doc title>](<path>#<section>). This topic goes to the missed-
 
 After a miss, show the lesson link. Do not ask the same question again now.
 
+The checkpoint file stores the whole pair before the checkpoint starts. The right option and the explanations go in its answer key, at the end of the file. In the chat or the widget, the user sees them only after the pick or the skip.
+
 ## The options checklist
 
 Make sure that each question passes these checks before you send it.
@@ -80,14 +82,14 @@ Ask 5 to 8, after the last pair. Each one is a question that an interviewer asks
 
 <A "walk me through" or "why" question. Name the part of the system. Example: "Walk me through what happens when a worker crashes after it saves the key.">
 
-Grader's notes (keep them out of the message to the user): Lesson: <the lesson this question maps to>. Points: <two or three points a good answer covers, each with the `file:line` that backs it>
+Grader's notes (keep them out of the message to the user and out of the checkpoint file, because model answers must not show before the results): Lesson: <the lesson this question maps to>. Points: <two or three points a good answer covers, each with the `file:line` that backs it>
 ```
 
 Mix the types. Ask for one data-flow walk, one trade-off ("why this over that"), one failure case, and one "what breaks first if the load grows" question. Make one lesson from the "Why this design" table. Map the load question to that lesson. Every explain-it-back question maps to a lesson.
 
 ## Grading format
 
-Grade only after the user sends their results. Grade against the code. Do not grade against your memory of the lesson.
+Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson.
 
 ```markdown
 ### Explain it back N: <pass | partial | miss>
@@ -99,4 +101,13 @@ Grade only after the user sends their results. Grade against the code. Do not gr
 **Review:** [Lesson K](<path>#<section>)
 ```
 
-Add the "Review" line to every partial and every miss. End with the totals: pairs right of pairs asked, and explain-it-back passes of questions asked. Write the totals and the missed topics to `LEARNING_LOG.md`.
+Add the "Review" line to every partial and every miss. End with the totals, such as `pairs: 3 of 4 right, re-asks: 1 of 1 cleared, explain-it-back: 5 of 7 passed`.
+
+- Pairs: the Q items right, out of the Q items asked.
+- Re-asks: the R items right, out of the R items asked. A right re-ask clears its topic.
+- Explain-it-back: the passes, out of the E items asked.
+- A skipped item counts as asked and not right. An E item with no text counts as asked and not passed.
+- Leave retired items out of every count.
+- Take the totals from the latest attempt whose results were sent. The rows of earlier attempts stay only in the checkpoint file.
+
+Write the totals and the missed topics to `LEARNING_LOG.md`.
