@@ -59,7 +59,7 @@ A re-ask comes first in the checkpoint, before lesson 1. Ask up to two. Before e
 ```markdown
 ### Re-ask N of M: <the missed idea>
 
-<The lesson again, in two lines. Cite the same `file:line` as the first lesson. In a checkpoint with a `Code at:` line, cite the same code where it is at this checkpoint's own `Code at:` commit.>
+<The lesson again, in two lines. Cite the same `file:line` as the first lesson. In a checkpoint with a `Code at:` line, cite the same code where it is at this checkpoint's own `Code at:` commit, or in its copies.>
 
 Read the full version: [<doc title>](<path>#<section>)
 
@@ -91,7 +91,7 @@ Mix the types. Ask for one data-flow walk, one trade-off ("why this over that"),
 
 ## Grading format
 
-Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson. When the checkpoint file has a `Code at:` line with a sha, grade against the code at that commit, such as with `git show <sha>:<path>`. When it names copies, grade against those copies. In the output, label each `file:line` with the pin, such as `3f2a9c1:path/to/file.py:41`, or with the path of the copy.
+Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson. When the checkpoint file has a `Code at:` line with a sha, grade against the code at that commit, such as with `git show <sha>:<path>`. When it names copies, grade against those copies, and read any other file from the sha after "on top of". In the output, label each `file:line` with the pin, such as `3f2a9c1:path/to/file.py:41`, or with the path of the copy.
 
 ```markdown
 ### Explain it back N: <pass | partial | miss>
