@@ -104,10 +104,9 @@ Grade only after the user sends their results. A Save in the widget is not a res
 Add the "Review" line to every partial and every miss. End with the totals, such as `pairs: 3 of 4 right, re-asks: 1 of 1 cleared, explain-it-back: 5 of 7 passed`.
 
 - Pairs: the Q items right, out of the Q items asked.
-- Re-asks: the R items right, out of the R items asked. A right re-ask clears its topic.
+- Re-asks: the R items that cleared their topic, out of the R items asked. When a re-ask clears its topic: "Missed topics" in `SKILL.md`.
 - Explain-it-back: the passes, out of the E items asked.
-- A skipped item counts as asked and not right. An E item with no text counts as asked and not passed.
+- A skipped or unanswered R or Q item counts as asked and not right. An unanswered E item counts as asked and not passed.
 - Leave retired items out of every count.
-- Take the totals from the latest attempt whose results were sent. The rows of earlier attempts stay only in the checkpoint file.
 
-Write the totals and the missed topics to `LEARNING_LOG.md`.
+Write the totals on the `Graded:` line of the checkpoint file. The log takes its totals from the first graded attempt: the first whose results were sent, or, in `lite` mode, the first that closed. A later graded attempt keeps its totals only in the checkpoint file. Write the missed topics to `LEARNING_LOG.md`.

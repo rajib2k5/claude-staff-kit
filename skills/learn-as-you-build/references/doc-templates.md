@@ -87,6 +87,7 @@ The path is the same in every repo. In a git repo, `.learning/` is in the exclud
 Lesson text: <not adversarially reviewed | reviewed by <reviewer>, <date>>.
 Walkthrough: [NN-<topic>](<the path from this file to the walkthrough doc>). Written: <YYYY-MM-DD>.
 Attempt: <1, then one more for each restart>.
+Graded: <"not yet", then the date and the totals when this attempt is graded>.
 
 ## Items
 
@@ -144,7 +145,7 @@ D. <option>
 
 ## Earlier attempts
 
-<"None. No restart yet." until the first restart. Each restart adds "### Attempt N, moved YYYY-MM-DD", with the old Answers rows and the old explain-it-back texts.>
+<"None. No restart yet." until the first restart. Each restart adds "### Attempt N, moved YYYY-MM-DD", with the old `Graded:` line, the old Answers rows, and the old explain-it-back texts.>
 
 ## Answer key
 
@@ -199,4 +200,4 @@ Learning mode: full
 - Milestone 04 (docs owed). Say "write the docs for milestone 4" to catch up.
 ```
 
-The `Learning mode:` line is the only line that `off` mode writes. When the user switches modes, update it. While a checkpoint is open, its Checkpoint cell reads `in progress, N of M answered`. The cell does not link the checkpoint file. That file is git-excluded, so a link would break in every other clone and on GitHub. The path is always `.learning/milestones/NN-checkpoint.md`. From attempt 2 on, the cell also names the attempt. Right after a restart, it reads `in progress, attempt 2, 0 of M answered`. When to update the cell: "Bring the log up to date" in `SKILL.md`. If an open checkpoint becomes owed, keep its cell and add the milestone to the owed list. When you grade the results, set the cell to `done <date>` and fill the Pairs, Re-asks, and Explain-it-back columns with the totals from `quiz-item-template.md`. Keep a topic on the missed-topics list. When the user answers a new question on it correctly, fill in Cleared. Do not re-ask a topic that has a Cleared date.
+The `Learning mode:` line is the only line that `off` mode writes. When the user switches modes, update it. While a checkpoint is open, its Checkpoint cell reads `in progress, N of M answered`. The cell does not link the checkpoint file. That file is git-excluded, so a link would break in every other clone and on GitHub. The path is always `.learning/milestones/NN-checkpoint.md`. From attempt 2 on, the cell also names the attempt. Right after a restart, it reads `in progress, attempt 2, 0 of M answered`. When to update the cell: "Bring the log up to date" in `SKILL.md`. If an open checkpoint becomes owed, keep its cell and add the milestone to the owed list. When it is graded, take it off the owed list. When an attempt is graded and no earlier attempt was, set the cell to `done <date>` and fill the Pairs, Re-asks, and Explain-it-back columns with its totals from `quiz-item-template.md`. When a later attempt is graded, keep those columns, and name that attempt in the cell, such as `done 2026-01-01; attempt 2 also graded`. Keep a topic on the missed-topics list. When the user answers a new question on it correctly, fill in Cleared. Do not re-ask a topic that has a Cleared date.
