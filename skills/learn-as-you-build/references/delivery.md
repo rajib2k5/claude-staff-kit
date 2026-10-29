@@ -77,7 +77,7 @@ The results message still starts the grading. It is the user's full submission. 
 
 When the steps end or stop, and you are paused at this checkpoint, wait for "continue" or for the user's answer. Otherwise, go back to the work you were doing. "Paused" means the same as for an answer line.
 
-In `queued` mode, a results message that arrives during the build gets all the steps at once. Grade on the strongest model you have (see "Token economy" in `SKILL.md`). Then go back to the build. Only urgent work delays the grading, as above.
+In `queued` mode, a results message that arrives during the build gets all the steps at once. Grade on the strongest model you have (see "Token economy" in `SKILL.md`). Then go back to the build. Only urgent work, as above, or an open pin question (see "Into `queued` mode" in `SKILL.md`), delays the grading.
 
 ## Format 2: plain markdown in chat
 

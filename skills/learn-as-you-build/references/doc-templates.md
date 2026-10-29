@@ -88,7 +88,7 @@ Attempt: <1, then one more for each restart>.
 Graded: <"not yet", then the date and the totals when this attempt is graded>.
 Lesson text: <not adversarially reviewed | reviewed by <reviewer>, <date>>.
 Walkthrough: [NN-<topic>](<the path from this file to the walkthrough doc>). Written: <YYYY-MM-DD>.
-Code at: <queued mode only: the short sha of the commit that finished the milestone, or "copies in .learning/milestones/NN-code/, <YYYY-MM-DD>"; no period after it>
+Code at: <queued mode only: the short sha of the commit that finished the milestone, or "copies in .learning/milestones/NN-code/ on top of <short sha of the newest kept commit>, <YYYY-MM-DD>"; no period after it>
 
 ## Items
 
