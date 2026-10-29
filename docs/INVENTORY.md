@@ -14,7 +14,7 @@ of the same files found under `~/dev`.
 | `skills/evidence-gated-validation` | `~/.claude/skills/` | 1 | with `references/` and `validation/`; identical to the public repo `rajib2k5/evidence-gated-validation` (same git blob `6dc163f` for SKILL.md) |
 | `skills/simple-english` | `~/.claude/skills/` | 1 | ASD-STE100 writing rules, with `references/` |
 | `skills/snowflake-sql` | `~/.claude/skills/` (written 2026-10-19) | 1 | stdlib-only Snowflake SQL API client `sf.py` with its tests; `config.json` is per machine and gitignored, `config.example.json` is the template |
-| `skills/learn-as-you-build` | written in this repo, 2026-10-28 (not captured from `~/.claude/skills/`) | 1 | milestone checkpoints with lessons, quizzes, and four modes (`full`, `lite`, `deferred`, `off`); with `references/` |
+| `skills/learn-as-you-build` | written in this repo, 2026-10-28 (not captured from `~/.claude/skills/`) | 1 | milestone checkpoints with lessons, quizzes, and five modes (`full`, `queued`, `lite`, `deferred`, `off`); with `references/` |
 | `agents/` | `~/.claude/agents/` | 19 | every file declares `model:` (15 opus, 4 sonnet) |
 | `commands/` | `~/.claude/commands/` | 12 | thin dispatchers onto the skills |
 | `rules/` | `~/.claude/rules/` | 19 | 18 standards plus `README.md` index |
