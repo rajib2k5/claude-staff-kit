@@ -88,7 +88,7 @@ Attempt: <1, then one more for each restart>.
 Graded: <"not yet", then the date and the totals when this attempt is graded>.
 Lesson text: <not adversarially reviewed | reviewed by <reviewer>, <date>>.
 Walkthrough: [NN-<topic>](<the path from this file to the walkthrough doc>). Written: <YYYY-MM-DD>.
-Code at: <queued mode only: the short sha of the commit that finished the milestone, or "copies in .learning/milestones/NN-code/, <YYYY-MM-DD>">.
+Code at: <queued mode only: the short sha of the commit that finished the milestone, or "copies in .learning/milestones/NN-code/, <YYYY-MM-DD>"; no period after it>
 
 ## Items
 
@@ -171,7 +171,7 @@ Right option: B.
 - **D. Wrong.** <the reason>
 ```
 
-Result is one of `right`, `wrong`, `skipped`, `saved`, or `retired`. Only E rows use `saved`, and only R and Q rows use `skipped`. A row with an empty Result is unanswered. A `retired` row is not asked and not counted. In "N of M answered", M counts the items that are not retired, and N counts those of them that have a Result. An explain-it-back text holds ` / ` where the user wrote a newline. The `Attempt:` and `Graded:` lines stay at the top. Every check of the `Graded:` line reads the one under `Attempt:` at the top. A `Graded:` line under `Earlier attempts` is history. The file holds no grader's notes (see `quiz-item-template.md`). Only a queued checkpoint has the `Code at:` line. It pins the items to that commit (see "Pin a queued checkpoint to its commit" in `SKILL.md`).
+Result is one of `right`, `wrong`, `skipped`, `saved`, or `retired`. Only E rows use `saved`, and only R and Q rows use `skipped`. A row with an empty Result is unanswered. A `retired` row is not asked and not counted. In "N of M answered", M counts the items that are not retired, and N counts those of them that have a Result. An explain-it-back text holds ` / ` where the user wrote a newline. The `Attempt:` and `Graded:` lines stay at the top. Every check of the `Graded:` line reads the one under `Attempt:` at the top. A `Graded:` line under `Earlier attempts` is history. The file holds no grader's notes (see `quiz-item-template.md`). Only a checkpoint that was queued has the `Code at:` line, and it keeps the line after a mode switch. It pins the items to that commit (see "Pin a queued checkpoint to its commit" in `SKILL.md`). Write no period after the sha, because `git show <sha>.:<path>` fails. When you read a line that ends in a period, drop the period.
 
 ## Learning log: `LEARNING_LOG.md`
 
