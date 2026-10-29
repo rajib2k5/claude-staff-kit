@@ -34,7 +34,7 @@ Review lesson N: [<doc title>](<path>#<section>). This topic goes to the missed-
 
 After a miss, show the lesson link. Do not ask the same question again now.
 
-In a queued checkpoint, end each lesson, re-asks too, with one more line after the doc link: `Code at <short sha>: this lesson describes the code at that commit.` Copy the value from the `Code at:` line of the checkpoint file.
+When you write a queued checkpoint, end each lesson, re-asks too, with one more line after the doc link, such as `Code at 3f2a9c1. This lesson describes the code there.` Copy the value from the `Code at:` line of the checkpoint file.
 
 The checkpoint file stores the whole pair before the checkpoint starts. The right option and the explanations go in its answer key, at the end of the file. In the chat or the widget, the user sees them only after the pick or the skip.
 
@@ -59,7 +59,7 @@ A re-ask comes first in the checkpoint, before lesson 1. Ask up to two. Before e
 ```markdown
 ### Re-ask N of M: <the missed idea>
 
-<The lesson again, in two lines. Cite the same `file:line` as the first lesson.>
+<The lesson again, in two lines. Cite the same `file:line` as the first lesson. In a checkpoint with a `Code at:` line, cite the same code where it is at this checkpoint's own `Code at:` commit.>
 
 Read the full version: [<doc title>](<path>#<section>)
 
@@ -91,7 +91,7 @@ Mix the types. Ask for one data-flow walk, one trade-off ("why this over that"),
 
 ## Grading format
 
-Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson. When the checkpoint file has a `Code at:` line with a sha, grade against the code at that commit, such as with `git show <sha>:<path>`.
+Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson. When the checkpoint file has a `Code at:` line with a sha, grade against the code at that commit, such as with `git show <sha>:<path>`. When it names copies, grade against those copies. In the output, label each `file:line` with the pin, such as `3f2a9c1:path/to/file.py:41`, or with the path of the copy.
 
 ```markdown
 ### Explain it back N: <pass | partial | miss>
