@@ -108,5 +108,6 @@ Add the "Review" line to every partial and every miss. End with the totals, such
 - Explain-it-back: the passes, out of the E items asked.
 - A skipped or unanswered R or Q item counts as asked and not right. An unanswered E item counts as asked and not passed.
 - Leave retired items out of every count.
+- For an item that already has a recorded pick or skip in an earlier attempt, count its earliest recorded pick or skip. Then a restart cannot raise the score through memory.
 
-Write the totals on the `Graded:` line of the checkpoint file. The log takes its totals from the first graded attempt: the first whose results were sent, or, in `lite` mode, the first that closed. A later graded attempt keeps its totals only in the checkpoint file. Write the missed topics to `LEARNING_LOG.md`.
+Write the totals on the `Graded:` line under `Attempt:` at the top of the checkpoint file. The log takes its totals from the first graded attempt: the first whose results were sent, or, in `lite` mode, the first that closed. A later graded attempt keeps its totals only in the checkpoint file. Write the missed topics to `LEARNING_LOG.md`.
