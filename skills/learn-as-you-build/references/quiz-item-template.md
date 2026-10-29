@@ -34,6 +34,8 @@ Review lesson N: [<doc title>](<path>#<section>). This topic goes to the missed-
 
 After a miss, show the lesson link. Do not ask the same question again now.
 
+In a queued checkpoint, end each lesson, re-asks too, with one more line after the doc link: `Code at <short sha>: this lesson describes the code at that commit.` Copy the value from the `Code at:` line of the checkpoint file.
+
 The checkpoint file stores the whole pair before the checkpoint starts. The right option and the explanations go in its answer key, at the end of the file. In the chat or the widget, the user sees them only after the pick or the skip.
 
 ## The options checklist
@@ -89,7 +91,7 @@ Mix the types. Ask for one data-flow walk, one trade-off ("why this over that"),
 
 ## Grading format
 
-Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson.
+Grade only after the user sends their results. A Save in the widget is not a result. Grade against the code. Do not grade against your memory of the lesson. When the checkpoint file has a `Code at:` line with a sha, grade against the code at that commit, such as with `git show <sha>:<path>`.
 
 ```markdown
 ### Explain it back N: <pass | partial | miss>

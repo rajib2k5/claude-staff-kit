@@ -9,7 +9,7 @@ When the host offers an inline interactive widget tool, and a widget can send a 
 1. If the tool has a setup guide, read it, and follow all of it.
 2. Write all content into the widget up front, from the checkpoint file: the milestone, the attempt number, every lesson, every question, the explanation of every option, and every answer that the file records. Leave out retired items. The widget answers the user without a round trip to you.
 3. Build these parts:
-   - A header with the review-status line, the milestone name, the progress ("Lesson 2 of 4"), and the count from the Answers table ("3 of 8 answered"). The header also has this fixed line: `Answers save as you go. If this quiz looks reset, say "resume the quiz".` In `off` mode, the fixed line reads: `Answers are kept in this conversation only. If this quiz looks reset, say "resume the quiz".`
+   - A header with the review-status line, the milestone name, the progress ("Lesson 2 of 4"), and the count from the Answers table ("3 of 8 answered"). The header also has this fixed line: `Answers save as you go. If this quiz looks reset, say "resume the quiz".` In `off` mode, the fixed line reads: `Answers are kept in this conversation only. If this quiz looks reset, say "resume the quiz".` When the checkpoint file has a `Code at:` line, the header also shows it, such as `Code at 3f2a9c1. The items describe the code at that commit.`
    - **Previous** and **Next** buttons. Order the screens like this:
      1. One re-ask screen for each missed topic, up to two. Each one shows the lesson in two lines, then a new question on the same idea. When no topic is missed, leave these screens out.
      2. Lesson 1, question 1, lesson 2, question 2, and so on.
@@ -34,7 +34,7 @@ ANSWER milestone 02 attempt 1 Q3: skipped
 ANSWER milestone 02 attempt 1 E3: <the user's text>
 ```
 
-When an answer line arrives, take the first step below that fits.
+The line names its milestone. Every step below uses the checkpoint file of that milestone. When an answer line arrives, take the first step below that fits.
 
 1. Its attempt differs from the attempt in the checkpoint file. Ignore the line. Say so in one line, such as `Ignored: that answer is from attempt 1, and the quiz is now on attempt 2.`
 2. The `Graded:` line under `Attempt:` at the top of the checkpoint file has a date, so this attempt is already graded. Change nothing. Say so in one line, such as `Milestone 02 attempt 1 is already graded. Say "restart the quiz" to try again.`
@@ -42,7 +42,7 @@ When an answer line arrives, take the first step below that fits.
 4. The item already has a recorded pick or skip. Leave the row as it is. Say so in one line, such as `Q2 is already recorded as B (wrong). Use the newest quiz widget, or say "resume the quiz" for a fresh one.` This holds for a second Skip too.
 5. Otherwise, write the row. For a pick, the answer key in the file decides right or wrong. For an explain-it-back item, write the text and the Result `saved`. A second Save replaces the text. Reply in one line, such as `Recorded Q2. 3 of 8 answered.` If the key disagrees with the word in the line, the key wins, and the reply says so, such as `Recorded Q2 as wrong: the answer key says C. 3 of 8 answered.`
 
-Never send a new widget in reply to an answer line. After the reply, if you are paused at a checkpoint, do nothing else in that turn. You are paused in `full` mode at a checkpoint, and in any catch-up, in every mode. Otherwise, go back to the work you were doing. That covers `lite` mode, and `full` mode after "continue" or during urgent work.
+Never send a new widget in reply to an answer line. After the reply, if you are paused at a checkpoint, do nothing else in that turn. You are paused in `full` mode at a checkpoint, and in any catch-up, in every mode but `queued`. Otherwise, go back to the work you were doing. That covers `lite` mode, `queued` mode, and `full` mode after "continue" or during urgent work. In `queued` mode, an answer never stops, restarts, or reorders the build.
 
 ### The results message
 
@@ -66,7 +66,7 @@ EXPLAIN-IT-BACK
 
 Lines that start with R are re-asks of missed topics. When no topic was re-asked, leave them out. Leave out every item that has no answer. The message covers every other item, including the answers that the widget loaded from the file.
 
-The results message still starts the grading. It is the user's full submission. Take the steps below in order. If it arrives during urgent work, take steps 1 to 3 at once, because they only read and edit the checkpoint file. If those steps did not stop, say in one line that you will grade when the urgent work is done, and go back to it. Only the grading waits. The urgent work is done when the urgent task ends, or when the user says so. Then take steps 4 to 6.
+The results message still starts the grading. It is the user's full submission. It names its milestone, and every step below uses the checkpoint file of that milestone. Take the steps below in order. If it arrives during urgent work, take steps 1 to 3 at once, because they only read and edit the checkpoint file. If those steps did not stop, say in one line that you will grade when the urgent work is done, and go back to it. Only the grading waits. The urgent work is done when the urgent task ends, or when the user says so. Then take steps 4 to 6.
 
 1. If its attempt differs from the attempt in the checkpoint file, ignore it, and say so in one line. Stop here.
 2. If the `Graded:` line under `Attempt:` at the top of the checkpoint file has a date, change nothing, and say so in one line, as for an answer line. Stop here.
@@ -76,6 +76,8 @@ The results message still starts the grading. It is the user's full submission. 
 6. Bring the log up to date, with the totals.
 
 When the steps end or stop, and you are paused at this checkpoint, wait for "continue" or for the user's answer. Otherwise, go back to the work you were doing. "Paused" means the same as for an answer line.
+
+In `queued` mode, a results message that arrives during the build gets all the steps at once. Grade on the strongest model you have (see "Token economy" in `SKILL.md`). Then go back to the build. Only urgent work delays the grading, as above.
 
 ## Format 2: plain markdown in chat
 
@@ -176,3 +178,7 @@ Send the 5 to 8 questions in one message, numbered. Tell the user to answer in t
 ## In `lite` mode
 
 Never block on an answer in `lite` mode. Send the recap (3 to 5 lines), then at most three pairs in the same two formats. Re-asks count toward the three. Do not wait for answers. In markdown, all the pairs are open at once. So end each one with "Reply with the item id and a letter, such as `Q2 B`." in place of "Reply with a letter." If the user answers, record the answer first. In markdown, then respond with the full per-option explanation. After a miss, show the lesson link, and keep working. When every item that is not retired has an answer, a checkpoint with no explain-it-back items closes, with no results message. Write the date and the totals on the `Graded:` line under `Attempt:`, and bring the log up to date with the totals, so the cell reads `done <date>`. A checkpoint that has explain-it-back items does not close this way. It stays open until a results message arrives, so explain-it-back is never graded before the results. In `lite` mode it counts as owed until then, and the next log update puts it on the owed list. If the user ignores the pairs, list the milestone under owed checkpoints in `LEARNING_LOG.md` and keep working.
+
+## In `queued` mode
+
+Never block on an answer in `queued` mode. At each milestone, deliver the whole checkpoint, then start the next milestone in the same turn. The widget works as above. In markdown, send every unanswered item in one message, at the milestone and on a resume or a catch-up: the review-status line, the `Code at:` line, each re-ask and each lesson with its question, then the explain-it-back questions. Several checkpoints can be open at once. So end each question with "Reply with the milestone, the item id, and a letter, such as `03 Q2 B`. Reply `03 Q2 skip` to skip it." in place of "Reply with a letter." Ask for all the explain-it-back answers in one reply that starts with the milestone, such as `03 EXPLAIN-IT-BACK`. That reply is the results. When a letter arrives, record it in the checkpoint file of that milestone first. Then send the explanation of every option, and the lesson link after a miss. Then go back to the build. A queued checkpoint stays queued until it is graded. It is not owed.
