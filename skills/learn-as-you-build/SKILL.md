@@ -140,14 +140,14 @@ The widget's memory is lost when the widget renders again, and the host guarante
 
 Choose the format from the tools you have. Never require one tool.
 
-1. If the host offers an inline interactive widget tool, build the checkpoint there. An example is a `show_widget` tool in the Claude desktop app. Follow the setup guide of that tool first. Build the widget from the checkpoint file (in `off` mode, from the conversation). Put every lesson, question, per-option explanation, and recorded answer in the widget up front, so that feedback is instant. The widget needs these parts:
+1. If the host offers an inline interactive widget tool, and a widget can send a line to the chat, build the checkpoint there. An example is a `show_widget` tool in the Claude desktop app. Follow the setup guide of that tool first. Build the widget from the checkpoint file (in `off` mode, from the conversation). Put every lesson, question, per-option explanation, and recorded answer in the widget up front, so that feedback is instant. The widget needs these parts:
    - **Previous** and **Next** buttons.
    - Instant feedback on every option after a pick.
    - One answer line to the chat after each pick or skip.
    - A **Review lesson** button after a miss.
    - A text box and a **Save** button for each explain-it-back question.
    - A **Send results** button that posts the picks and the written answers to the chat.
-2. If there is no widget tool, or the widget fails, use plain markdown in chat. Send one lesson, then its question with lettered options. The user replies with a letter. Record it, then send the explanation of every option. Repeat for the next pair.
+2. If there is no widget tool, a widget cannot send to the chat, or the widget fails, use plain markdown in chat. A widget that cannot send records nothing. Send one lesson, then its question with lettered options. The user replies with a letter. Record it, then send the explanation of every option. Repeat for the next pair.
 
 Both formats in detail: `references/delivery.md`.
 
