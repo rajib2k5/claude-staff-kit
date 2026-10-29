@@ -4,7 +4,7 @@ Choose the format from the tools you have. Never require a specific tool. The le
 
 ## Format 1: inline widget
 
-When the host offers an inline interactive widget tool, use it. An example is a `show_widget` tool in the Claude desktop app.
+When the host offers an inline interactive widget tool, and a widget can send a line to the chat, use it. An example is a `show_widget` tool in the Claude desktop app, whose widgets call `sendPrompt`. If a widget cannot send to the chat, use Format 2. A widget that cannot send records nothing.
 
 1. If the tool has a setup guide, read it. Follow its rules for colours, size, and scripts.
 2. Write all content into the widget up front, from the checkpoint file: the milestone, the attempt number, every lesson, every question, the explanation of every option, and every answer that the file records. Leave out retired items. The widget answers the user without a round trip to you.
