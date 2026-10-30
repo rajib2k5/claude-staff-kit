@@ -1,12 +1,14 @@
 ---
 name: snowflake-sql
-description: Run Snowflake SQL and inspect a Snowflake account with a programmatic access token (PAT) through the Snowflake SQL API, using the bundled stdlib-only Python CLI sf.py. Use for any task that has to execute something in Snowflake - queries, SHOW / DESCRIBE / GET_DDL, grants, query history, warehouse credits, explain plans, async statements and cancel - and whenever the Snowflake MCP server is unavailable (it cannot connect in this environment; do not try it). Triggers - run this in snowflake, query snowflake, check snowflake, snowflake table, show grants, query history, snowflake credits, live snowflake test.
+description: Run Snowflake SQL and inspect a Snowflake account with a programmatic access token (PAT) through the Snowflake SQL API, using the bundled stdlib-only Python CLI sf.py. Use for any task that has to execute something in Snowflake - queries, SHOW / DESCRIBE / GET_DDL, grants, query history, warehouse credits, explain plans, async statements and cancel. This is the only way to reach Snowflake: never use the Snowflake MCP server, even when it is connected; always authenticate with the TMP_PAT token. Triggers - run this in snowflake, query snowflake, check snowflake, snowflake table, show grants, query history, snowflake credits, live snowflake test.
 ---
 
 # Snowflake SQL with a PAT (`sf.py`)
 
-The Snowflake MCP server cannot connect in this environment (owner, 2026-10-19: "stop looking for snowflake mcp").
-Use this tool instead. It calls the Snowflake SQL API (`POST /api/v2/statements`) directly, with the PAT in the
+**Rule: never use the Snowflake MCP server, even when it shows as connected. Use this tool, with `TMP_PAT`.** The
+owner decided this on 2026-10-19 ("stop looking for snowflake mcp") and repeated it on 2026-10-30 ("Don't use mcp
+server ... use TMP_PAT"). The server can connect; whether it can is not the reason. Do not repair, reconnect or
+configure it. The tool calls the Snowflake SQL API (`POST /api/v2/statements`) directly, with the PAT in the
 `TMP_PAT` variable that `~/.zshrc` exports.
 
 ```bash
