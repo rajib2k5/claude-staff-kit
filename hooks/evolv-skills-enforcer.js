@@ -51,12 +51,13 @@ Three local skills are ACTIVE for this session and every project. They are not o
    Run the completion sweep (task -> command executed -> output seen) before reporting done.
 
 3. evidence-gated-validation — claims are REJECTED until evidence flips them.
-   For AI-generated code, ML/algorithm implementations, API/kwarg existence, and any
-   "it's fixed" claim: decompose into atomic falsifiable claims and audit through two
-   independent channels (A: primary documentation; B: executed runtime probes). Accept only
-   on convergence. Tier it: Tier 0 deterministic gates always; Tier 1 Channel B for routine
-   changes; Tier 2 full dual-channel for unfamiliar libraries, ML correctness, and anything
-   whose wrongness is silent.
+   Route first with ~/.claude/skills/evidence-gated-validation/references/validation-router.md
+   (consequence, oracle, novelty, claim shape) and put the route line at the top of the report.
+   Tier 0 deterministic gates always. Dual-channel EGV (A: primary documentation; B: executed
+   runtime probes; accept only on convergence) only for API/kwarg existence, unfamiliar or
+   version-sensitive libraries and ML pipeline code (rows 3-4; row 4 only when a named algorithm or library semantics is claimed). A "fixed" claim is
+   reproduce-RED first (row 12), never EGV. A number headed to a decision is verifier +
+   adversarial (row 6). A documentation channel cannot see a value.
 
 Reserved language: never write "tests pass", "the build is green", "verified", "confirmed
 working", or "faster" without a command executed in THIS session, with its output.

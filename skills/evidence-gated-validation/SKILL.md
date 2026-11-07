@@ -1,6 +1,6 @@
 ---
 name: evidence-gated-validation
-description: Validates AI-generated code in any programming language, plus ML/AI algorithm implementations, using evidence-gated validation with two independent audit channels — one researches official documentation, one probes runtime behavior empirically — and accepts a claim only when both converge. Use when asked to validate this code, check AI-generated code for hallucinations, audit this implementation, verify this ML algorithm is correct, confirm an API or kwarg actually exists, or determine whether the AI skipped a step.
+description: Routes a validation request to the right method first (references/validation-router.md), then runs dual-channel EGV when that is the route. Validates AI-generated code in any programming language, plus ML/AI algorithm implementations, using evidence-gated validation with two independent audit channels — one researches official documentation, one probes runtime behavior empirically — and accepts a claim only when both converge. Use when asked to validate this code, check AI-generated code for hallucinations, audit this implementation, verify this ML algorithm is correct, confirm an API or kwarg actually exists, or determine whether the AI skipped a step.
 license: MIT
 ---
 
@@ -21,13 +21,24 @@ error correlation is as high as same-family), but swapping the *evidence source*
 Documentation lookup and empirical execution fail in different ways. Treat every
 material claim as REJECTED until evidence flips it.
 
-## When to run this protocol — cost and tiering
+## Which validation to run — the router
 
-Full dual-channel EGV is the high-assurance tier, not the everyday default. It is
-the best-supported design for catching the silent-wrong class — code that runs,
-looks plausible, and is wrong — but it costs two full audit passes, and in measured
-practice roughly 4 in 10 divergences are false alarms that consume investigation
-time (arXiv:2510.09907). Triage before invoking it:
+Dual-channel EGV is one method, not the default. Before running it — or a cheap
+verifier re-measurement, or a strongest-model adversarial pass — route the claim set
+with `references/validation-router.md`: four questions (consequence, oracle, novelty,
+claim shape), a 13-row decision table naming the primary, the complements that run
+only when their "when" holds, what not to run, the stop condition and the cost, and
+a right-tool / wrong-tool catalogue. Dual-channel is the route for API-existence,
+unfamiliar-library and ML-pipeline claims (router rows 3 and 4 — row 4 only when a named algorithm or library semantics is claimed — and row-5 pipeline claims once per pipeline change; Channel A alone inside row 9). A numeric value, an
+"A beats B" claim or prose is routed elsewhere: a documentation channel cannot see a
+number. The route line goes at the top of every report. Recipes for the complements
+(differential reimplementation, mutation score, metamorphic relations, pre-registered
+holdout, block inference on autocorrelated series, forward/live) are in
+`references/complementary-methods.md`.
+
+The tier facts the router rests on, with their evidence. Full dual-channel costs two
+complete audit passes, and in measured practice roughly 4 in 10 divergences are
+false alarms that consume investigation time (arXiv:2510.09907), so:
 
 - **Tier 0 — always, near-free:** deterministic gates (build, type check, lint,
   existing tests). Production systems run these unconditionally (Meta's filter
@@ -38,16 +49,22 @@ time (arXiv:2510.09907). Triage before invoking it:
   most functional wrongness at a fraction of full-protocol cost.
 - **Tier 2 — full dual-channel:** unfamiliar or low-usage libraries (documentation
   grounding pays off exactly where the model is weak, arXiv:2406.14497),
-  version-sensitive code, ML/numerics (the silent-failure class), security, money,
-  irreversible operations, and anything with no test oracle. Also whenever Tier 1
-  returns UNVERIFIABLE, or a load-bearing claim is API-existence-shaped —
-  hallucinated symbols persist across resamples (arXiv:2406.10279), so only a
-  documentation/registry lookup carries signal there.
+  version-sensitive code, ML/numerics *code* (the silent-failure class). Security,
+  money and irreversible operations are router rows 6, 8, 9: adversarial + human,
+  not dual-channel (row 9 uses Channel A alone). Also when a Channel-B probe returns UNVERIFIABLE on an API-existence claim (a documentation lookup is the only remaining source), or a
+  load-bearing claim is API-existence-shaped — hallucinated symbols persist across
+  resamples (arXiv:2406.10279), so only a documentation/registry lookup carries
+  signal there. A numeric research claim with no test oracle is **not** Tier 2: its
+  primary is the pre-registered holdout with block-resampled, multiplicity-corrected
+  inference (`references/complementary-methods.md` §4–5), and EGV covers the
+  pipeline once per pipeline change (router row 5).
 - Do not over-decompose familiar code: decomposition measurably *hurts* strong
   verifiers on simple inputs (arXiv:2411.02400). Match ledger granularity to risk,
   and audit material claims only.
 
-Escalate one tier when the code is AI-generated and unreviewed. Never skip Tier 0.
+Escalation follows the router's fixed map (`references/validation-router.md` step 4): AI-generated
+and unreviewed code moves row 1 → 2, and row 2 → 3 only when it introduces an unfamiliar or
+version-sensitive symbol. Never skip Tier 0. Never escalate past the consequence of the change.
 
 ## The protocol, in order
 
@@ -111,6 +128,11 @@ Guard against triviality inflation: decompose-then-verify pipelines are gameable
 adding tautological, trivially-confirmable sub-claims (CORE, arXiv:2407.03572). Every
 claim must be unique, informative, and falsifiable — there must exist an observation
 that would refute it. Convergence on trivial claims is not evidence.
+
+A numeric-value claim ("the metric is 0.031") is pre-split in the ledger into its
+method (Channel A: the formula, the convention, the library semantics) and its value
+(Channel B, with Channel A marked N/A-by-construction); the value's *significance* is
+not an EGV claim at all — it is router row 5 (`references/complementary-methods.md`).
 
 ## Step 3 — Pre-registration and independence setup
 
@@ -188,7 +210,9 @@ Verifies claims empirically **only**: import probes, signature introspection, mi
 execution probes, property-based and metamorphic tests. Never consults documentation.
 Field manual: `references/runtime-audit.md`. For ML claims (gradient check,
 overfit-tiny-batch, loss-at-init, loss-decreases, seed determinism, leakage), read
-`references/ml-validation.md`.
+`references/ml-validation.md`. For the complements a route may add inside this
+channel (differential reimplementation, metamorphic null controls, mutation score),
+read `references/complementary-methods.md`.
 
 Every probe records: the exact probe script/command, and the verbatim observed output
 (stdout/stderr + exit code) — never a summary. Agents have been measured faking pass
@@ -254,7 +278,8 @@ Mode 2, dual-confirmed-fallback — the report must carry the mode label).
 Any REJECTED material claim ⇒ fail, with the fix requirement stated. Any UNRESOLVED
 material claim ⇒ blocked, escalated. Minor claims are reported but do not block.
 
-Output the evidence table:
+Output the route line first (`references/validation-router.md` step 6), then the
+evidence table:
 
 | ID | Claim | Cat | Mat | A verdict | A evidence | B verdict | B evidence | Gate |
 |---|---|---|---|---|---|---|---|---|

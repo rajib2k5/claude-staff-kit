@@ -153,6 +153,7 @@ for the verbatim record.
 ```markdown
 # Evidence-gated validation report
 
+route:         rows 3 | primary: EGV Mode 1 | complement: none | not-run: adversarial (API-existence claims) | stop: met
 target:        train.py (git sha / file hash)
 environment:   Python 3.12.3, torch 2.5.1, numpy 2.4.6 (pin file: env-pin.txt)
 mode:          single-context sequential fallback

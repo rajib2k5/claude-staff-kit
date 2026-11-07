@@ -8,7 +8,7 @@ The same files also serve the Snowflake Cortex CLI, which reads `~/.claude/skill
 
 | Layer | Count | What it does |
 |---|---|---|
-| **Rules** (`rules/`) | 19 | The standards: engineering bar, adversarial validation (highest tier), testing, code review, security, SQL, dbt, Snowflake, data modelling, migrations, docs. `rules/README.md` is the index and states the conflict order. |
+| **Rules** (`rules/`) | 19 | The standards: engineering bar, adversarial validation (validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13)), testing, code review, security, SQL, dbt, Snowflake, data modelling, migrations, docs. `rules/README.md` is the index and states the conflict order. |
 | **Contexts** (`contexts/`) | 6 | Tiered loading: tier 0 always (the four questions, irreversibility ladder T0 to T4), tier 1 per role, tier 2 per domain. |
 | **Skills** (`skills/`) | 26 | 13 `staff-*` workflows (design, tdd, debug, review, ship, migrate, ...), 8 `data-*` workflows (quality, metric, dbt audit, Snowflake audit and tune, cost, ...), plus `cost-conscious-orchestration`, `destructive-ops-guard`, `evidence-gated-validation`, `simple-english`, `learn-as-you-build`. |
 | **Agents** (`agents/`) | 19 | Each declares an explicit `model:`. `adversarial-validator` is pinned to Opus and is never downgraded. Mechanical agents (explorer, docs writer, release manager, dependency auditor) run on Sonnet. |
@@ -21,7 +21,7 @@ Full list with provenance, and everything deliberately left out: [docs/INVENTORY
 
 ## The ideas the kit enforces
 
-- **Adversarial validation outranks speed.** Any number for a human decision, any SQL on production data, any migration, any "it's fixed": an Opus validator tries to break it, and every blocker it raises is reproduced before it is acted on.
+- **Validation outranks speed; the method is routed.** Every substantive change is validated; `skills/evidence-gated-validation/references/validation-router.md` picks the method by consequence, oracle, novelty and claim shape. Trivial edits, routine code under tests and prose (rows 1, 2, 10) stop at the gates — row 2 adds one hand mutant per new or changed test — or a Sonnet verifier, unless another row also applies; API-existence and unfamiliar-library claims go to dual-channel EGV; a quant research claim goes to a pre-registered holdout test. A number for a human decision, SQL on production data, a migration, security, new concurrency or timezone code, any "it's fixed" (rows 6–9, 12, 13): an Opus validator tries to break it, and every blocker it raises is reproduced before it is acted on.
 - **Every subagent gets an explicit model.** Sonnet for lookups and mechanical work, Opus for synthesis and validation. The main thread on a personal Claude Max plan defends its allowance.
 - **Nothing irreversible happens on inference.** The guard hook asks before anything in tier T3 or T4 of the ladder, and denies the catastrophic tier outright.
 - **Verification language is reserved.** "Tests pass", "verified", "faster" are never written without a command executed in the session and its output.
@@ -73,7 +73,7 @@ See [adapters/cortex/CORTEX.md](adapters/cortex/CORTEX.md) for why the adapter s
 | New or unfamiliar repo | `/bootstrap` writes a project `CLAUDE.md` that references the rules and records only project facts. `/standards` prints the map. |
 | Before building anything non-trivial | `/design` (constraints, non-goals, alternatives, failure modes, migration path). |
 | A bug | `/rca` reproduces first, one hypothesis at a time. |
-| A number, a migration, a "fixed" | `/validate` dispatches the Opus adversarial validator. |
+| A number, a migration, a "fixed", any claim | `/validate` classifies with the router, writes the route line, and dispatches the Opus adversarial validator only when routed. |
 | Before saying done | `/ship` executes build, tests, lint, types, and reports what was skipped. |
 | Data work | `/dq` hunts fan-out, freshness, and absence-vs-zero; `/dbt-audit`, `/sf-audit`, `/sf-tune` for the platform. |
 

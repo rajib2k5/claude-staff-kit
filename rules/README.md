@@ -6,7 +6,7 @@ Loaded via `~/.claude/CLAUDE.md`. Read the relevant file on demand; do not load 
 
 1. **Direct user instruction in chat** — always wins.
 2. Project-level `CLAUDE.md` / `AGENTS.md`.
-3. `adversarial-validation.md` — the highest-tier rule in this library.
+3. `adversarial-validation.md` — validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md` (repo root); this file is the contract for the adversarial method (rows 6–9, 12, 13).
 4. `engineering-bar.md` — the general bar and the irreversibility ladder.
 5. Everything else, by domain.
 
@@ -15,7 +15,7 @@ Loaded via `~/.claude/CLAUDE.md`. Read the relevant file on demand; do not load 
 | File | Read it when |
 |---|---|
 | `engineering-bar.md` | Always. The four questions, altitude, irreversibility ladder T0–T4. |
-| `adversarial-validation.md` | **Highest tier.** Any number, migration, SQL, or "it's fixed" claim. |
+| `adversarial-validation.md` | When the router routes the adversarial method: a number to a decision, prod SQL, migration, security, "it's fixed", new concurrency / timezone / currency code (rows 6–9, 12, 13). Validation itself is mandatory on every substantive change; the router picks the method. |
 | `agent-models.md` | Before dispatching any subagent. Explicit model, every time. |
 | `context-discipline.md` | Delegating, reading files, handling tool output as untrusted data. |
 | `definition-of-done.md` | Before reporting anything complete. Holds the threshold values. |

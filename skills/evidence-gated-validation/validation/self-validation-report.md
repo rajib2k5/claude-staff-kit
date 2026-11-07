@@ -1,5 +1,8 @@
 # Evidence-gated validation report — this skill, validated by its own protocol
 
+> Produced 2026-08-30, before `references/validation-router.md` existed; no route line. Routed today it
+> would be rows 3/10 (API/semantic claims → EGV; prose, paths and citations → gates + verifier).
+
 target:        the evidence-gated-validation skill itself (SKILL.md, README.md,
                references/*.md — the state immediately before the fixes listed below)
 environment:   Python 3.12.3, numpy 2.4.6, torch 2.5.1, scikit-learn 1.9.0,

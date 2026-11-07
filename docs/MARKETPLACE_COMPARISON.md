@@ -30,7 +30,7 @@ The catalog has no entry for dbt standards, Snowflake RBAC and cost review, or q
 
 ## 3. Unique to the kit
 
-- **Adversarial validation as the highest-tier rule.** `adversarial-validation.md` outranks every other rule, and the validator agent is pinned to Opus in its frontmatter. A flagged blocker must be reproduced before anyone acts on it, because validators produce false positives too.
+- **Validation is mandatory; the method is routed.** `skills/evidence-gated-validation/references/validation-router.md` picks the method by consequence, oracle, novelty and claim shape; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13), and the validator agent is pinned to Opus in its frontmatter. A flagged blocker must be reproduced before anyone acts on it, because validators produce false positives too.
 - **Explicit model routing per subagent.** All 19 agents declare a `model:` (15 Opus, 4 Sonnet), and `scripts/validate.sh` rejects an agent without one. The stance fits a personal Claude Max plan, where token spend is the constraint: mechanical work goes to Sonnet and validation never drops a tier.
 - **Irreversibility ladder T0 to T4 and definition-of-done thresholds.** Every change sits on a ladder from reversible (T0) to unrecoverable (T4), and T3 and T4 never run on inference. `definition-of-done.md` holds the numbers, for example 400 substantive lines per PR and a coverage floor of 70 overall and 90 on critical paths.
 - **Destructive-ops guard across every technology.** One PreToolUse hook covers SQL, dbt, git, shell, Terraform, Kubernetes and cloud CLIs, with an ask tier and a deny tier. `node --test hooks/*.test.js` ran 121 tests and 121 passed on 2026-10-11.

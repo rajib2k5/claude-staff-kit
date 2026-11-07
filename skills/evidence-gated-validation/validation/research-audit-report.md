@@ -1,5 +1,8 @@
 # Evidence-gated validation report — the research corpus behind this skill
 
+> Produced 2026-08-30, before `references/validation-router.md` existed; no route line. Routed today it
+> would be rows 3/10 (literature claims → Channel A; empirical claims → Channel B; prose → verifier).
+
 target:        the load-bearing research findings the skill's design rests on, as
                asserted in SKILL.md / README.md / references/*.md (state immediately
                before the repairs listed below)

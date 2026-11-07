@@ -9,7 +9,7 @@ The global engineering standards are a single canonical library under `~/.claude
 copied) by individual projects:
 
 - `rules/` — 18 standards files. `rules/README.md` is the index and states the conflict-priority order.
-  `adversarial-validation.md` is the highest-tier rule.
+  validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13).
 - `agents/` — 19 subagents, each declaring an explicit `model:` in frontmatter.
 - `skills/staff-*` and `skills/data-*` — 21 invocable workflows in directory form with `SKILL.md`.
 - `commands/` — 12 slash-command dispatchers (`/bootstrap`, `/ship`, `/validate`, `/deep-review`,

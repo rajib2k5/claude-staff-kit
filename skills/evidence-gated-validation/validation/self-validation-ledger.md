@@ -25,3 +25,11 @@ scoped to one channel is N/A-by-construction on the other.
 | D16 | api | material | AB | `bash -n` on a file with a syntax error exits 2 (runtime-audit.md §7) | different exit code observed/documented |
 | D17 | num | material | AB | Centered difference error is O(h²) vs O(h) for forward difference; optimal h for centered differences in float64 ≈ cbrt(machine eps) ≈ 6e-6 (ml-validation.md §1) | derivation/docs contradict; measured error curve inconsistent with claim |
 | D18 | sem | material | AB | scipy.optimize.check_grad returns an absolute 2-norm and uses forward differences (ml-validation.md §1) | scipy docs/measurement show relative error or centered differences |
+
+## Added 2026-11-07 — UNAUDITED
+
+Neither channel has run on these two files; they were added after the audit above. The gap is recorded here, not only in the README.
+
+| ID | Cat | Mat | Scope | Claim | Falsifier | Status |
+|----|-----|-----|-------|-------|-----------|--------|
+| R1 | ref | material | — | `references/validation-router.md` and `references/complementary-methods.md` are self-consistent with SKILL.md and README.md (row count, Do-NOT-run cells, tier wording) and every path and citation in them resolves. `route: rows 10 \| primary: gates + verifier \| complement: none \| not-run: EGV (prose) \| stop: not met` | a path or citation fails to resolve, or a tier/row statement in one file contradicts another | UNAUDITED |

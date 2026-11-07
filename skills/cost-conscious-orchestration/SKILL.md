@@ -60,7 +60,7 @@ Never let a subagent inherit the session model silently. Pass `model:` on every 
 | **Very simple** — lookup, transcription, single-fact | `sonnet` | Find a symbol, read one file and report, list files matching a pattern, count objects, copy values between files |
 | **Simple / moderate** — mechanical, bounded, verifiable | `sonnet` | Multi-file find/replace, scaffold from a template, write tests against a stated oracle, inventory a directory, summarise a known doc |
 | **Complex** — synthesis, tradeoffs, whole-system context | `opus` | Design a change across modules, root-cause an unknown failure, concurrency/transaction reasoning, schema or API migration, cost/capacity modelling, anything where a plausible-but-wrong answer is expensive |
-| **Adversarial validation** — always | `opus`, never downgraded | Breaking a claim, checking a number destined for a human, auditing a migration, verifying "it's fixed" |
+| **Adversarial validation** — when routed (router rows 6–9, 12, 13; row-5 procedure claims) | `opus`, never downgraded | Breaking a claim, checking a number destined for a human, auditing a migration, verifying "it's fixed" |
 
 Model ids in this environment: prefer the aliases `sonnet` / `opus` / `haiku` / `fable` — they
 track the current generation without edits. Canonical ids when a pin is genuinely required:
@@ -90,7 +90,7 @@ window and returns only the conclusion, which is the single biggest lever on a l
 - Inventory and mapping tasks across a repo
 - Anything whose *output* is a paragraph but whose *input* is thousands of lines
 - Independent work that can run in parallel
-- Adversarial validation (always a separate agent — self-review is not validation)
+- Adversarial validation (a separate agent when the router routes it — self-review is not validation)
 
 **Do not delegate:**
 - A single-fact lookup in a file you already know — the dispatch costs more than the read
@@ -115,7 +115,9 @@ compromise.
 Explorers miss files. Summarisers drop the caveat that mattered. Validators produce false
 positives. **Confirm any flagged blocker empirically before acting on it** — a throwaway
 round-trip, a real build. Do not relay a subagent's report as verified fact; say what was
-checked and how. See `~/.claude/rules/adversarial-validation.md`.
+checked and how. Which validation method a task gets is decided by
+`~/.claude/skills/evidence-gated-validation/references/validation-router.md`; then see
+`rules/adversarial-validation.md` in claude-staff-kit (installed at `~/.claude/rules/` in dotfiles mode).
 
 ## 4. Todo tasks — and verifying they are actually complete
 
