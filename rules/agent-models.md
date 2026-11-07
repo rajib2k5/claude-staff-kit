@@ -14,7 +14,7 @@ mechanical work than for reasoning-heavy work, and adversarial validation must n
 |-----------|-------|-----|
 | **Simple / mechanical** subagent tasks | latest **Sonnet** | Fast and cheap; the answer is a lookup, not a judgement |
 | **Complex** subagent tasks | latest **Opus** | Needs synthesis, tradeoff reasoning, or whole-system context |
-| **Adversarial validation** (any change) | latest **Opus** — never Sonnet | A weaker validator produces false confidence, which is worse than no validation |
+| **Adversarial validation** (when the router routes it) | latest **Opus** — never Sonnet | A weaker validator produces false confidence, which is worse than no validation |
 
 ## Model ids
 
@@ -71,7 +71,7 @@ Agent(
 )
 ```
 
-`~/.claude/agents/adversarial-validator.md` declares `model: opus` in its frontmatter so the
+`agents/adversarial-validator.md` (installed locally as `adversarial-reviewer`) declares `model: opus` in its frontmatter so the
 validator defaults to Opus even when the caller forgets. Do not override that downward.
 
 Running several subagents concurrently is fine and encouraged — mixing models across concurrent

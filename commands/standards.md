@@ -5,10 +5,10 @@ description: Print the engineering standards library index — rules, agents, sk
 Show the user a compact map of the global engineering library. Read `~/.claude/rules/README.md` for the
 authoritative index, then present:
 
-1. **Rules** (`~/.claude/rules/`) — the standards layer, with the conflict-priority order. Flag
-   `adversarial-validation.md` as the highest-tier rule.
+1. **Rules** (`~/.claude/rules/` (installed at `~/.claude/rules/` in dotfiles mode)) — the standards layer, with the conflict-priority order. Note that
+   validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13).
 2. **Agents** (`~/.claude/agents/`) — the roster with each one's declared model. Note that every agent has
-   an explicit `model:` and that adversarial validation is never downgraded from Opus.
+   an explicit `model:` and that the adversarial validator, when routed, is never downgraded from Opus.
 3. **Skills** (`~/.claude/skills/staff-*`, `data-*`) — the invocable workflows, grouped engineering vs data
    platform.
 4. **Commands** (`~/.claude/commands/`) — this set.

@@ -44,6 +44,16 @@ echo "== shell syntax"
 for f in scripts/*.sh adapters/cortex/bootstrap.sh; do bash -n "$f" || fail "syntax: $f"; echo "  ok $f"; done
 python3 -c 'import ast,sys; ast.parse(open(sys.argv[1]).read())' scripts/merge-settings.py && echo "  ok scripts/merge-settings.py"
 
+echo "== bundled evidence-gated-validation copy"
+EGV_SRC="${EGV_SRC:-$HOME/dev/evidence-gated-validation}"
+if [ -d "$EGV_SRC" ]; then
+  diff -rq --exclude=.git "$EGV_SRC" skills/evidence-gated-validation >/dev/null \
+    || fail "bundled evidence-gated-validation copy differs from $EGV_SRC (rsync the EGV repo into the bundled copy)"
+  echo "  ok bundled copy identical to $EGV_SRC (whole tree, .git excluded)"
+else
+  echo "  WARN: $EGV_SRC not present; bundled-copy identity check SKIPPED (set EGV_SRC to the evidence-gated-validation checkout)"
+fi
+
 echo "== hook tests"
 node --test hooks/*.test.js
 

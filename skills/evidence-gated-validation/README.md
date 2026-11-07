@@ -74,9 +74,13 @@ and ~4 in 10 divergences are false alarms that take investigation time
 supports is a **tiered** practice — deterministic gates (build/types/tests) always
 and for free, a single execution channel with the falsifiability check for routine
 changes, and the full dual-channel protocol reserved for where model priors are
-least trustworthy: unfamiliar libraries, version-sensitive code, ML/numerics,
-security/money/irreversible operations, and no-test-oracle situations. SKILL.md's
-"When to run this protocol" section encodes exactly that triage. What you get for
+least trustworthy: unfamiliar libraries, version-sensitive code, ML/numerics.
+Security, money and irreversible operations are router rows 6, 8, 9: adversarial +
+human, not dual-channel (row 9 uses Channel A alone). Dual-channel is router rows 3 and 4 (row 4 only when a named algorithm or library semantics is claimed) and row-5 pipeline claims once per pipeline change. Which method to run at all — gates only, a
+cheap verifier, an adversarial attacker, dual-channel, or a pre-registered holdout
+with block-resampled inference for a research number — is decided by
+`references/validation-router.md`; SKILL.md's "Which validation to run" section
+points there and keeps the tier facts. What you get for
 the Tier-2 cost is coverage of the failure class nothing cheaper catches: code that
 runs, looks right, and is wrong.
 
@@ -90,9 +94,11 @@ evidence-gated-validation/
 │   ├── docs-audit.md                 # Channel A field manual
 │   ├── runtime-audit.md              # Channel B field manual (per-language probes)
 │   ├── ml-validation.md              # ML probe library (gradient check, leakage, …)
-│   └── divergence-and-verdict.md     # split protocol, escalation, report template
+│   ├── divergence-and-verdict.md     # split protocol, escalation, report template
+│   ├── validation-router.md          # which method for which claim: 13-row table + catalogue
+│   └── complementary-methods.md      # recipes: Channel C, mutation, metamorphic, holdout, block inference
 ├── validation/
-│   ├── self-validation-report.md     # this skill, validated by its own protocol
+│   ├── self-validation-report.md     # this skill, validated by its own protocol as of 2026-08-30; validation-router.md and complementary-methods.md not yet audited
 │   ├── self-validation-ledger.md     # pre-registered ledger for that audit
 │   ├── self-validation-channel-a.md  # documentation channel's verbatim evidence
 │   ├── self-validation-channel-b.md  # runtime channel's verbatim evidence
@@ -185,6 +191,20 @@ Validate against the standard with `skills-ref validate ./evidence-gated-validat
 The output is a verdict (pass / fail with required fixes / blocked-escalated) plus
 an evidence table where every accepted claim carries a documentation quote AND a
 probe transcript.
+
+**Which validation to run is decided first, not assumed.** Dual-channel is the route
+for API-existence, unfamiliar-library and ML-pipeline claims; it is the wrong tool
+for a numeric value, an "A beats B" research claim or prose, and a strongest-model
+adversarial pass is the wrong tool for a rename or for a statistical claim on an
+autocorrelated series. `references/validation-router.md` routes a claim set by
+consequence, oracle, novelty and claim shape to a primary method, the complements
+that run only when their condition holds, and a stop condition — dual-channel is
+rows 3 and 4 of its table (row 4 only when a named algorithm or library semantics is claimed), row-5 pipeline claims once per pipeline change, and Channel A alone inside row 9 — and `references/complementary-methods.md` gives the
+recipe and falsifier for each complement (differential reimplementation from spec,
+mutation score of the probes, metamorphic relations including a quant-research set,
+pre-registered one-shot holdout, block sign-flip / block bootstrap / Newey–West for
+autocorrelated per-period series, forward/live out-of-sample). Every report starts
+with the route line.
 
 ## Theory and further reading
 

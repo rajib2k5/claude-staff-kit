@@ -20,11 +20,18 @@ costs a bad change.
 
 Full rule, including how to classify a task and how to pass the model: **`~/.claude/rules/agent-models.md`**.
 
-## Adversarial validation
+## Validation — mandatory, method routed
 
-Non-trivial changes get validated by a subagent whose explicit job is to **break the work** — find
-bugs, wrong numbers, edge cases, runtime failures. The validator must **execute** checks (compile the
-SQL, run the build, round-trip a throwaway row), not read code and opine.
+Every substantive change is validated; which method is decided by
+`~/.claude/skills/evidence-gated-validation/references/validation-router.md` (consequence, oracle,
+novelty, claim shape), and the route line goes at the top of the report. Trivial edits, routine code
+under tests and prose (rows 1, 2, 10) stop at the gates — row 2 adds one hand mutant per new or changed test — or a Sonnet `verifier`, unless another row also applies; API-existence and unfamiliar-library
+claims go to dual-channel EGV; a quant research claim goes to a pre-registered holdout test.
+
+When the router routes the adversarial method (rows 6–9, 12, 13; row-5 procedure claims) the change
+is validated by a subagent whose explicit job is to **break the work** — find bugs, wrong numbers,
+edge cases, runtime failures. The validator must **execute** checks (compile the SQL, run the build,
+round-trip a throwaway row), not read code and opine.
 
 Validators produce false positives too. Confirm every flagged blocker empirically before acting on it.
 
@@ -45,7 +52,7 @@ Read on demand — do not preload. Index and conflict-priority order: **`~/.clau
 
 | Layer | Location | What it is |
 |---|---|---|
-| **Rules** | `~/.claude/rules/` | 18 standards files. `adversarial-validation.md` is highest tier. |
+| **Rules** | `~/.claude/rules/` | 18 standards files. `adversarial-validation.md` is the contract for the adversarial method; the router picks when it runs. |
 | **Agents** | `~/.claude/agents/` | 19 subagents, each declaring an explicit `model:`. |
 | **Skills** | `~/.claude/skills/staff-*`, `data-*` | 21 workflows. Also discovered by the Cortex CLI. |
 | **Commands** | `~/.claude/commands/` | `/bootstrap` `/ship` `/validate` `/deep-review` `/design` `/rca` `/adr` `/dbt-audit` `/sf-audit` `/sf-tune` `/dq` `/standards` |

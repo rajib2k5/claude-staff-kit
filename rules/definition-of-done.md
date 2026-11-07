@@ -30,9 +30,10 @@ failure: it moves discovery of the bug to production and removes the person who 
 - [ ] Docs/README/ADR/dbt descriptions updated in the same change if behaviour or contracts moved.
 - [ ] Secrets: none added, none logged, none committed.
 
-**Validation (see `adversarial-validation.md`)**
-- [ ] Adversarial validation run if the change is T3+, produces a number for a human, touches
-      production data, or is security-relevant.
+**Validation (see the validation router in the `evidence-gated-validation` skill, then `adversarial-validation.md`)**
+- [ ] Validated per the router: route line recorded; the row's primary ran to its stop condition;
+      complements ran where their "when" held. Adversarial validation (Opus) where the router routes
+      it — T3+, a number for a human, production data, security, "fixed" — not by reflex elsewhere.
 - [ ] Any flagged blocker **empirically reproduced** before being acted on.
 
 ## Reporting
