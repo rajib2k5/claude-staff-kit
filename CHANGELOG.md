@@ -5,6 +5,7 @@ All notable changes to staff-kit. Format follows Keep a Changelog; versions foll
 ## [Unreleased]
 
 ### Added
+- `scripts/kit-drift.sh [ROOT]`: report-only table of vendored copies of kit skills under `ROOT/*/.claude/skills/` and `ROOT/*/*/.claude/skills/` (default `~/dev`), each marked IDENTICAL or DRIFTED with the number of differing files. Skips `all-repos`, the kit itself and symlinks into the kit; never modifies anything.
 - `scripts/sync-index.py` (`--check` / `--write`) counts skills, agents, commands, rules and hook scripts from the filesystem and keeps the generated counts and lists in `README.md`, `docs/INVENTORY.md`, `commands/standards.md` and the two manifest descriptions in step. Generated regions sit between `<!-- sync-index:KEY -->` markers. `scripts/test_sync_index.py` covers it and both run from `scripts/validate.sh`. The first run fixed the stale README counts (26 skills versus 37), the missing `claude-*` INVENTORY row and the `commands/standards.md` family list.
 - `snowflake-sql` skill: a stdlib-only Snowflake SQL API client (`sf.py`, with `test_sf.py`) that authenticates with a PAT, is read-only by default, and refuses destructive SQL without `--destructive`. Its `config.json` is per machine and gitignored; copy `config.example.json`. The kit now has 37 skills.
 - `third-party/skills/graphify`: the graphify 0.9.93 skill (Apache-2.0, with its LICENSE and NOTICE). Not installed by `scripts/install.sh`.
