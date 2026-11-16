@@ -7,19 +7,20 @@ of the same files found under `~/dev`.
 
 | Repo path | Source | Count | Notes |
 |---|---|---|---|
-| `skills/staff-*` | `~/.claude/skills/staff-*` | 13 | adr, bootstrap, debug, design, incident, migrate, onboard, perf, review, security, ship, tdd, validate |
+| <!-- sync-index:skill-family-rows -->`skills/staff-*` | `~/.claude/skills/staff-*` | 13 | adr, bootstrap, debug, design, incident, migrate, onboard, perf, review, security, ship, tdd, validate |
 | `skills/data-*` | `~/.claude/skills/data-*` | 8 | cost, dbt-audit, metric, model, pipeline-debug, quality, snowflake-audit, snowflake-tune |
+| `skills/claude-*` | written in this repo | 10 | agent-orchestration, api-ops, code-config, context-management, evals, governance, prompt-engineering, rag-and-citations, solution-design, tool-and-mcp-design<!-- /sync-index:skill-family-rows --> |
 | `skills/cost-conscious-orchestration` | `~/.claude/skills/` | 1 | model routing, delegation, todo verification |
 | `skills/destructive-ops-guard` | `~/.claude/skills/` | 1 | pairs with the PreToolUse hook |
 | `skills/evidence-gated-validation` | `~/.claude/skills/` | 1 | with `references/` and `validation/`; identical to the public repo `rajib2k5/evidence-gated-validation` (same git blob `6dc163f` for SKILL.md) |
 | `skills/simple-english` | `~/.claude/skills/` | 1 | ASD-STE100 writing rules, with `references/` |
 | `skills/snowflake-sql` | `~/.claude/skills/` (written 2026-10-19) | 1 | stdlib-only Snowflake SQL API client `sf.py` with its tests; `config.json` is per machine and gitignored, `config.example.json` is the template |
 | `skills/learn-as-you-build` | written in this repo, 2026-10-28 (not captured from `~/.claude/skills/`) | 1 | milestone checkpoints with lessons, quizzes, and five modes (`full`, `queued`, `lite`, `deferred`, `off`); with `references/` |
-| `agents/` | `~/.claude/agents/` | 23 | every file declares `model:` (17 opus, 6 sonnet) |
-| `commands/` | `~/.claude/commands/` | 12 | thin dispatchers onto the skills |
-| `rules/` | `~/.claude/rules/` | 19 | 18 standards plus `README.md` index |
+| `agents/` | `~/.claude/agents/` | <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> | every file declares `model:` <!-- sync-index:agents-models -->(17 opus, 6 sonnet)<!-- /sync-index:agents-models --> |
+| `commands/` | `~/.claude/commands/` | <!-- sync-index:commands-count -->12<!-- /sync-index:commands-count --> | thin dispatchers onto the skills |
+| `rules/` | `~/.claude/rules/` | <!-- sync-index:rules-count -->19<!-- /sync-index:rules-count --> | <!-- sync-index:rules-standards -->18<!-- /sync-index:rules-standards --> standards plus `README.md` index |
 | `contexts/` | `~/.claude/contexts/` | 6 | tier 0, three tier 1 roles, one tier 2 domain, README |
-| `hooks/` | `~/.claude/hooks/` | 3 | `evolv-destructive-guard.js` (+ its 121-test suite), `evolv-skills-enforcer.js` |
+| `hooks/` | `~/.claude/hooks/` | <!-- sync-index:hooks-count -->2<!-- /sync-index:hooks-count --> scripts | `evolv-destructive-guard.js` (+ its 121-test suite), `evolv-skills-enforcer.js` |
 | `memory/` | `~/.claude/memory/` | 7 | six global facts plus `MEMORY.md`; the employer brand rule was dropped |
 | `templates/global-CLAUDE.md` | `~/.claude/CLAUDE.md` | 1 | the global instructions that wire the library together |
 | `adapters/cortex/` | `~/.cortex/` | 2 | `CORTEX.md` and `bootstrap.sh`; the symlinks are described, not shipped |

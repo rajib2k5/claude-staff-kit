@@ -44,6 +44,11 @@ echo "== shell syntax"
 for f in scripts/*.sh adapters/cortex/bootstrap.sh; do bash -n "$f" || fail "syntax: $f"; echo "  ok $f"; done
 python3 -c 'import ast,sys; ast.parse(open(sys.argv[1]).read())' scripts/merge-settings.py && echo "  ok scripts/merge-settings.py"
 
+echo "== index sync (counts and lists in README, manifests, INVENTORY, standards)"
+python3 scripts/sync-index.py --check || fail "indexes are stale; run: python3 scripts/sync-index.py --write"
+python3 -B scripts/test_sync_index.py 2>&1 | tail -3
+python3 -B scripts/test_sync_index.py >/dev/null 2>&1 || fail "scripts/test_sync_index.py failed"
+
 echo "== bundled evidence-gated-validation copy"
 EGV_SRC="${EGV_SRC:-$HOME/dev/evidence-gated-validation}"
 if [ -d "$EGV_SRC" ]; then

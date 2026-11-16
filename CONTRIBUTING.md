@@ -12,3 +12,4 @@ The file you want for global behaviour is `templates/global-CLAUDE.md`, not this
 - `scripts/install.sh` must never overwrite without `--force`, and `--force` must back up first. Test it against
   `--target` on a throwaway directory, never against the real `~/.claude`.
 - Bump `version` in both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, and add a CHANGELOG entry.
+- Adding a skill, agent, command or rule: run `python3 scripts/sync-index.py --write` to update the counts and lists in the README, INVENTORY, `/standards` and the manifest descriptions. `validate.sh` fails while they are stale.
