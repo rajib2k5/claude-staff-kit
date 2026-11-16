@@ -25,7 +25,7 @@ time it surfaces the person who had the context has moved on. This is why the ru
 desire to report success.
 
 **How to apply:** run the `staff-validate` skill or `/validate`: classify with the router, write the route
-line, then dispatch `adversarial-validator` on Opus only when routed.
+line, then dispatch `adversarial-reviewer` on Opus only when routed.
 Require executed checks and per-claim verdicts (`CONFIRMED` / `REFUTED` / `PARTIALLY-CORRECT` /
 `UNVERIFIABLE`) with the measured number beside the claimed one — no claim left unaddressed. Then apply
 [[validator-false-positives]] before acting on anything it flags. See

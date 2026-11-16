@@ -50,7 +50,7 @@ per-file ingest charges, and Time Travel / snapshot storage.**
 
 ## Mandatory
 
-Any savings or spend figure destined for a human decision goes through `adversarial-validator`
+Any savings or spend figure destined for a human decision goes through `adversarial-reviewer`
 (Opus) before you present it. A wrong number in front of a decision-maker is the top-priority defect
 class in this environment. See `~/.claude/rules/adversarial-validation.md`.
 

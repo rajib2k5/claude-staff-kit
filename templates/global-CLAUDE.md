@@ -35,7 +35,7 @@ round-trip a throwaway row), not read code and opine.
 
 Validators produce false positives too. Confirm every flagged blocker empirically before acting on it.
 
-Agent definition: **`~/.claude/agents/adversarial-validator.md`** (declares `model: opus`).
+Agent definition: **`~/.claude/agents/adversarial-reviewer.md`** (declares `model: opus`).
 
 ## Reporting
 

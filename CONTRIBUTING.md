@@ -5,7 +5,7 @@ The file you want for global behaviour is `templates/global-CLAUDE.md`, not this
 
 - Run `bash scripts/validate.sh` before every commit. It checks the manifests, every skill and agent
   frontmatter, shell syntax, the 121 hook tests, and `claude plugin validate --strict`.
-- Every agent in `agents/` declares an explicit `model:`. Do not remove it. `adversarial-validator` stays on Opus.
+- Every agent in `agents/` declares an explicit `model:`. Do not remove it. `adversarial-reviewer` stays on Opus.
 - `rules/` and `contexts/` are referenced by skills and agents with `~/.claude/...` paths on purpose: the Cortex CLI
   reads `~/.claude/skills` directly. Plugin mode resolves those paths through the session-start hint in
   `hooks/evolv-skills-enforcer.js`. Keep both modes working.

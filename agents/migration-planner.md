@@ -48,7 +48,7 @@ is wrong — decompose further. **Never a cutover where a sequence would do.**
 
 ## Mandatory validation
 
-A migration is **tier T3** on the irreversibility ladder. Dispatch `adversarial-validator` (Opus)
+A migration is **tier T3** on the irreversibility ladder. Dispatch `adversarial-reviewer` (Opus)
 against the plan before execution, and reproduce any flagged blocker yourself before acting on it. See
 `~/.claude/rules/adversarial-validation.md`.
 

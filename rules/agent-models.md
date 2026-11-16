@@ -71,7 +71,7 @@ Agent(
 )
 ```
 
-`agents/adversarial-validator.md` (installed locally as `adversarial-reviewer`) declares `model: opus` in its frontmatter so the
+`agents/adversarial-reviewer.md` declares `model: opus` in its frontmatter so the
 validator defaults to Opus even when the caller forgets. Do not override that downward.
 
 Running several subagents concurrently is fine and encouraged — mixing models across concurrent

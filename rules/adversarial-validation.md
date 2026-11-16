@@ -45,7 +45,7 @@ because a different window is not independence on an autocorrelated series; the 
 
 ## How validation runs
 
-When routed, dispatch the `adversarial-validator` subagent. **Always Opus — never downgrade it.** A weaker
+When routed, dispatch the `adversarial-reviewer` subagent. **Always Opus — never downgrade it.** A weaker
 validator confirms plausible arithmetic, which manufactures exactly the false confidence this rule
 exists to prevent. See `agent-models.md`.
 

@@ -52,8 +52,7 @@ unfamiliar libraries, ML pipeline code) go to dual-channel EGV; row 5 (a quant r
 1. **Write down the claims** to be validated, one per line, each falsifiable. A vague claim cannot be
    validated — "performance improved" is not a claim, "p99 dropped from 820 ms to 310 ms over the 14:00–
    15:00 window under 200 rps" is.
-2. **Dispatch the primary the router chose.** When it is `adversarial-validator` (installed here as
-   `adversarial-reviewer`), it is always Opus, never downgraded. A weaker validator confirms plausible
+2. **Dispatch the primary the router chose.** When it is `adversarial-reviewer`, it is always Opus, never downgraded. A weaker validator confirms plausible
    arithmetic, manufacturing exactly the false confidence this gate exists to prevent.
 3. Require the validator to **execute**: compile the SQL, run the build, round-trip a throwaway row,
    re-derive the number by a *different method over a different window*. A verdict with no executed check

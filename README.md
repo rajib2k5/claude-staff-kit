@@ -11,7 +11,7 @@ The same files also serve the Snowflake Cortex CLI, which reads `~/.claude/skill
 | **Rules** (`rules/`) | 19 | The standards: engineering bar, adversarial validation (validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13)), testing, code review, security, SQL, dbt, Snowflake, data modelling, migrations, docs. `rules/README.md` is the index and states the conflict order. |
 | **Contexts** (`contexts/`) | 6 | Tiered loading: tier 0 always (the four questions, irreversibility ladder T0 to T4), tier 1 per role, tier 2 per domain. |
 | **Skills** (`skills/`) | 26 | 13 `staff-*` workflows (design, tdd, debug, review, ship, migrate, ...), 8 `data-*` workflows (quality, metric, dbt audit, Snowflake audit and tune, cost, ...), plus `cost-conscious-orchestration`, `destructive-ops-guard`, `evidence-gated-validation`, `simple-english`, `learn-as-you-build`. |
-| **Agents** (`agents/`) | 19 | Each declares an explicit `model:`. `adversarial-validator` is pinned to Opus and is never downgraded. Mechanical agents (explorer, docs writer, release manager, dependency auditor) run on Sonnet. |
+| **Agents** (`agents/`) | 23 | Each declares an explicit `model:`. `adversarial-reviewer` is pinned to Opus and is never downgraded. Mechanical agents (explorer, docs writer, release manager, dependency auditor) run on Sonnet. |
 | **Commands** (`commands/`) | 12 | `/bootstrap` `/ship` `/validate` `/deep-review` `/design` `/rca` `/adr` `/dbt-audit` `/sf-audit` `/sf-tune` `/dq` `/standards`. Thin dispatchers onto the skills. |
 | **Hooks** (`hooks/`) | 2 scripts | `evolv-destructive-guard.js` (PreToolUse: asks or denies before DROP, TRUNCATE, `rm -rf`, force-push, `terraform destroy`, ... across every technology; 121 unit tests). `evolv-skills-enforcer.js` (SessionStart: loads the mandatory-skills policy; Stop: flags "verified" claims with no executed command). |
 | **Memory** (`memory/`) | 7 | Global facts for the file-based memory. Opt-in at install. |
@@ -108,7 +108,7 @@ Checks the manifests, every skill and agent frontmatter (agents must declare a m
 ```
 .claude-plugin/   plugin.json, marketplace.json
 skills/           37 skills, one directory each with SKILL.md
-agents/           19 agents (frontmatter: name, description, model)
+agents/           23 agents (frontmatter: name, description, model)
 commands/         12 slash commands
 rules/            18 standards files plus README.md, the index
 contexts/         tier0-always, tier1-role-*, tier2-domain-*

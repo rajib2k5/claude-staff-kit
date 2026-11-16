@@ -81,5 +81,5 @@ warehouses, unused tables, runaway Time Travel storage.
 ## Report
 
 Always quote **the window a figure was measured over**. Any cost or savings figure headed for a
-decision-maker goes through `adversarial-validator` first — a wrong number in front of a decision-maker
+decision-maker goes through `adversarial-reviewer` first — a wrong number in front of a decision-maker
 is the top-priority defect class.

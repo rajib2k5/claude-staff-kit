@@ -15,7 +15,7 @@ of the same files found under `~/dev`.
 | `skills/simple-english` | `~/.claude/skills/` | 1 | ASD-STE100 writing rules, with `references/` |
 | `skills/snowflake-sql` | `~/.claude/skills/` (written 2026-10-19) | 1 | stdlib-only Snowflake SQL API client `sf.py` with its tests; `config.json` is per machine and gitignored, `config.example.json` is the template |
 | `skills/learn-as-you-build` | written in this repo, 2026-10-28 (not captured from `~/.claude/skills/`) | 1 | milestone checkpoints with lessons, quizzes, and five modes (`full`, `queued`, `lite`, `deferred`, `off`); with `references/` |
-| `agents/` | `~/.claude/agents/` | 19 | every file declares `model:` (15 opus, 4 sonnet) |
+| `agents/` | `~/.claude/agents/` | 23 | every file declares `model:` (17 opus, 6 sonnet) |
 | `commands/` | `~/.claude/commands/` | 12 | thin dispatchers onto the skills |
 | `rules/` | `~/.claude/rules/` | 19 | 18 standards plus `README.md` index |
 | `contexts/` | `~/.claude/contexts/` | 6 | tier 0, three tier 1 roles, one tier 2 domain, README |
