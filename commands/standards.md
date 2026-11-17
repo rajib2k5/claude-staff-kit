@@ -9,8 +9,8 @@ authoritative index, then present:
    validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13).
 2. **Agents** (`~/.claude/agents/`) — the roster with each one's declared model. Note that every agent has
    an explicit `model:` and that the adversarial validator, when routed, is never downgraded from Opus.
-3. **Skills** (`~/.claude/skills/staff-*`, `data-*`) — the invocable workflows, grouped engineering vs data
-   platform.
+3. **Skills** (`~/.claude/skills/`: <!-- sync-index:skill-prefixes -->`staff-*`, `data-*`, `claude-*`<!-- /sync-index:skill-prefixes -->) — the invocable workflows, grouped engineering, data
+   platform and Claude platform.
 4. **Commands** (`~/.claude/commands/`) — this set.
 
 Do not paste file contents. One line each, and finish with the two entry points a new project needs:

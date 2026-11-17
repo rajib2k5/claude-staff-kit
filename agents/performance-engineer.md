@@ -47,4 +47,4 @@ proceed on a guess and call it a fix.
 
 Before and after, with the **window and conditions** for each. State what you changed and what you did
 not. Label anything modelled or extrapolated as such — never present an estimate in the grammar of a
-measurement. A performance figure headed for a decision-maker goes through `adversarial-validator`.
+measurement. A performance figure headed for a decision-maker goes through `adversarial-reviewer`.

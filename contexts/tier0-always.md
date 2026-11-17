@@ -44,7 +44,7 @@ production data · a schema change, migration, or backfill · something is repor
 failure having been reproduced · new concurrency, retries, or idempotency code · timezone,
 date-boundary, or currency arithmetic · anything security-relevant (rows 6–9, 12, 13).
 
-→ Only then dispatch `adversarial-validator` on **Opus**. Never downgrade it. Then **reproduce any
+→ Only then dispatch `adversarial-reviewer` on **Opus**. Never downgrade it. Then **reproduce any
 flagged blocker yourself** — validators produce false positives too.
 
 ## Subagents get an explicit model, every time

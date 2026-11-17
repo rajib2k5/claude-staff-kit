@@ -14,7 +14,7 @@ Procedure reminders:
   Rows 1, 2, 10, 11 stop at Tier 0 or a Sonnet `verifier`; rows 3–4 go to dual-channel EGV; row 5 to the
   pre-registered holdout test.
 - Write the claims down first, one per line, each **falsifiable**. "Performance improved" is not a claim.
-- Dispatch `adversarial-validator` on **Opus** only when routed (rows 6–9, 12, 13; row-5 procedure claims).
+- Dispatch `adversarial-reviewer` on **Opus** only when routed (rows 6–9, 12, 13; row-5 procedure claims).
   Never downgrade it — a weak validator manufactures false confidence, which is worse than no validation.
 - Require **executed** checks: compile the SQL, run the build, re-derive the number by a different method
   over a different window.
