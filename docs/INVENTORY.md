@@ -52,6 +52,12 @@ what this repo contains. The `evolv-dq-ai-accelerator` hook copy of the destruct
 | `memory/evolv-lowercase.md` | `~/.claude/memory` | Employer brand rule. |
 | `~/.claude/settings.json`, `settings.local.json`, `.claude.json` | `~/.claude` | Machine-specific and may hold permissions and paths; `scripts/merge-settings.py` adds only the hook entries. |
 
+## Plugins written in this repo
+
+| Plugin | Contents | Source |
+|---|---|---|
+| `plugins/snowflake-delivery/` | skills `snowflake-hol`, `semantic-view-authoring`, `snowddl`, `plugin-release`, `cortex-fraud-analytics`, `cortex-streamlit-in-snowflake`, `cortex-synthetic-data-demo`; agent `semantic-model-author`; commands `/hol-scaffold`, `/new-mcp-server` | Generalised from consulting repositories (hands-on labs, semantic views, SnowDDL, an MCP server template). Client names and client data removed. Not part of `staff-kit`; not installed by `scripts/install.sh`. |
+
 ## Third-party, vendored 2026-10-12
 
 `third-party/` holds four packages written by other people, added at the owner's request: `threejs`,
