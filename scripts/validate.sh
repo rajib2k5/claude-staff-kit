@@ -62,6 +62,10 @@ fi
 echo "== hook tests"
 node --test hooks/*.test.js
 
+echo "== licensed-data scanner tests (stdlib; the real-Parquet test skips without pyarrow)"
+python3 -B -m unittest hooks/lib/test_scan_licensed_rows.py 2>&1 | tail -3
+python3 -B -m unittest hooks/lib/test_scan_licensed_rows.py >/dev/null 2>&1 || fail "hooks/lib/test_scan_licensed_rows.py failed"
+
 if command -v claude >/dev/null 2>&1; then
   echo "== claude plugin validate --strict (plugin manifest, then marketplace manifest)"
   claude plugin validate --strict "$KIT/.claude-plugin/plugin.json"

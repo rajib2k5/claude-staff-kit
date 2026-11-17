@@ -33,13 +33,19 @@ def hook_entries(hook_dir):
     - PreToolUse "" (every tool): the guard also inspects Artifact deletes and any MCP tool whose
       name contains sql/query/snowflake/bigquery/postgres/mysql/duckdb. A narrower matcher would
       silently drop that protection.
+    - PreToolUse "Bash" for pre-publish-guard: it judges only git commit and git push.
     - SessionStart startup|clear|compact, not resume or fork: those sessions already carry the
       policy in their transcript, so re-injecting it only costs tokens. Compaction can drop it.
     """
     guard = f"node {hook_dir}/evolv-destructive-guard.js"
+    publish = f"node {hook_dir}/pre-publish-guard.js"
     enforcer = f"node {hook_dir}/evolv-skills-enforcer.js"
     return {
-        "PreToolUse": [{"matcher": "", "hooks": [{"type": "command", "command": guard}]}],
+        "PreToolUse": [
+            {"matcher": "", "hooks": [{"type": "command", "command": guard}]},
+            # Bash only: it judges git commit and git push. 90 s covers the licensed-data scan (60 s cap).
+            {"matcher": "Bash", "hooks": [{"type": "command", "command": publish, "timeout": 90}]},
+        ],
         "SessionStart": [{"matcher": "startup|clear|compact", "hooks": [{"type": "command", "command": enforcer}]}],
         "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": enforcer}]}],
     }
