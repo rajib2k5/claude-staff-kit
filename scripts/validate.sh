@@ -82,6 +82,38 @@ done
 echo "== hook tests"
 node --test hooks/*.test.js
 
+echo "== plugins/* (manifest, frontmatter, bundled tests, claude plugin validate)"
+for pdir in plugins/*/; do
+  [ -f "$pdir.claude-plugin/plugin.json" ] || continue
+  python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$pdir.claude-plugin/plugin.json" \
+    || fail "invalid JSON: $pdir.claude-plugin/plugin.json"
+  python3 - "$pdir" <<'PY' || fail "frontmatter: $pdir"
+import glob, re, sys
+root, bad = sys.argv[1], []
+def fm(path):
+    m = re.match(r"^---\n(.*?)\n---\n", open(path, encoding="utf-8").read(), re.S)
+    return m.group(1) if m else ""
+for p in glob.glob(root + "skills/*/SKILL.md"):
+    if not re.search(r"^name:", fm(p), re.M) or not re.search(r"^description:", fm(p), re.M):
+        bad.append(f"{p}: needs name and description")
+for p in glob.glob(root + "agents/*.md"):
+    if not re.search(r"^model:\s*(opus|sonnet|haiku|fable)", fm(p), re.M):
+        bad.append(f"{p}: needs an explicit model")
+for p in glob.glob(root + "commands/*.md"):
+    if not re.search(r"^description:", fm(p), re.M):
+        bad.append(f"{p}: needs description")
+print("\n".join("  " + b for b in bad) or f"  ok frontmatter {root}")
+sys.exit(1 if bad else 0)
+PY
+  while IFS= read -r t; do
+    ( cd "$(dirname "$t")" && python3 -B "$(basename "$t")" >/dev/null 2>&1 ) || fail "tests failed: $t"
+    echo "  ok $t"
+  done < <(find "$pdir" -name 'test_*.py' -not -path '*/node_modules/*' | sort)
+  if command -v claude >/dev/null 2>&1; then
+    claude plugin validate --strict "$KIT/$pdir.claude-plugin/plugin.json" || fail "claude plugin validate: $pdir"
+  fi
+done
+
 if command -v claude >/dev/null 2>&1; then
   echo "== claude plugin validate --strict (plugin manifest, then marketplace manifest)"
   claude plugin validate --strict "$KIT/.claude-plugin/plugin.json"
