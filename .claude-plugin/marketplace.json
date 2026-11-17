@@ -5,7 +5,7 @@
     "url": "https://github.com/rajib2k5"
   },
   "metadata": {
-    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) and market-watch (live market data in the session), plus vendored third-party plugins (threejs, cert-safari-quiz, evolv-taste-pilot)."
+    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) market-watch (live market data in the session) and snowflake-delivery (Snowflake labs, semantic views, SnowDDL, releases), plus vendored third-party plugins (threejs, cert-safari-quiz, evolv-taste-pilot)."
   },
   "plugins": [
     {
@@ -14,6 +14,13 @@
       "version": "1.1.0",
       "category": "development",
       "description": "Staff-level engineering standards: 37 skills, 23 model-routed agents, 12 commands, 19 rules, tiered contexts, and a destructive-ops guard hook. Snowflake, dbt, SQL, and cost-disciplined multi-agent work."
+    },
+    {
+      "name": "snowflake-delivery",
+      "source": "./plugins/snowflake-delivery",
+      "version": "0.1.0",
+      "category": "development",
+      "description": "Snowflake delivery work, made generic: hands-on-lab setup/seed/verify/teardown with a teardown checker, semantic view and Cortex Agent authoring, SnowDDL review, Cortex Code demo skills, an MCP server scaffold, and regression-proof plugin releases."
     },
     {
       "name": "market-watch",
