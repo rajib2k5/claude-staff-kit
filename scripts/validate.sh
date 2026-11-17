@@ -82,6 +82,9 @@ done
 echo "== hook tests"
 node --test hooks/*.test.js
 
+echo "== licensed-data scanner tests (stdlib; the real-Parquet test skips without pyarrow)"
+python3 -B -m unittest hooks/lib/test_scan_licensed_rows.py 2>&1 | tail -3
+python3 -B -m unittest hooks/lib/test_scan_licensed_rows.py >/dev/null 2>&1 || fail "hooks/lib/test_scan_licensed_rows.py failed"
 echo "== plugins/* (manifest, frontmatter, bundled tests, claude plugin validate)"
 for pdir in plugins/*/; do
   [ -f "$pdir.claude-plugin/plugin.json" ] || continue

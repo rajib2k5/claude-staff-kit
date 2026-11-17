@@ -1,0 +1,40 @@
+#!/bin/sh
+# Optional git post-commit hook: refresh the graphify code graph in the background.
+#
+# Runs `graphify update .` only when `graphify` is on PATH and `graphify-out/` exists.
+# The update re-extracts code with no model call. As a second guard, every provider key is
+# removed from the environment of the child, so a bug or a new graphify version cannot bill an API.
+# It never blocks the commit and never fails it: the exit code is always 0.
+# Log: graphify-out/.refresh.log
+#
+# Install: see skills/graphify-refresh/SKILL.md.
+
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+cd "$root" || exit 0
+command -v graphify >/dev/null 2>&1 || exit 0
+[ -d graphify-out ] || exit 0
+log=graphify-out/.refresh.log
+
+# Explicit provider keys, plus any variable whose name ends in _API_KEY.
+unset_args=""
+for k in ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN OPENAI_API_KEY GEMINI_API_KEY GOOGLE_API_KEY \
+         GROQ_API_KEY MISTRAL_API_KEY OPENROUTER_API_KEY COHERE_API_KEY DEEPSEEK_API_KEY \
+         XAI_API_KEY TOGETHER_API_KEY FIREWORKS_API_KEY PERPLEXITY_API_KEY AZURE_OPENAI_API_KEY \
+         MOONSHOT_API_KEY KIMI_API_KEY; do
+  unset_args="$unset_args $k"
+done
+for k in $(env | sed -n 's/^\([A-Za-z_][A-Za-z0-9_]*_API_KEY\)=.*/\1/p'); do
+  unset_args="$unset_args $k"
+done
+
+set --
+for k in $unset_args; do set -- "$@" -u "$k"; done
+
+(
+  export GRAPHIFY_NO_AUTO_REFRESH=1
+  echo "$(date '+%F %T') post-commit: graphify update ." >>"$log"
+  env "$@" graphify update . >>"$log" 2>&1
+  echo "$(date '+%F %T') post-commit: done, exit $?" >>"$log"
+) </dev/null >/dev/null 2>&1 &
+
+exit 0

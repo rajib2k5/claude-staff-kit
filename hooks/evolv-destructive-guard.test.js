@@ -214,6 +214,119 @@ for (const [command, expected] of runnable) {
   });
 }
 
+// Regression (2026-11-09): a PR body that only quotes destructive text was denied as if it ran.
+const postedText = [
+  'gh pr create --title "guard fix" --body "The guard now denies rm -rf / and DROP DATABASE prod."',
+  "gh pr create --body 'Notes: terraform destroy and git reset --hard need approval'",
+  'gh issue comment 12 --body "TRUNCATE TABLE accounts was seen in the log"',
+  'gh -R owner/repo pr edit 3 --body "rm -rf ~ is denied"',
+  "gh pr create --title t --body \"$(cat <<'EOF'\nrm -rf / is denied; DROP DATABASE asks nothing\nEOF\n)\"",
+  'gh release create v1 --notes "pkill -f and snowddl destroy are now guarded"',
+];
+for (const command of postedText) {
+  test(`posted PR/issue text is not run: ${command.split('\n')[0].slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), 'allow', command);
+  });
+}
+
+// ...but a real delete next to it, or a command substitution inside the quoted text, still runs and is judged.
+const stillRuns = [
+  ['gh pr create --body "x" && rm -rf ~', 'deny'],
+  ['gh pr create --body "x"; rm -rf /', 'deny'],
+  ['gh pr create --body "$(rm -rf ~)"', 'deny'],
+  ['git commit -m "$(rm -rf ~)"', 'deny'],
+  ['git commit -m "`rm -rf /`"', 'deny'],
+  ["git commit -m \"$(psql -c 'DROP DATABASE prod')\"", 'deny'],
+  ['gh pr create --body "$(echo "$(rm -rf build)")"', 'ask'],
+  ['gh repo delete owner/repo --yes', 'ask'],
+  ['bash -c "gh pr create --body x; rm -rf /"', 'deny'],
+];
+for (const [command, expected] of stillRuns) {
+  test(`a real delete beside posted text is still judged: ${command.slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), expected, command);
+  });
+}
+
+// Adversarial review of W2 (2026-11-16): ways the text exemption or the parser disagreed with bash.
+const reviewRefuted = [
+  // An assignment before a text command is not text: the editor or ssh command it names runs.
+  ['GH_EDITOR="sh -c \'git reset --hard\'" gh pr create --editor', 'ask'],
+  ['GIT_SSH_COMMAND="sh -c \'git reset --hard\'" gh pr checkout 1', 'ask'],
+  ['EDITOR="git push --force origin main" gh issue create --editor', 'deny'],
+  // $'...' (ANSI-C) quoting: \' does not end the string, so the $(...) after it is outside any quote.
+  ["gh pr create --title $'x\\'' --body $(git reset --hard) '#'", 'ask'],
+  ["echo $'x\\'' $(rm -rf ~) '#'", 'deny'],
+  ["git commit -m $'it\\'s' -m \"$(rm -rf ~)\"", 'deny'],
+  // An unquoted heredoc expands $(...) in its body even when the body is only written to a file.
+  ['cat <<EOF > notes.txt\nhello $(rm -rf ~)\nEOF', 'deny'],
+  // A substitution runs where it appears, not in the folder of the last cd on the line.
+  [`git commit -m "$(rm -rf *)"; cd ${SCRATCH}`, 'ask'],
+  // numerapi's command-line tool spells its commands with dashes; pgrep -f feeding kill is pkill -f.
+  ['numerapi stake-drain --model_id x', 'ask'],
+  ['numerapi stake-increase 1 --model_id x', 'ask'],
+  ['pgrep -f train.py | xargs kill', 'ask'],
+  ['kill -9 $(pgrep -f train.py)', 'ask'],
+];
+for (const [command, expected] of reviewRefuted) {
+  test(`review case: ${command.split('\n')[0].slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), expected, command);
+  });
+}
+
+test('quoted single-quote heredoc bodies stay text, and a tool named "mistake" is not a stake tool', () => {
+  assert.equal(verdict(bash("cat <<'EOF' > notes.txt\nhello $(rm -rf ~)\nEOF")), 'allow');
+  assert.equal(verdict(decide('mcp__notes__log_mistake', { text: 'unstake later' })), 'allow');
+});
+
+// --- pkill -f, snowddl and stake changes (W2, 2026-11-16) -----------------------------------------------------
+const newRules = [
+  ['pkill -f train.py', 'ask'],
+  ['pkill -9 -f "python r2_train"', 'ask'],
+  ['pkill -u me -f worker', 'ask'],
+  ['pkill --full worker', 'ask'],
+  ['sudo pkill -ef jupyter', 'ask'],
+  ['snowddl -c ./config -a acct apply', 'ask'],
+  ['snowddl -c ./config apply --apply-unsafe', 'ask'],
+  ['snowddl-singledb -c ./db apply', 'ask'],
+  ['snowddl -c ./config -a acct destroy', 'deny'],
+  ['python3 -c "import numerapi; numerapi.NumerAPI().stake_increase(1, \'model\')"', 'ask'],
+  ['python3 -c "napi.stake_drain(\'m\')"', 'ask'],
+  ['curl -X POST https://api-tournament.numer.ai -d \'{"query":"mutation { v2ChangeStake(value: 1) { id } }"}\'', 'ask'],
+];
+for (const [command, expected] of newRules) {
+  test(`new rule: ${command.slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), expected, command);
+  });
+}
+
+const notNewRules = [
+  'pkill train.py',
+  'pkill -x python3',
+  'kill -TERM -- -12345',
+  'snowddl -c ./config -a acct plan',
+  'grep -rn "pkill -f" docs',
+  'git commit -m "docs: never use pkill -f; snowddl destroy is denied; stake_increase asks"',
+  'python3 -c "print(napi.get_account())"',
+];
+for (const command of notNewRules) {
+  test(`new rules leave alone: ${command.slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), 'allow', command);
+  });
+}
+
+test('a stake mutation through a Numerai MCP tool asks', () => {
+  const q = { query: 'mutation { releaseStake(modelId: "x", value: "1") { id } }' };
+  assert.equal(verdict(decide('mcp__numerai__graphql_query', q)), 'ask');
+  assert.equal(verdict(decide('mcp__numerai__graphql_query', { query: '{ account { models { name } } }' })), 'allow');
+  assert.equal(verdict(decide('mcp__numerai__get_model_profile', { name: 'stake_change_test' })), 'allow');
+});
+
+test('a stake change through a tool that is not a query tool asks (not caught by the SQL-tool path)', () => {
+  assert.equal(verdict(decide('mcp__numerai__set_stake', { model: 'm', value: 1 })), 'ask');
+  assert.equal(verdict(decide('mcp__numerai__run_mutation', { body: 'mutation { v2ChangeStake(value: 1) { id } }' })), 'ask');
+  assert.equal(verdict(decide('mcp__numerai__get_leaderboard', { limit: 5 })), 'allow');
+});
+
 // --- One case per rule, so that deleting a rule fails a test ------------------------------------------------------
 const everyDenyRule = [
   'mkfs.ext4 /dev/disk2',

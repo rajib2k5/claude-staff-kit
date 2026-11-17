@@ -17,5 +17,11 @@ jobs:
           node-version: "20"
       - name: Install Claude Code CLI (pinned; used only for `claude plugin validate`)
         run: npm install -g @anthropic-ai/claude-code@2.1.287
+      # plugins/quant-rigor needs numpy; a venv on PATH avoids the runner's externally-managed system Python.
+      - name: Install Python test dependencies (pinned)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet numpy==2.4.6
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
       - name: Validate kit
         run: bash scripts/validate.sh

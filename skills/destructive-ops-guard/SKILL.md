@@ -34,10 +34,11 @@ to the user: they need approval.
 
 **Denied outright (the user runs these by hand):** `DROP DATABASE`; a recursive or wildcard delete of `/`, a home
 folder, a system folder or the whole `~/.claude`; `mkfs` or `dd` to a device; a force-push to main, master or
-prod; rewriting published history; `terraform destroy`; `shred`.
+prod; rewriting published history; `terraform destroy`; `snowddl destroy`; `shred`.
 
-Text that only mentions a verb is not the verb: `grep "DROP DATABASE"`, an `echo`, a commit message, or a heredoc
-that writes a `.sql` file runs nothing. A heredoc or string handed to an interpreter or a database client does, and so
+Text that only mentions a verb is not the verb: `grep "DROP DATABASE"`, an `echo`, a commit message, the title,
+body or notes of a `gh pr`, `gh issue` or `gh release` command, or a heredoc that writes a `.sql` file runs nothing.
+A command substitution inside that text, `$(...)` or backticks, does run, and is judged as a command. A heredoc or string handed to an interpreter or a database client does, and so
 does any text on a line that also runs one (`echo "..." > x.sql && snowsql -f x.sql`). A read, a dry run or a plan
 excuses only its own command: `ls && git reset --hard` still asks.
 
@@ -89,6 +90,15 @@ confirm step and no undo · deleting user content without a soft-delete path
 `helm uninstall` · `docker system prune -a` / `volume rm` · cloud CLI deletes
 (`aws s3 rm --recursive`, `gcloud ... delete`, `az ... delete`) · disabling versioning or
 deletion protection · lifecycle rules that expire objects
+
+**Processes** `pkill -f` (it matches whole command lines, so it also matches the shell that runs it and has
+killed its own session). Kill a PID or a process group that you recorded when you started the job.
+
+**Snowflake as code** `snowddl apply` changes the live account: run `snowddl plan`, show the plan to the user,
+then apply. `snowddl destroy` drops every object the config manages: denied, the user runs it.
+
+**Money** a call that changes a stake: numerapi `stake_increase` / `stake_decrease` / `stake_change` /
+`stake_drain`, a Numerai GraphQL stake mutation, or any stake/unstake call. The user places stakes.
 
 **APIs and data services** `DELETE` verbs against production · bulk-delete endpoints · webhook or
 integration removal · key/secret **rotation or revocation** · unsubscribing or disabling an

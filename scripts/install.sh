@@ -138,6 +138,8 @@ done
 for f in "$KIT"/hooks/*.js; do
   install_item "$f" "$TARGET/hooks/$(basename "$f")"
 done
+# pre-publish-guard.js runs hooks/lib/scan_licensed_rows.py from beside itself.
+[ -d "$KIT/hooks/lib" ] && install_item "$KIT/hooks/lib" "$TARGET/hooks/lib"
 if [ "$WITH_MEMORY" = 1 ]; then
   for f in "$KIT"/memory/*.md; do install_item "$f" "$TARGET/memory/$(basename "$f")"; done
 fi

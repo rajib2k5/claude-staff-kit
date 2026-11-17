@@ -63,8 +63,23 @@ const DENY = [
   [/\bgit\s+push\s+(-f\b|--force\b)(?!-with-lease)[\s\S]*\b(main|master|prod|production)\b/i, 'force-push to a protected branch'],
   [/\bgit\s+(filter-branch|filter-repo)\b/, 'rewriting published git history'],
   [/\bterraform\s+destroy\b/i, 'terraform destroy'],
+  // SnowDDL drops every object its config manages. Like terraform destroy, the user runs it by hand.
+  [/\bsnowddl(-[\w-]+)?\b[^;&|\n]*\sdestroy\b/i, 'snowddl destroy (drops every object the config manages)'],
   [/\bshred\b/, 'shred (unrecoverable overwrite)'],
 ];
+
+/**
+ * A call that changes staked money: numerapi's stake_* methods, Numerai's GraphQL stake mutations, or a generic
+ * stake/unstake/withdraw-stake call. Matched in shell text and in the input of any tool whose name mentions numerai
+ * or stake (an MCP GraphQL tool).
+ */
+const STAKE_CALL = /\b(?:stake[-_](?:increase|decrease|change|drain|set)|set_stake|(?:v2)?(?:Change|Release|Set)Stake|changeStake|releaseStake|setStake|withdraw_?stake|unstake)\b/i;
+
+/** kill fed by pgrep -f (piped to xargs kill, or in $(...)): the same self-kill risk as pkill -f. Whole line. */
+const PGREP_KILL = /\bpgrep\b[^;&|\n]*\s-[A-Za-z0-9]*f[\s\S]*\bkill\b|\bkill\b[\s\S]*\bpgrep\b[^;&|\n]*\s-[A-Za-z0-9]*f/;
+
+/** Name of a variable that is never set: `cd "$<it>"` marks where a command substitution starts (see decideShell). */
+const SUBST_DIR = '__GUARD_SUBSTITUTION_DIR__';
 
 /**
  * Destructive — ASK. Reversible only with effort, or blast radius depends on context.
@@ -94,6 +109,9 @@ const ASK = [
 
   // --- shell / filesystem (rm and friends: see deleteVerdict; system paths: SYSTEM_OVERWRITE) ---------------
   [/\bchmod\s+-R\b|\bchown\s+-R\b/, 'recursive permission/ownership change'],
+  // pkill -f matches whole command lines, so its pattern also matches the shell that runs it (numerai-jupiter-nn
+  // LEARNINGS §6: it killed its own session). Kill a recorded PID or process group instead.
+  [/\bpkill\b[^;&|\n]*\s(?:-[A-Za-z0-9]*f[A-Za-z0-9]*|--full)(?=\s|$)/, 'pkill -f (matches full command lines, including its own shell)'],
 
   // --- application code (shutil.rmtree and fs.rm: see deleteVerdict) -------
   [/\bdrop_all\s*\(/, 'ORM drop_all (drops every table)'],
@@ -109,6 +127,11 @@ const ASK = [
   [/\b(gcloud|az)\b[\s\S]*\bdelete\b/i, 'cloud resource delete'],
   [/\bterraform\s+apply\b[\s\S]*-auto-approve/i, 'terraform apply -auto-approve (plan not reviewed)'],
   [/\bterraform\s+state\s+rm\b/i, 'terraform state rm'],
+  // snowddl plan is the review step: show its output to the user before an apply.
+  [/\bsnowddl(-[\w-]+)?\b[^;&|\n]*\sapply\b/i, 'snowddl apply (changes the live Snowflake account; run snowddl plan and show it first)'],
+
+  // --- money ------------------------------------------------------------------
+  [STAKE_CALL, 'changing a stake (Numerai or other staked money)'],
 
   // --- secrets / external effects -------------------------------------------
   [/\b(rotate|revoke)[-_ ](key|secret|token|credential)/i, 'credential rotation/revocation'],
@@ -160,6 +183,12 @@ const READ_ONLY = new Set(['ls', 'cat', 'head', 'tail', 'wc', 'grep', 'egrep', '
 const DATA_SINKS = new Set(['cat', 'tee']);
 const WRAPPERS = new Set(['sudo', 'command', 'builtin', 'exec', 'nohup', 'time', 'env', 'nice']);
 
+/**
+ * Quote state 'A' is bash's ANSI-C string $'...': a backslash escapes the next character, so \' does not end it.
+ * Every scanner below knows it, or the guard and bash disagree on where a quote ends (adversarial review, W2).
+ */
+const ANSI = 'A';
+
 /** Shell words of one simple command, quotes removed. An unmatched quote ends the word. */
 function tokenize(s) {
   const words = [];
@@ -168,10 +197,18 @@ function tokenize(s) {
   let quote = null;
   for (let i = 0; i < s.length; i += 1) {
     const c = s[i];
-    if (quote) {
+    if (quote === ANSI) {
+      if (c === "'") quote = null;
+      else if (c === '\\' && i + 1 < s.length) cur += s[(i += 1)];
+      else cur += c;
+    } else if (quote) {
       if (c === quote) quote = null;
       else if (c === '\\' && quote === '"' && i + 1 < s.length) cur += s[(i += 1)];
       else cur += c;
+    } else if (c === '$' && s[i + 1] === "'") {
+      quote = ANSI;
+      started = true;
+      i += 1;
     } else if (c === "'" || c === '"') {
       quote = c;
       started = true;
@@ -200,8 +237,12 @@ function splitSegments(text) {
     const c = text[i];
     if (quote) {
       cur += c;
-      if (c === quote) quote = null;
-      else if (c === '\\' && quote === '"' && i + 1 < text.length) cur += text[(i += 1)];
+      if (c === (quote === ANSI ? "'" : quote)) quote = null;
+      else if (c === '\\' && (quote === '"' || quote === ANSI) && i + 1 < text.length) cur += text[(i += 1)];
+    } else if (c === '$' && text[i + 1] === "'") {
+      quote = ANSI;
+      cur += "$'";
+      i += 1;
     } else if (c === "'" || c === '"') {
       quote = c;
       cur += c;
@@ -262,6 +303,7 @@ function parseHeredocs(command) {
   const shell = [];
   const code = [];
   const data = [];
+  const expanding = [];
   for (let i = 0; i < lines.length; i += 1) {
     shell.push(lines[i]);
     const m = /(?<!<)<<(?!<)-?\s*(['"]?)([A-Za-z_][\w-]*)\1/.exec(lines[i]);
@@ -277,9 +319,11 @@ function parseHeredocs(command) {
     for (; j < lines.length && lines[j].replace(/^\t+/, '') !== m[2]; j += 1) body.push(lines[j]);
     const runs = !DATA_SINKS.has(owner) || piped || runsGivenText(outer);
     (runs ? code : data).push(body.join('\n'));
+    // An unquoted delimiter (<<EOF, not <<'EOF' or <<\EOF) makes bash expand $(...) in the body, even for cat.
+    if (!m[1] && lines[i][m.index + m[0].length - m[2].length - 1] !== '\\') expanding.push(body.join('\n'));
     i = j; // skip the body and its closing delimiter
   }
-  return { shell: shell.join('\n'), code, data };
+  return { shell: shell.join('\n'), code, data, expanding };
 }
 
 /** VAR=value assignments made earlier in the same command line, plus HOME. */
@@ -355,15 +399,83 @@ function gitSubcommand(words, i) {
   return '';
 }
 
-/** A simple command whose quoted arguments are text it prints, stores or commits: an echo, a printf, a message. */
+/** gh command groups whose quoted arguments are a title, a body, notes or a comment, never run. */
+const MESSAGE_GH = new Set(['pr', 'issue', 'release', 'gist', 'discussion']);
+
+function ghSubcommand(words, i) {
+  for (let j = i + 1; j < words.length; j += 1) {
+    if (words[j] === '-R' || words[j] === '--repo') j += 1;
+    else if (!words[j].startsWith('-')) return words[j];
+  }
+  return '';
+}
+
+/**
+ * A simple command whose quoted arguments are text it prints, stores, commits or posts: an echo, a printf, a commit
+ * message, a gh PR or issue body. Regression (2026-11-09): `gh pr create --body "...rm -rf /..."` was denied because
+ * the PR text was scanned as if it ran.
+ */
 function isTextCommand(segment) {
   const words = tokenize(segment);
   const i = commandIndex(words);
   const cmd = i < words.length ? path.basename(words[i]) : '';
-  return cmd === 'echo' || cmd === 'printf' || (cmd === 'git' && MESSAGE_GIT.has(gitSubcommand(words, i)));
+  // VAR="..." before the command is not text: GIT_SSH_COMMAND, EDITOR or GH_EDITOR name a command that runs.
+  if (words.slice(0, i).some((w) => /^[A-Za-z_][A-Za-z0-9_]*=/.test(w))) return false;
+  return cmd === 'echo' || cmd === 'printf' || (cmd === 'git' && MESSAGE_GIT.has(gitSubcommand(words, i))) ||
+    (cmd === 'gh' && MESSAGE_GH.has(ghSubcommand(words, i)));
 }
 
-const withoutQuotedText = (segment) => segment.replace(/'[^']*'|"(?:[^"\\]|\\.)*"/g, "''");
+const withoutQuotedText = (segment) => segment.replace(/\$'(?:[^'\\]|\\.)*'|'[^']*'|"(?:[^"\\]|\\.)*"/g, "''");
+
+/**
+ * Bodies of command substitutions, $(…) and `…`, outside single quotes, nested ones too. They run even inside a
+ * double-quoted message (`git commit -m "$(rm -rf ~)"`), so they are judged as commands of their own.
+ */
+function substitutions(text) {
+  const out = [];
+  let quote = null;
+  for (let i = 0; i < text.length; i += 1) {
+    const c = text[i];
+    if (quote === "'") {
+      if (c === "'") quote = null;
+    } else if (quote === ANSI) {
+      if (c === '\\') i += 1;
+      else if (c === "'") quote = null;
+    } else if (c === '\\') {
+      i += 1;
+    } else if (c === '$' && text[i + 1] === "'" && !quote) {
+      quote = ANSI;
+      i += 1;
+    } else if (c === "'" && !quote) {
+      quote = "'";
+    } else if (c === '"') {
+      quote = quote === '"' ? null : '"';
+    } else if (c === '`') {
+      const end = text.indexOf('`', i + 1);
+      const body = text.slice(i + 1, end === -1 ? text.length : end);
+      out.push(body, ...substitutions(body));
+      i = end === -1 ? text.length : end;
+    } else if (c === '$' && text[i + 1] === '(') {
+      let depth = 1;
+      let q = null;
+      let j = i + 2;
+      for (; j < text.length && depth; j += 1) {
+        const d = text[j];
+        if (q) {
+          if (d === q) q = null;
+          else if (d === '\\' && q === '"') j += 1;
+        } else if (d === "'" || d === '"') q = d;
+        else if (d === '\\') j += 1;
+        else if (d === '(') depth += 1;
+        else if (d === ')') depth -= 1;
+      }
+      const body = text.slice(i + 2, depth ? j : j - 1);
+      out.push(body, ...substitutions(body));
+      i = j - 1;
+    }
+  }
+  return out.filter((s) => s.trim());
+}
 
 /** SQL statements of a script, split on ; outside quotes, so a read statement cannot excuse a write after it. */
 function splitStatements(sql) {
@@ -486,7 +598,12 @@ function deleteVerdict(shell, code, vars, cwd) {
  */
 function decideShell(command, cwd) {
   if (!command.trim()) return null;
-  const { shell, code, data } = parseHeredocs(command);
+  const parsed = parseHeredocs(command);
+  const { code, data } = parsed;
+  // Each substitution runs where it appears, not after the line's last cd: the cd to an unknown folder in front of
+  // it makes a relative target unresolved (ask) instead of judged against a later cd.
+  const subs = [parsed.shell, ...parsed.expanding].flatMap(substitutions);
+  const shell = [parsed.shell, ...subs.map((s) => `cd "$${SUBST_DIR}"\n${s}`)].join('\n');
   const segments = splitSegments(shell);
   const runsText = code.length > 0 || segments.some((s) => runsGivenText(commandWord(tokenize(s))));
   const executed = runsText ? [...code, ...data] : [];
@@ -505,9 +622,13 @@ function decideShell(command, cwd) {
         `run it themselves if they truly intend it. See ~/.claude/skills/destructive-ops-guard/SKILL.md`,
     };
   }
-  const scanned = runsText
+  const selfKill = PGREP_KILL.test(withoutQuotedText(shell))
+    ? { decision: 'ask', reason: 'Destructive operation detected: kill fed by pgrep -f, which matches full command ' +
+        'lines, including the shell that runs it. Kill a PID or process group you recorded instead.' }
+    : null;
+  const scanned = worstVerdict([selfKill, runsText
     ? scanPatterns(text, { strict: true })
-    : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s)));
+    : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s)))]);
   if (scanned) return scanned;
   if (deletion.level === 'ask') {
     return {
@@ -530,6 +651,15 @@ function decide(toolName, toolInput, cwd = process.cwd()) {
     };
   }
   if (BASH_TOOLS.has(toolName)) return decideShell(String(toolInput.command || ''), cwd);
+  const toolAction = toolName.slice(toolName.lastIndexOf('__') + 2); // mcp__numerai__set_stake -> set_stake
+  if (/numerai|(^|_)stake/i.test(toolName) &&(STAKE_CALL.test(toolAction) || STAKE_CALL.test(JSON.stringify(toolInput)))) {
+    return {
+      decision: 'ask',
+      reason:
+        `Changing a stake through ${toolName}: this moves the user's money. State the model, the current stake, ` +
+        'the new stake and when it takes effect, and let the user confirm. The user places stakes, not Claude.',
+    };
+  }
   if (/sql|query|snowflake|bigquery|postgres|mysql|duckdb/i.test(toolName)) {
     const sqlText = String(toolInput.query || toolInput.sql || toolInput.statement || toolInput.command || '');
     return worstVerdict(splitStatements(sqlText).map((statement) => scanPatterns(statement)));
@@ -618,4 +748,5 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { decide };
+// The shell parser is shared with pre-publish-guard.js, so both hooks read a command line the same way.
+module.exports = { decide, shell: { tokenize, splitSegments, parseHeredocs, commandIndex, substitutions } };
