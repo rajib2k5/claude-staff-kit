@@ -32,6 +32,49 @@
       "description": "Stock ticker in the status line, /quote pane, price alerts, a market-context band, and a quote tool the model can call."
     },
     {
+      "name": "strategy-card",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/strategy-card"
+      },
+      "category": "research",
+      "description": "Draft, validate and badge a one-page disclosure card for a backtest. Analysis only: no orders, no brokers, no network. Not investment advice."
+    },
+    {
+      "name": "test-tamper-guard",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/test-tamper-guard"
+      },
+      "category": "quality",
+      "description": "Analysis-only guard: asks before an edit that weakens a test (skip/xfail, loosened tolerance, deleted test, changed expectation). Never edits files or runs your code."
+    },
+    {
+      "name": "api-reality-check",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/api-reality-check"
+      },
+      "category": "quality",
+      "description": "After each Write/Edit of a .py file, checks that its imports, attributes and keyword arguments exist in your installed library versions. Analysis only; never modifies files."
+    },
+    {
+      "name": "sharpe-observatory",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/quant-3d-sharpe-viz-claude-plugin"
+      },
+      "category": "research",
+      "description": "Screen a stock universe by Sharpe ratio and Jensen's alpha with a multiple-testing luck correction (Probabilistic and Deflated Sharpe), then render a 3D skyline. Offline sample data by default; not investment advice."
+    },
+    {
+      "name": "quant-rigor",
+      "source": "./plugins/quant-rigor",
+      "version": "0.1.0",
+      "category": "research",
+      "description": "Statistical rigour for quant research: tested Sharpe, PSR, DSR, Holm, Diebold-Mariano and purged walk-forward splits; a seal-then-score-once holdout; a procedure-attacking research auditor; reproducible market data fetch with a SHA-256 manifest and a DoltHub read-only guard."
+    },
+    {
       "name": "threejs",
       "source": "./third-party/plugins/threejs",
       "version": "1.0.0",

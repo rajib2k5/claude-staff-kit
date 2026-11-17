@@ -59,6 +59,26 @@ else
   echo "  WARN: $EGV_SRC not present; bundled-copy identity check SKIPPED (set EGV_SRC to the evidence-gated-validation checkout)"
 fi
 
+echo "== plugin tests (plugins/*: unit tests next to the code, plus each plugin's tests/ folder)"
+for plug in plugins/*/; do
+  [ -d "$plug" ] || continue
+  if [ -d "${plug}tests" ]; then
+    out="$(python3 -B -m unittest discover -s "${plug}tests" -p 'test_*.py' 2>&1)" \
+      || { echo "$out" | tail -30; fail "${plug}tests failed"; }
+    echo "  ok ${plug}tests: $(echo "$out" | grep -E '^Ran ' | tail -1)"
+  fi
+  for d in "${plug}"skills/*/scripts; do
+    ls "$d"/test_*.py >/dev/null 2>&1 || continue
+    out="$(python3 -B -m unittest discover -s "$d" -p 'test_*.py' 2>&1)" \
+      || { echo "$out" | tail -30; fail "$d tests failed"; }
+    echo "  ok $d: $(echo "$out" | grep -E '^Ran ' | tail -1)"
+  done
+  if command -v claude >/dev/null 2>&1; then
+    claude plugin validate --strict "${plug}.claude-plugin/plugin.json" >/dev/null || fail "claude plugin validate --strict ${plug}"
+    echo "  ok claude plugin validate --strict ${plug}"
+  fi
+done
+
 echo "== hook tests"
 node --test hooks/*.test.js
 

@@ -1,0 +1,11 @@
+{
+  "name": "quant-rigor",
+  "version": "0.1.0",
+  "description": "Statistical rigour for quant research: one tested module for Sharpe, PSR, DSR, Holm, Diebold-Mariano and purged walk-forward splits; a seal-then-score-once holdout script; a quant research auditor agent; market data fetch with a SHA-256 manifest and a DoltHub read-only guard; and /egv-ledger.",
+  "author": {
+    "name": "Rajib Bahar",
+    "url": "https://github.com/rajib2k5"
+  },
+  "license": "MIT",
+  "keywords": ["quant", "sharpe", "deflated-sharpe", "holm", "diebold-mariano", "walk-forward", "pre-registration", "holdout", "data-manifest"]
+}
