@@ -5,7 +5,7 @@
     "url": "https://github.com/rajib2k5"
   },
   "metadata": {
-    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) and market-watch (live market data in the session), plus vendored third-party plugins (threejs, cert-safari-quiz, evolv-taste-pilot)."
+    "description": "Rajib Bahar's Claude Code plugins: staff-kit (engineering standards, skills, agents, guards) market-watch (live market data in the session) and snowflake-delivery (Snowflake labs, semantic views, SnowDDL, releases), plus vendored third-party plugins (threejs, cert-safari-quiz, evolv-taste-pilot)."
   },
   "plugins": [
     {
@@ -16,6 +16,13 @@
       "description": "Staff-level engineering standards: 41 skills, 23 model-routed agents, 14 commands, 19 rules, tiered contexts, and a destructive-ops guard hook. Snowflake, dbt, SQL, and cost-disciplined multi-agent work."
     },
     {
+      "name": "snowflake-delivery",
+      "source": "./plugins/snowflake-delivery",
+      "version": "0.1.0",
+      "category": "development",
+      "description": "Snowflake delivery work, made generic: hands-on-lab setup/seed/verify/teardown with a teardown checker, semantic view and Cortex Agent authoring, SnowDDL review, Cortex Code demo skills, an MCP server scaffold, and regression-proof plugin releases."
+    },
+    {
       "name": "market-watch",
       "source": {
         "source": "github",
@@ -23,6 +30,49 @@
       },
       "category": "productivity",
       "description": "Stock ticker in the status line, /quote pane, price alerts, a market-context band, and a quote tool the model can call."
+    },
+    {
+      "name": "strategy-card",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/strategy-card"
+      },
+      "category": "research",
+      "description": "Draft, validate and badge a one-page disclosure card for a backtest. Analysis only: no orders, no brokers, no network. Not investment advice."
+    },
+    {
+      "name": "test-tamper-guard",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/test-tamper-guard"
+      },
+      "category": "quality",
+      "description": "Analysis-only guard: asks before an edit that weakens a test (skip/xfail, loosened tolerance, deleted test, changed expectation). Never edits files or runs your code."
+    },
+    {
+      "name": "api-reality-check",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/api-reality-check"
+      },
+      "category": "quality",
+      "description": "After each Write/Edit of a .py file, checks that its imports, attributes and keyword arguments exist in your installed library versions. Analysis only; never modifies files."
+    },
+    {
+      "name": "sharpe-observatory",
+      "source": {
+        "source": "github",
+        "repo": "rajib2k5/quant-3d-sharpe-viz-claude-plugin"
+      },
+      "category": "research",
+      "description": "Screen a stock universe by Sharpe ratio and Jensen's alpha with a multiple-testing luck correction (Probabilistic and Deflated Sharpe), then render a 3D skyline. Offline sample data by default; not investment advice."
+    },
+    {
+      "name": "quant-rigor",
+      "source": "./plugins/quant-rigor",
+      "version": "0.1.0",
+      "category": "research",
+      "description": "Statistical rigour for quant research: tested Sharpe, PSR, DSR, Holm, Diebold-Mariano and purged walk-forward splits; a seal-then-score-once holdout; a procedure-attacking research auditor; reproducible market data fetch with a SHA-256 manifest and a DoltHub read-only guard."
     },
     {
       "name": "threejs",

@@ -117,8 +117,13 @@ memory/           global memory seed (opt-in)
 templates/        global-CLAUDE.md
 adapters/cortex/  Cortex CLI adapter
 scripts/          install.sh, merge-settings.py, install-plugins.sh, validate.sh
+plugins/          extra plugins listed in the marketplace (snowflake-delivery)
 docs/             INVENTORY, MARKETPLACE_COMPARISON, RECOMMENDED_PLUGINS, recommended-plugins.json
 ```
+
+## Other plugins in this marketplace
+
+- `snowflake-delivery` (`plugins/snowflake-delivery/`): hands-on-lab scaffolding with a teardown checker, semantic view and Cortex Agent authoring, SnowDDL review, an MCP server scaffold, and plugin releases that refuse a version regression. Install with `/plugin install snowflake-delivery@claude-staff-kit`.
 
 ## Related
 

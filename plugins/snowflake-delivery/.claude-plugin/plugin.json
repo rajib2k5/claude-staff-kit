@@ -1,0 +1,8 @@
+{
+  "name": "snowflake-delivery",
+  "version": "0.1.0",
+  "description": "Snowflake delivery work, made generic: hands-on-lab scaffolding with a teardown checker, semantic view and Cortex Agent authoring, SnowDDL config review, Cortex Code demo skills, an MCP server scaffold, and plugin releases that refuse a version regression.",
+  "author": { "name": "Rajib Bahar", "url": "https://github.com/rajib2k5" },
+  "license": "MIT",
+  "keywords": ["snowflake", "hands-on-lab", "semantic-view", "cortex", "snowddl", "mcp", "release"]
+}

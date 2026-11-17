@@ -1,0 +1,9 @@
+[project]
+name = "synthetic-data-demo"
+version = "0.1.0"
+description = "Skill for generating synthetic relational datasets and Streamlit dashboards"
+requires-python = ">=3.11"
+dependencies = [
+    "faker>=28.0.0",
+    "pandas>=2.0.0",
+]
