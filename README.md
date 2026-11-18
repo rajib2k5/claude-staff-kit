@@ -13,7 +13,7 @@ The same files also serve the Snowflake Cortex CLI, which reads `~/.claude/skill
 | **Skills** (`skills/`) | <!-- sync-index:skills-count -->42<!-- /sync-index:skills-count --> | Engineering workflows (design, tdd, debug, review, ship, migrate, ...), data-platform workflows (quality, metric, dbt audit, Snowflake audit and tune, cost, ...) and Claude-platform skills: <!-- sync-index:skill-families -->13 `staff-*`, 8 `data-*` and 10 `claude-*` skills, plus `ai-spend`, `cost-conscious-orchestration`, `destructive-ops-guard`, `diagram-kit`, `evidence-gated-validation`, `graphify-refresh`, `heavy-job`, `learn-as-you-build`, `real-run-screenshots`, `simple-english`, `snowflake-sql`.<!-- /sync-index:skill-families --> |
 | **Agents** (`agents/`) | <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> | Each declares an explicit `model:`. `adversarial-reviewer` is pinned to Opus and is never downgraded. Mechanical agents (explorer, docs writer, release manager, dependency auditor) run on Sonnet. |
 | **Commands** (`commands/`) | <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> | `/bootstrap` `/ship` `/validate` `/deep-review` `/design` `/rca` `/adr` `/dbt-audit` `/sf-audit` `/sf-tune` `/dq` `/standards`. Thin dispatchers onto the skills. |
-| **Hooks** (`hooks/`) | 3 scripts | `evolv-destructive-guard.js` (PreToolUse: asks or denies before DROP, TRUNCATE, `rm -rf`, force-push, `terraform destroy`, `snowddl destroy`, `pkill -f`, stake changes, ... across every technology). `pre-publish-guard.js` (PreToolUse on git commit, tag, merge and push: denies a Claude co-author trailer, asks on home-directory paths, runs the licensed-data scanner in `hooks/lib/` when the repo has `.licensed-data.json`). `evolv-skills-enforcer.js` (SessionStart: loads the mandatory-skills policy; Stop: flags "verified" claims with no executed command). |
+| **Hooks** (`hooks/`) | 7 scripts | `evolv-destructive-guard.js` (PreToolUse: asks or denies before DROP, TRUNCATE, `rm -rf`, force-push, `terraform destroy`, `snowddl destroy`, `pkill -f`, stake changes, ... across every technology). `pre-publish-guard.js` (PreToolUse on git commit, tag, merge and push: denies a Claude co-author trailer, asks on home-directory paths, runs the licensed-data scanner in `hooks/lib/` when the repo has `.licensed-data.json`). `evolv-skills-enforcer.js` (SessionStart: loads the mandatory-skills policy; Stop: flags "verified" claims with no executed command). `subagent-model-guard.js` (PreToolUse on `Agent`: denies a launch without an explicit model and effort, and an `adversarial-reviewer`, including a plugin-namespaced one such as `staff-kit:adversarial-reviewer`, on anything but opus). `subagent-cost-ledger.js` (SubagentStop: one ledger line per subagent with tokens and API-equivalent USD; Stop: session total). `cost-statusline.js` (status line: context used, how far toward the auto-compact point, cost). `compact-journal.js` (PreCompact: verbatim fact journal of the human's own instructions, tasks and git state; SessionStart `compact`: re-injects it). |
 | **Memory** (`memory/`) | 7 | Global facts for the file-based memory. Opt-in at install. |
 | **Adapters** (`adapters/cortex/`) | 2 | How `~/.cortex` symlinks into the library, and the script that seeds `cortex ctx`. |
 
@@ -93,7 +93,7 @@ How the kit compares with the marketplace, component by component, and which pac
 - **Plugin mode and `~/.claude` paths.** Skills, agents, and commands refer to the rules as `~/.claude/rules/...` because the Cortex CLI and the dotfiles install need literal paths. In plugin mode the session-start hook tells Claude where the plugin root is, but subagents do not receive that hint. Dotfiles mode (Option B) has no such gap and is the primary mode.
 - **The guard sees Claude Code tool calls only.** It inspects `Bash` commands, the paths written by `Write`, `Edit`, and `NotebookEdit`, `Artifact` deletes, and the SQL passed to any MCP tool whose name contains sql, query, snowflake, bigquery, postgres, mysql, or duckdb. SQL executed by another agent, such as Cortex Code after a prompt is routed to it, never reaches the hook. The `destructive-ops-guard` skill still governs the model's behaviour there, but without the hook as backstop.
 - **Hooks need `node`.** If it is missing, the hook exits non-zero and Claude Code shows the error and continues; the guard fails open, visibly.
-- **No evals yet.** The 211 hook tests and the scanner tests cover the hooks. Whether a skill triggers on the right prompt is not tested.
+- **No evals yet.** The node hook tests and the scanner tests cover the hooks. Whether a skill triggers on the right prompt is not tested.
 
 ## Validate
 
@@ -101,7 +101,7 @@ How the kit compares with the marketplace, component by component, and which pac
 bash scripts/validate.sh
 ```
 
-Checks the manifests, every skill and agent frontmatter (agents must declare a model), shell syntax, the 211 hook tests, the licensed-data scanner tests, and `claude plugin validate --strict`. CI runs the same script.
+Checks the manifests, every skill and agent frontmatter (agents must declare a model), shell syntax, the node hook tests, the licensed-data scanner tests, and `claude plugin validate --strict`. CI runs the same script.
 
 ## Layout
 
@@ -112,7 +112,7 @@ agents/           <!-- sync-index:agents-count -->23<!-- /sync-index:agents-coun
 commands/         <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> slash commands
 rules/            <!-- sync-index:rules-standards -->18<!-- /sync-index:rules-standards --> standards files plus README.md, the index
 contexts/         tier0-always, tier1-role-*, tier2-domain-*
-hooks/            hooks.json (plugin wiring), the three hook scripts and their tests, lib/ (the licensed-data scanner)
+hooks/            hooks.json (plugin wiring), the hook scripts and their tests, lib/ (the licensed-data scanner, the model price table)
 memory/           global memory seed (opt-in)
 templates/        global-CLAUDE.md
 adapters/cortex/  Cortex CLI adapter

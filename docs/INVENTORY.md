@@ -21,7 +21,7 @@ of the same files found under `~/dev`.
 | `commands/` | `~/.claude/commands/` | <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> | thin dispatchers onto the skills |
 | `rules/` | `~/.claude/rules/` | <!-- sync-index:rules-count -->19<!-- /sync-index:rules-count --> | <!-- sync-index:rules-standards -->18<!-- /sync-index:rules-standards --> standards plus `README.md` index |
 | `contexts/` | `~/.claude/contexts/` | 6 | tier 0, three tier 1 roles, one tier 2 domain, README |
-| `hooks/` | `~/.claude/hooks/` | <!-- sync-index:hooks-count -->3<!-- /sync-index:hooks-count --> scripts | `evolv-destructive-guard.js`, `pre-publish-guard.js` (+ `lib/scan_licensed_rows.py`), `evolv-skills-enforcer.js`; 211 node tests plus the scanner's unittest suite |
+| `hooks/` | `~/.claude/hooks/` | <!-- sync-index:hooks-count -->7<!-- /sync-index:hooks-count --> scripts | `evolv-destructive-guard.js`, `pre-publish-guard.js` (+ `lib/scan_licensed_rows.py`), `evolv-skills-enforcer.js`, `subagent-model-guard.js`, `subagent-cost-ledger.js` (+ `lib/model-prices.json`), `cost-statusline.js`, `compact-journal.js`; node tests beside each script plus the scanner's unittest suite |
 | `memory/` | `~/.claude/memory/` | 7 | six global facts plus `MEMORY.md`; the employer brand rule was dropped |
 | `templates/global-CLAUDE.md` | `~/.claude/CLAUDE.md` | 1 | the global instructions that wire the library together |
 | `adapters/cortex/` | `~/.cortex/` | 2 | `CORTEX.md` and `bootstrap.sh`; the symlinks are described, not shipped |
