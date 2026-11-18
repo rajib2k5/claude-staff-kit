@@ -26,8 +26,9 @@
  *    A command that only reads (grep for "DROP DATABASE") or a heredoc that only writes a file runs nothing.
  *  - Trivial prompts removed (2026-11-18, from a week of transcripts): Claude's temp root on Linux and under
  *    CLAUDE_CODE_TMPDIR (TMP_BASES), a variable assigned a literal path earlier on the same line
- *    (resolveAssignedVariables), regenerable caches (CACHE_DIRS), `chmod -R u+…`, redirections read as arguments, and
- *    SQL text in a file being written or in a `python3 -` program's source (SQL_RULES).
+ *    (resolveAssignedVariables), regenerable caches (CACHE_DIRS), `chmod -R u+…` on a project folder (riskyChmod)
+ *    and redirections read as arguments. SQL text in a heredoc is judged as before: the guard cannot know which
+ *    program reads a file, so a list of SQL clients was a hole (adversarial review, 2026-11-18).
  *
  * Pairs with ~/.claude/skills/destructive-ops-guard/SKILL.md. Tests: evolv-destructive-guard.test.js
  * (node --test ~/.claude/hooks/evolv-destructive-guard.test.js).
@@ -60,11 +61,10 @@ const SAFE_SIGNALS = [
  * Catastrophic — DENY. Unrecoverable or system-wide. The user must do these by hand.
  * Each entry: [regex, human reason]
  */
-const SQL_DENY = [[/\bDROP\s+DATABASE\b/i, 'DROP DATABASE']];
 const DENY = [
   // rm, rmdir, unlink, shutil.rmtree and fs.rm are judged by their targets: see deleteVerdict.
   [/\bmkfs\b|\bdd\s+if=.*\bof=\/dev\//, 'filesystem format / raw device write'],
-  ...SQL_DENY,
+  [/\bDROP\s+DATABASE\b/i, 'DROP DATABASE'],
   [/\bgit\s+push\s+(-f\b|--force\b)(?!-with-lease)[\s\S]*\b(main|master|prod|production)\b/i, 'force-push to a protected branch'],
   [/\bgit\s+(filter-branch|filter-repo)\b/, 'rewriting published git history'],
   [/\bterraform\s+destroy\b/i, 'terraform destroy'],
@@ -86,10 +86,13 @@ const PGREP_KILL = /\bpgrep\b[^;&|\n]*\s-[A-Za-z0-9]*f[\s\S]*\bkill\b|\bkill\b[\
 /** Name of a variable that is never set: `cd "$<it>"` marks where a command substitution starts (see decideShell). */
 const SUBST_DIR = '__GUARD_SUBSTITUTION_DIR__';
 
+/** A recursive chmod. Not a plain regex rule: scanPatterns asks only when riskyChmod finds a risky one. */
+const CHMOD_R = /\bchmod\s+-R\b/;
+
 /**
  * Destructive — ASK. Reversible only with effort, or blast radius depends on context.
  */
-const SQL_ASK = [
+const ASK = [
   // --- SQL, any dialect -------------------------------------------------
   [/\bDROP\s+(TABLE|SCHEMA|VIEW|INDEX|USER|ROLE|WAREHOUSE|STAGE|STREAM|TASK|FUNCTION|PROCEDURE)\b/i, 'SQL DROP of a database object'],
   [/\bTRUNCATE\s+(TABLE\s+)?\w/i, 'SQL TRUNCATE'],
@@ -100,15 +103,6 @@ const SQL_ASK = [
   [/\bWHEN\s+NOT\s+MATCHED\s+BY\s+SOURCE\s+THEN\s+DELETE\b/i, 'unbounded MERGE ... DELETE'],
   [/\bREVOKE\b[\s\S]*\bFROM\b/i, 'REVOKE (access removal)'],
   [/\bDATA_RETENTION_TIME_IN_DAYS\s*=\s*0\b/i, 'setting Snowflake Time Travel retention to 0 (removes undo)'],
-];
-/**
- * Rules that only matter when the text reaches a database (see decideShell's skipSql). Ask tier only: DROP DATABASE
- * stays denied in any text the line runs, as it was before skipSql existed.
- */
-const SQL_RULES = new Set(SQL_ASK.map(([re]) => re));
-
-const ASK = [
-  ...SQL_ASK,
 
   // --- dbt --------------------------------------------------------------
   [/\bdbt\s+(run|build)\b[\s\S]*--full-refresh\b/i, 'dbt --full-refresh (rebuilds incremental history)'],
@@ -122,8 +116,9 @@ const ASK = [
   [/\bgit\s+push\b[\s\S]*\s--delete\b|\bgit\s+push\s+\w+\s+:/i, 'deleting a remote branch'],
 
   // --- shell / filesystem (rm and friends: see deleteVerdict; system paths: SYSTEM_OVERWRITE) ---------------
-  // A mode that only adds owner permissions (u+rwx, u+w,u+x) takes nothing away from anyone and opens nothing to others.
-  [/\bchmod\s+-R\b(?!\s+u\+[rwx]+(?:,u\+[rwx]+)*(?=\s|$))|\b(?:chown|chgrp)\s+-R\b/, 'recursive permission/ownership change'],
+  // CHMOD_R is judged by riskyChmod: an owner-add mode on project folders does not ask.
+  [CHMOD_R, 'recursive permission change'],
+  [/\b(?:chown|chgrp)\s+-R\b/, 'recursive ownership change'],
   // pkill -f matches whole command lines, so its pattern also matches the shell that runs it (numerai-jupiter-nn
   // LEARNINGS §6: it killed its own session). Kill a recorded PID or process group instead.
   [/\bpkill\b[^;&|\n]*\s(?:-[A-Za-z0-9]*f[A-Za-z0-9]*|--full)(?=\s|$)/, 'pkill -f (matches full command lines, including its own shell)'],
@@ -155,7 +150,7 @@ const ASK = [
 ];
 
 /** A redirect or tee into a system folder writes there whatever command produced the text: always ASK. */
-const SYSTEM_OVERWRITE = /(>|\btee\s+(-a\s+)?)\s*\/(etc|usr|var|bin|sbin)\//;
+const SYSTEM_OVERWRITE = /(>\|?|\btee\s+(-a\s+)?)\s*\/(etc|usr|var|bin|sbin)\//;
 
 /** Paths whose overwrite is worth a prompt even though Write itself is benign. */
 const SENSITIVE_PATHS = [
@@ -182,8 +177,9 @@ const TMP_BASES = [...new Set(['/tmp', os.tmpdir(), process.env.CLAUDE_CODE_TMPD
 
 /** Claude's own session and task files: not the user's data, so deleting them needs no approval. */
 const INTERNAL = [
-  // Inside a claude-* folder of a temp base. The folder itself (the per-uid root, every session's files) still asks.
-  ...TMP_BASES.map((base) => new RegExp(`^${escapeRe(base.replace(/\/$/, ''))}/claude-[^/]+/.`)),
+  // Inside the claude-<uid> folder of a temp base (a number: /tmp/claude-backups is not Claude's). The folder itself
+  // (every session's files) still asks.
+  ...TMP_BASES.map((base) => new RegExp(`^${escapeRe(base.replace(/\/$/, ''))}/claude-\\d+/.`)),
   new RegExp(`^${escapeRe(CLAUDE_DIR)}/(session-env|sessions|shell-snapshots|file-history|debug|paste-cache|cache|` +
              'telemetry|ide|todos|tasks|statsig)(/|$)'),
   // A session's folder or transcript under projects/ (never the project's memory/ folder, which is the user's).
@@ -214,7 +210,9 @@ const WRAPPERS = new Set(['sudo', 'command', 'builtin', 'exec', 'nohup', 'time',
 const ANSI = 'A';
 
 /** An unquoted redirection operator: >, >>, >|, <, <>, <<, <<-, <<<, &>, &>>, >&, <& (an fd number before it is cut). */
-const REDIRECT = /^(?:&>>?|<<<|<<-?|<>|>>|>\||>&|<&|>|<)/;
+const REDIRECT = /(?:&>>?|<<<|<<-?|<>|>>|>\||>&|<&|>|<)/y;
+/** What may follow >& or <& to duplicate or close a descriptor (>&2, <&0, >&-) instead of naming a file. */
+const FD_DUP = /(?:\d+-?|-)(?=$|[\s<>])/y;
 
 /**
  * Shell words of one simple command, quotes removed. An unmatched quote ends the word. Redirections are not words:
@@ -264,9 +262,11 @@ function tokenize(s) {
         started = false;
       }
       end();
-      const op = REDIRECT.exec(s.slice(i))[0];
+      REDIRECT.lastIndex = i;
+      const op = REDIRECT.exec(s)[0];
       i += op.length - 1;
-      const dup = op.endsWith('&') && /^(?:\d+-?|-)(?=$|[\s<>])/.exec(s.slice(i + 1)); // >&2, <&0, >&-
+      FD_DUP.lastIndex = i + 1;
+      const dup = op.endsWith('&') && FD_DUP.exec(s);
       if (dup) i += dup[0].length;
       else dropNext = true;
     } else if (/\s/.test(c)) {
@@ -282,9 +282,10 @@ function tokenize(s) {
 
 /**
  * Simple commands of a command line: split on unquoted ; & | newlines and parentheses, but not on the & of a
- * redirection (2>&1, &>file). With `ops`, the separator after each segment is pushed to it ('||' for a double bar).
+ * redirection (2>&1, &>file) or the | of >|. With `ops`, the separator after each segment is pushed to it ('||' for a
+ * double bar). With `max`, stops after that many segments (the first command of a long text, read in linear time).
  */
-function splitSegments(text, ops = null) {
+function splitSegments(text, ops = null, max = Infinity) {
   const out = [];
   let cur = '';
   let quote = null;
@@ -293,7 +294,7 @@ function splitSegments(text, ops = null) {
     out.push(cur.trim());
     if (ops) ops.push(op);
   };
-  for (let i = 0; i < text.length; i += 1) {
+  for (let i = 0; i < text.length && out.length < max; i += 1) {
     const c = text[i];
     if (quote) {
       cur += c;
@@ -308,7 +309,8 @@ function splitSegments(text, ops = null) {
       cur += c;
     } else if (c === '\\' && i + 1 < text.length) {
       cur += c + text[(i += 1)];
-    } else if (c === '&' && (text[i - 1] === '>' || text[i - 1] === '<' || text[i + 1] === '>')) {
+    } else if ((c === '&' && (text[i - 1] === '>' || text[i - 1] === '<' || text[i + 1] === '>')) ||
+               (c === '|' && text[i - 1] === '>' && text[i - 2] !== '\\')) {
       cur += c;
     } else if (';&|\n()'.includes(c)) {
       push(c === '|' && text[i + 1] === '|' ? '||' : c);
@@ -317,7 +319,7 @@ function splitSegments(text, ops = null) {
       cur += c;
     }
   }
-  push('');
+  if (out.length < max) push('');
   return out;
 }
 
@@ -366,34 +368,27 @@ function parseHeredocs(command) {
   const code = [];
   const data = [];
   const expanding = [];
-  const python = [];
   for (let i = 0; i < lines.length; i += 1) {
     shell.push(lines[i]);
-    const m = HEREDOC.exec(lines[i]);
-    if (!m) continue;
-    const before = lines[i].slice(0, m.index);
-    const sub = Math.max(before.lastIndexOf('$('), before.lastIndexOf('`'));
-    const inner = sub === -1 ? before : before.slice(sub + (before.startsWith('$(', sub) ? 2 : 1));
-    const ownerWords = tokenize(splitSegments(inner).pop() || '');
-    const owner = commandWord(ownerWords);
-    const outer = sub === -1 ? '' : commandWord(tokenize(splitSegments(before.slice(0, sub)).pop() || ''));
-    const piped = /\|/.test(lines[i].slice(m.index).replace(/'[^']*'|"[^"]*"/g, ''));
-    const body = [];
-    let j = i + 1;
-    for (; j < lines.length && lines[j].replace(/^\t+/, '') !== m[2]; j += 1) body.push(lines[j]);
-    const runs = !DATA_SINKS.has(owner) || piped || runsGivenText(outer);
-    (runs ? code : data).push(body.join('\n'));
-    // `python3 - <<'EOF'`: the body is the program itself (no -c, -m or script file), not input to one.
-    const args = ownerWords.slice(commandIndex(ownerWords) + 1);
-    if (/^python[\d.]*$/.test(owner) && !piped && !runsGivenText(outer) &&
-        args.every((a) => a === '-' || (/^-[A-Za-z]+$/.test(a) && !/[cmWX]/.test(a)))) {
-      python.push(body.join('\n'));
+    let j = i + 1; // the bodies of a line's heredocs follow it one after another: `cmd <<A <<B`
+    for (const op of heredocOperators(lines[i])) {
+      const before = lines[i].slice(0, op.index);
+      const sub = Math.max(before.lastIndexOf('$('), before.lastIndexOf('`'));
+      const inner = sub === -1 ? before : before.slice(sub + (before.startsWith('$(', sub) ? 2 : 1));
+      const owner = commandWord(tokenize(splitSegments(inner).pop() || ''));
+      const outer = sub === -1 ? '' : commandWord(tokenize(splitSegments(before.slice(0, sub)).pop() || ''));
+      const piped = /\|/.test(lines[i].slice(op.index).replace(/'[^']*'|"[^"]*"/g, ''));
+      const body = [];
+      for (; j < lines.length && lines[j].replace(/^\t+/, '') !== op.delim; j += 1) body.push(lines[j]);
+      j += 1; // past the closing delimiter
+      const runs = !DATA_SINKS.has(owner) || piped || runsGivenText(outer);
+      (runs ? code : data).push(body.join('\n'));
+      // An unquoted delimiter (<<EOF, not <<'EOF' or <<\EOF) makes bash expand $(...) in the body, even for cat.
+      if (!op.quoted) expanding.push(body.join('\n'));
     }
-    // An unquoted delimiter (<<EOF, not <<'EOF' or <<\EOF) makes bash expand $(...) in the body, even for cat.
-    if (!m[1] && lines[i][m.index + m[0].length - m[2].length - 1] !== '\\') expanding.push(body.join('\n'));
-    i = j; // skip the body and its closing delimiter
+    i = j - 1; // skip the bodies and their closing delimiters
   }
-  return { shell: shell.join('\n'), code, data, expanding, python };
+  return { shell: shell.join('\n'), code, data, expanding };
 }
 
 /**
@@ -419,28 +414,41 @@ function bindings(command) {
   return counts;
 }
 
-/** The heredoc operator parseHeredocs and resolveAssignedVariables both read: <<EOF, <<-'EOF', <<"EOF", not <<<. */
-const HEREDOC = /(?<!<)<<(?!<)-?\s*(['"]?)([A-Za-z_][\w-]*)\1/;
+/**
+ * The heredoc operators parseHeredocs and resolveAssignedVariables both read: <<EOF, <<-'EOF', <<"E O", <<\EOF,
+ * <<EOF. and the like, never <<<. The delimiter word may mix quoted and plain parts. One that starts with a digit is
+ * skipped, so the shift in $((1<<2)) is not read as a heredoc.
+ */
+const HEREDOC = /(?<!<)<<(?!<)-?[ \t]*((?:'[^'\n]*'|"[^"\n]*"|\\.|[^\s;&|<>()'"\\])+)/g;
+
+/** A line's heredoc operators in order: { index, delim (quotes removed), quoted (any quote stops expansion) }. */
+function heredocOperators(line) {
+  const ops = [];
+  for (const m of line.matchAll(HEREDOC)) {
+    if (/^\d/.test(m[1])) continue;
+    const delim = m[1].replace(/'([^']*)'|"([^"]*)"|\\(.)/g, (all, single, double, escaped) => single ?? double ?? escaped);
+    ops.push({ index: m.index, delim, quoted: /['"\\]/.test(m[1]) });
+  }
+  return ops;
+}
 
 /** Heredoc bodies by the index where each starts: { end, next, expands, at }, found the way parseHeredocs finds them. */
 function heredocBodies(command) {
   const bodies = new Map();
   const lines = command.split('\n');
-  let offset = 0;
+  const starts = [0]; // where each line starts; one past the end for the line after the last
+  for (const line of lines) starts.push(starts[starts.length - 1] + line.length + 1);
   for (let k = 0; k < lines.length; k += 1) {
-    const line = lines[k];
-    const m = HEREDOC.exec(line);
-    const lineStart = offset;
-    offset += line.length + 1;
-    if (!m) continue;
-    const start = offset;
     let j = k + 1;
-    for (; j < lines.length && lines[j].replace(/^\t+/, '') !== m[2]; j += 1) offset += lines[j].length + 1;
-    const end = Math.min(offset, command.length);
-    if (j < lines.length) offset += lines[j].length + 1;
-    const expands = !m[1] && line[m.index + m[0].length - m[2].length - 1] !== '\\';
-    bodies.set(start, { end, next: offset - 1, expands, at: lineStart + m.index });
-    k = j;
+    for (const op of heredocOperators(lines[k])) {
+      j = Math.min(j, lines.length);
+      const first = j;
+      while (j < lines.length && lines[j].replace(/^\t+/, '') !== op.delim) j += 1;
+      bodies.set(starts[Math.min(first, lines.length)], { end: Math.min(starts[j], command.length),
+        next: starts[Math.min(j + 1, lines.length)] - 1, expands: !op.quoted, at: starts[k] + op.index });
+      j += 1;
+    }
+    k = Math.max(k, j - 1);
   }
   return bodies;
 }
@@ -470,16 +478,81 @@ const CLOSERS = new Set(['fi', 'esac', 'done', '}']);
 /** NAME=value words (after an optional export) where every value is literal: no expansion, quote, operator or #. */
 const ASSIGNMENT = /([A-Za-z_]\w*)=(?:'([^'\n]*)'|"([^"\n]*)"|([^\s'"]*))(?=\s|$)/y;
 const LITERAL = /^[^$`'"\\;&|()<>#\n]*$/;
+/** Builtins that run text in this shell or set variables from input or later: never parsed for what they bind. */
+const REBINDERS = new Set(['eval', 'source', '.', 'trap']);
+/**
+ * Builtins that take variable names, with the letters of their options that take a value (`read -p prompt name`).
+ * printf and wait take names only after -v and -p.
+ */
+const NAME_TAKERS = new Map([['read', 'adinNptu'], ['mapfile', 'dnOsuCc'], ['readarray', 'dnOsuCc'], ['declare', ''],
+  ['typeset', ''], ['local', ''], ['export', ''], ['readonly', ''], ['printf', ''], ['wait', '']]);
+/** One shell word as written, quotes kept. */
+const RAW_WORD = /(?:[^\s'"\\]|\\.|'[^']*'|"(?:[^"\\]|\\.)*")+/g;
+
+/** Whether every name the builtin `cmd` is given (raw words, quotes kept) is a plain word that bindings() counts. */
+function namesArePlain(cmd, args) {
+  const valued = NAME_TAKERS.get(cmd);
+  for (let k = 0; k < args.length; k += 1) {
+    const a = args[k];
+    const option = /^-([A-Za-z]+)$/.exec(a);
+    if (/^\d*(?:[<>]|&>)/.test(a)) {
+      if (/^\d*[<>&|-]+$/.test(a)) k += 1; // a redirection and its file, written apart
+    } else if (cmd === 'printf') {
+      if (a.startsWith('-v') && (a !== '-v' || !/^[A-Za-z_]\w*$/.test(args[k + 1] || ''))) return false;
+    } else if (cmd === 'wait') {
+      if (option && option[1].includes('p')) return false; // wait -p NAME: bindings() does not count it
+    } else if (option) {
+      if (!valued && option[1].includes('n')) return false; // declare -n, local -n: a nameref
+      if (valued.includes(option[1].slice(-1))) k += 1; // the option's value
+    } else if (!/^[A-Za-z_]\w*(?:\[[^\]]*\])?(?:\+?=[\s\S]*)?$/.test(a)) {
+      return false; // a quoted or expanded name: "S=x", $V=x, 'S'
+    }
+  }
+  return true;
+}
+
+/**
+ * Whether something on the line may set a variable where bindings() cannot see it, so no variable is resolved: eval,
+ * source, ., trap; read, mapfile, declare, export, printf -v, wait -p and the like given a quoted or expanded name
+ * ("S", $V) or a nameref (-n); or a {VAR}> redirection, which stores a file descriptor number in VAR. decideShell also
+ * asks it of the resolved line, so a command word that expands to one of these (X=eval; $X "S=…") counts too.
+ */
+function hidesAssignments(command) {
+  const text = withoutHeredocBodies(command);
+  if (/(?:^|[\s;&|(])\{[A-Za-z_]\w*\}[<>]/m.test(text)) return true;
+  return splitSegments(text).some((segment) => {
+    const words = tokenize(segment);
+    const cmd = words[commandIndex(words)] || '';
+    if (REBINDERS.has(path.basename(cmd))) return true;
+    if (!NAME_TAKERS.has(cmd)) return false;
+    const raw = segment.match(RAW_WORD) || [];
+    return !namesArePlain(cmd, raw.slice(raw.indexOf(cmd) + 1));
+  });
+}
+
+/**
+ * The longest a resolved command line may grow: 8x the original, at least 16 KB (a long scratch path used many times
+ * in a short line), never more than 64 KB. Past it no variable is resolved, so a delete through one asks.
+ */
+const RESOLVE_MIN_BUDGET = 16 * 1024;
+const RESOLVE_MAX_LENGTH = 64 * 1024;
+
+/** A use of a variable at a given index (sticky: no copy of the rest of the line per `$`). */
+const BRACED_USE = /\$\{([A-Za-z_]\w*)\}/y;
+const BARE_USE = /\$([A-Za-z_]\w*)/y;
+const USE = /\$\{([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)/g;
 
 /**
  * The command line with each use of a variable replaced by its value, where that is certain to be what bash expands:
- * the variable is bound once on the whole line, by a top-level `VAR=literal` (or `export VAR=literal`) that is not in
+ * the variable is bound once on the whole line, by a top-level `VAR=literal` (or `export VAR=literal`, or a value
+ * built from variables resolved the same way, as in `B=$A/x`; one pass, never re-parsed) that is not in
  * a loop, a conditional block, a function, a subshell, a pipeline or a background job; the use comes after it, outside
  * single quotes and quoted heredocs (where only an inner shell would expand it); and the assignment has run when the
  * use runs: it starts its and-or list (after ; newline & or the line start), or it and the use are in one && chain.
  * Anything else stays a variable, which the guard cannot resolve, so it asks. Never reads the real environment.
+ * Returns null when the result would be longer than maxLength (a chain such as B=$A$A$A grows the text geometrically).
  */
-function resolveAssignedVariables(command) {
+function resolveAssignedVariables(command, maxLength = Infinity) {
   const bodies = heredocBodies(command);
   const bound = bindings(withoutHeredocBodies(command, bodies));
   if (changesIfs(command)) return command; // a changed IFS splits a value differently from the text the guard reads
@@ -488,6 +561,7 @@ function resolveAssignedVariables(command) {
   const stack = []; // 'dq' | 'sub' | 'bq' | 'par'
   const background = new Set();
   let el = { start: 0, opBefore: '', list: 0, allAnd: true };
+  const blank = (end) => !command.slice(el.start, end).replace(/(^|\s)#[^\n]*/g, '').trim(); // nothing but comments
   const close = (end, op) => {
     elements.push({ ...el, end });
     let { list, allAnd } = el;
@@ -499,7 +573,9 @@ function resolveAssignedVariables(command) {
     el = { start: end + op.length, opBefore: op, list, allAnd };
   };
   const useAt = (i) => {
-    const braced = /^\$\{([A-Za-z_]\w*)\}/.exec(command.slice(i)) || /^\$([A-Za-z_]\w*)/.exec(command.slice(i));
+    BRACED_USE.lastIndex = i;
+    BARE_USE.lastIndex = i;
+    const braced = BRACED_USE.exec(command) || BARE_USE.exec(command);
     if (braced) uses.push({ name: braced[1], start: i, end: i + braced[0].length, el: elements.length });
     if (braced || command[i + 1] !== '{') return braced ? braced[0].length - 1 : 0;
     // ${m%%|*}, ${x:-a b}: one expansion, never an operator or a separator. Skip to its closing brace.
@@ -522,7 +598,7 @@ function resolveAssignedVariables(command) {
             el: owner === -1 ? elements.length : owner });
         }
       }
-      if (el.start === i) el.start = body.next; // the body is not part of the command after it
+      if (blank(i)) el.start = body.next; // the body is not part of the command after it
       i = body.next - 1; // the newline after the delimiter line still separates commands
       continue;
     }
@@ -562,7 +638,9 @@ function resolveAssignedVariables(command) {
       const two = command.slice(i, i + 2);
       if (two === '&&' || two === '||' || two === ';;') { close(i, two); i += 1; }
       else if (c === '&' && !/[<>]/.test(command[i - 1] || '') && command[i + 1] !== '>') close(i, '&');
-      else if (c === '|' || c === ';' || c === '\n') close(i, c);
+      // A newline right after && || or | continues the list (`false &&⏎S=x` assigns only if false succeeds).
+      else if (c === '\n' && ['&&', '||', '|'].includes(el.opBefore) && blank(i)) continue;
+      else if ((c === '|' && command[i - 1] !== '>') || c === ';' || c === '\n') close(i, c);
     }
   }
   if (stack.length) return command;
@@ -591,9 +669,33 @@ function resolveAssignedVariables(command) {
   if (depth) return command;
 
   const values = new Map(); // name -> { value, index, chain }
+  // A value is usable at element `at` when it was assigned in an earlier element and, if in a && chain, `at` is in
+  // that chain too.
+  const usable = (v, at) => v && v.index < at && (!v.chain || (elements[at] &&
+    elements[at].list === elements[v.index].list && elements[at].allAnd));
+  // B=$A/x or B="${A}y": a value built from variables this pass already resolved, substituted here. The result is
+  // never parsed again, so a value that reads like an assignment or an operator stays text (X=S; $X=/tmp/x does
+  // not bind S). Null when a part is not resolved, or the value outgrows maxLength (B=$A$A$A grows geometrically).
+  let over = false;
+  const chainValue = (value, at) => {
+    if (!LITERAL.test(value.replace(USE, ''))) return null;
+    let out = '';
+    let last = 0;
+    for (const m of value.matchAll(USE)) {
+      const v = values.get(m[1] || m[2]);
+      if (!usable(v, at)) return null;
+      out += value.slice(last, m.index) + v.value;
+      last = m.index + m[0].length;
+      if (out.length > maxLength) {
+        over = true;
+        return null;
+      }
+    }
+    return out + value.slice(last);
+  };
   elements.forEach((e, index) => {
     const opAfter = index + 1 < elements.length ? elements[index + 1].opBefore : '';
-    if (!e.top || e.opBefore === '|' || e.opBefore === '||' || opAfter === '|' || background.has(e.list)) return;
+    if (over || !e.top || e.opBefore === '|' || e.opBefore === '||' || opAfter === '|' || background.has(e.list)) return;
     if (e.opBefore === '&&' && !e.allAnd) return;
     const text = command.slice(e.start, e.end).trim().replace(/^export\s+/, '');
     const found = [];
@@ -602,10 +704,13 @@ function resolveAssignedVariables(command) {
       ASSIGNMENT.lastIndex = pos;
       const m = ASSIGNMENT.exec(text);
       if (!m) return;
-      const value = m[2] ?? m[3] ?? m[4];
-      const tilde = m[4] !== undefined && /^~(\/|$)/.test(value) && !bound.has('HOME');
-      if (!LITERAL.test(value) || (value.includes('~') && !tilde)) return;
-      found.push([m[1], tilde ? HOME + value.slice(1) : value]);
+      const raw = m[2] ?? m[3] ?? m[4];
+      const tilde = m[4] !== undefined && /^~(\/|$)/.test(raw) && !bound.has('HOME');
+      if (raw.includes('~') && !tilde) return;
+      // Single quotes keep a $ as text: only a double-quoted or bare value can be a chain.
+      const value = m[2] === undefined ? chainValue(tilde ? HOME + raw.slice(1) : raw, index) : raw;
+      if (value === null || !LITERAL.test(value)) return;
+      found.push([m[1], value]);
       pos = m.index + m[0].length;
       while (/\s/.test(text[pos] || '')) pos += 1;
     }
@@ -613,18 +718,19 @@ function resolveAssignedVariables(command) {
       if (bound.get(name) === 1 && !SHELL_MANAGED.has(name)) values.set(name, { value, index, chain: e.opBefore === '&&' });
     }
   });
+  if (over) return null;
 
   let out = '';
   let last = 0;
   for (const u of uses.sort((a, b) => a.start - b.start)) {
     const v = values.get(u.name);
-    if (!v || u.el <= v.index) continue;
-    const at = elements[u.el];
-    if (v.chain && (!at || at.list !== elements[v.index].list || !at.allAnd)) continue;
+    if (!usable(v, u.el)) continue;
     out += command.slice(last, u.start) + v.value;
     last = u.end;
+    if (out.length > maxLength) return null;
   }
-  return out + command.slice(last);
+  out += command.slice(last);
+  return out.length > maxLength ? null : out;
 }
 
 function expandVars(word, vars) {
@@ -634,14 +740,21 @@ function expandVars(word, vars) {
   });
 }
 
-/** internal | catastrophic | other | unresolved. A glob is judged by its fixed prefix and the folder it lists. */
-// A target cut from inside an interpreter's string (os.system('rm -rf /')) keeps the closing quote: drop it.
-const targetPath = (word, vars) => expandVars(word, vars).replace(/[)'"`\]}]+$/, '');
+/**
+ * A target cut from inside an interpreter's string (os.system('rm -rf /')) keeps the closing quote: drop it. Not in a
+ * word with a {: bash expands ~/dev{,/__pycache__} or {a,/} into several words, so the } stays and the word is
+ * judged unresolved (the guard does not expand braces).
+ */
+const targetPath = (word, vars) => {
+  const p = expandVars(word, vars);
+  return p.includes('{') ? p : p.replace(/[)'"`\]}]+$/, '');
+};
 
+/** internal | catastrophic | other | unresolved. A glob is judged by its fixed prefix and the folder it lists. */
 function classifyTarget(word, vars, cwd) {
   let p = targetPath(word, vars);
   if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
-  if (/[$`]/.test(p) || p.startsWith('~') || (cwd === null && !p.startsWith('/'))) return 'unresolved';
+  if (/[$`{]/.test(p) || p.startsWith('~') || (cwd === null && !p.startsWith('/'))) return 'unresolved';
   const glob = p.search(/[*?[]/);
   if (glob === -1) {
     const abs = toAbs(p, cwd);
@@ -660,10 +773,10 @@ const RANK = { none: 0, internal: 1, ask: 2, deny: 3 };
  * .tox are not here: rebuilding them is slow and can pull different versions. */
 const CACHE_DIRS = new Set(['__pycache__', '.pytest_cache', '.hypothesis', '.mypy_cache', '.ruff_cache']);
 
-/** A target whose last part is a cache folder (or node_modules/.cache). Unresolved, a trailing / or .. : not one. */
+/** A target whose last part is a cache folder (or node_modules/.cache). Unresolved, a brace, a trailing / or .. : not one. */
 function isCacheDir(word, vars) {
   const p = targetPath(word, vars);
-  if (/[$`]/.test(p) || p.endsWith('/')) return false;
+  if (/[$`{]/.test(p) || p.endsWith('/')) return false;
   const parts = p.split('/');
   const last = parts[parts.length - 1];
   return CACHE_DIRS.has(last) || (last === '.cache' && parts[parts.length - 2] === 'node_modules');
@@ -686,6 +799,42 @@ function judgeTargets(targets, wide, vars, cwd) {
   return worst;
 }
 
+/** Folders of the system, not of a project: a recursive chmod under one asks even when it only adds owner bits. */
+const SYSTEM_DIRS = ['/etc', '/usr', '/bin', '/sbin', '/lib', '/lib32', '/lib64', '/libx32', '/var', '/opt', '/boot',
+  '/root', '/srv', '/snap', '/proc', '/sys', '/dev', '/System', '/Library', '/Applications', '/private/etc',
+  '/private/var'];
+const underSystemDir = (abs) => SYSTEM_DIRS.some((d) => abs === d || abs.startsWith(`${d}/`));
+/** A mode that only adds owner permissions (u+rwx, u+w,u+X): it takes nothing away and opens nothing to others. */
+const OWNER_ADD = /^u\+[rwxX]+(?:,u\+[rwxX]+)*$/;
+const CHMOD_R_ALL = new RegExp(CHMOD_R.source, 'g');
+
+/** A chmod target that needs approval: unresolved, catastrophic, or in a system folder (a glob: its fixed part). */
+function chmodTargetRisky(word, vars, cwd) {
+  const kind = classifyTarget(word, vars, cwd);
+  if (kind !== 'other') return kind !== 'internal';
+  let p = targetPath(word, vars);
+  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
+  const glob = p.search(/[*?[]/);
+  return underSystemDir(toAbs(glob === -1 ? p : p.slice(0, glob) || '.', cwd));
+}
+
+/**
+ * Whether some `chmod -R` in the text needs approval. Only `chmod -R <owner-add mode> <targets>` does not, and only
+ * when no target is unresolved (a variable, a brace word, a relative path after a cd), the root, a home folder,
+ * another catastrophic folder or a system folder, no other option follows (--reference copies another file's mode),
+ * and nothing on the line runs it as another user (sudo, doas, su). `cwd` is null when the folder is not known.
+ */
+function riskyChmod(text, { cwd = null, vars = { HOME } } = {}) {
+  const asUser = /\b(?:sudo|doas|su|pkexec|run0)\b/.test(text);
+  for (const m of text.matchAll(CHMOD_R_ALL)) {
+    if (asUser) return true;
+    const [mode, ...targets] = tokenize(splitSegments(text.slice(m.index + m[0].length), null, 1)[0] || '');
+    if (!OWNER_ADD.test(mode || '') || !targets.length) return true;
+    if (targets.some((t) => t.startsWith('-') || chmodTargetRisky(t, vars, cwd))) return true;
+  }
+  return false;
+}
+
 const RM_COMMANDS = new Set(['rm', 'rmdir', 'unlink']);
 /** Commands that run the code they are given (a string, a heredoc): a delete inside it is real. */
 const EXECUTORS = /^(bash|sh|zsh|ksh|dash|fish|eval|ssh|su|doas|timeout|watch|parallel|nsenter|docker|podman|kubectl|python[\d.]*|node|deno|bun|ruby|perl|php|osascript)$/;
@@ -693,14 +842,6 @@ const EXECUTORS = /^(bash|sh|zsh|ksh|dash|fish|eval|ssh|su|doas|timeout|watch|pa
 const SQL_CLIENTS = /^(snowsql|psql|mysql|mariadb|sqlite3|duckdb|bq|sqlcmd|clickhouse|clickhouse-client|trino|presto|beeline|spark-sql|cockroach|mongosh|mongo|redis-cli|cqlsh)$/;
 /** A command that runs text it is given: a shell, an interpreter, a container or remote runner, xargs, a database. */
 const runsGivenText = (cmd) => EXECUTORS.test(cmd) || SQL_CLIENTS.test(cmd) || cmd === 'xargs';
-/** A database client named anywhere on the line: SQL text in a file or heredoc on that line may reach a database. */
-const SQL_RUNNERS = new RegExp(`\\b(?:${SQL_CLIENTS.source.slice(2, -2)})\\b|\\b(?:dolt|snow|sf)\\s+sql\\b`);
-/** Python (or other) source that talks to a database or starts a process, so SQL text in it may run. */
-const DB_CALL = new RegExp([
-  String.raw`\b(?:execute\w*|exec_driver_sql|read_sql\w*|cursor|connect|query|sql|run_query)\s*\(`,
-  String.raw`\b(?:sqlite3|psycopg2?|pymysql|MySQLdb|mysql|snowflake|duckdb|sqlalchemy|pyodbc|asyncpg|aiosqlite|cx_Oracle|oracledb|bigquery|clickhouse\w*|trino|databricks|pyspark|pymongo|redis|cassandra|peewee|django|subprocess|psql)\b`,
-  String.raw`\bos\.(?:system|popen|exec\w*|spawn\w*)\b|\bPopen\b`,
-].join('|'));
 
 /** Git subcommands whose quoted arguments are a message, never run. */
 const MESSAGE_GIT = new Set(['commit', 'tag', 'notes', 'stash', 'merge']);
@@ -835,42 +976,53 @@ function rmCall(words, start, vars, dir) {
 
 const FIND_EXEC = ['-exec', '-execdir', '-ok', '-okdir'];
 
-/** The folders a find searches: the words before its first test. */
-function findRoots(words, start) {
+/**
+ * The folders a find searches (the words before its first test, after -H, -L, -P, -D and -O, which come first:
+ * `find -L / …` searches /) and where its expression starts.
+ */
+function findParts(words, start) {
+  let k = start + 1;
+  while (k < words.length && (/^-(?:[HLP]+|O\d*)$/.test(words[k]) || words[k] === '-D')) k += words[k] === '-D' ? 2 : 1;
   const roots = [];
-  for (const w of words.slice(start + 1)) {
-    if (w.startsWith('-') || w === '(' || w === '!') break;
-    roots.push(w);
-  }
-  return roots.length ? roots : ['.'];
+  for (; k < words.length && !words[k].startsWith('-') && words[k] !== '(' && words[k] !== '!'; k += 1) roots.push(words[k]);
+  return { roots: roots.length ? roots : ['.'], expr: k };
 }
 
+/** find tests that take one argument and only narrow what an implicit AND matches. */
+const FIND_NARROWING = new Set(['-type', '-xtype', '-path', '-ipath', '-wholename', '-iwholename', '-iname', '-maxdepth',
+  '-mindepth']);
+/** find words with no argument that neither widen the match nor write a file. */
+const FIND_PLAIN = new Set(['-prune', '-depth', '-xdev', '-mount', '-print', '-print0', '-quit']);
+
 /**
- * A find that can only reach cache folders (CACHE_DIRS): no !, -not, -o, -or, comma or parentheses (only implicit
- * AND), at least one -name, every -name a cache folder, and each delete (-delete, or -exec rm with {} as its only
- * target) after a -name. With `printsOnly`, nothing but tests, -prune, -print and -print0, so what it prints for a
- * pipe is the matched paths.
+ * A find expression that can only reach cache folders (CACHE_DIRS). An allowlist: every word is a -name of a cache
+ * folder, a narrowing test, a plain word, or (unless `printsOnly`) a delete after a -name: -delete, or -exec rm with
+ * {} as its only target. Anything else (-o, !, parentheses, a comma, -fprint, -newer …) is not only caches.
  */
-function onlyFindsCaches(words, start, printsOnly = false) {
+function onlyFindsCaches(words, expr, printsOnly = false) {
   let names = 0;
-  for (let k = start + 1; k < words.length; k += 1) {
+  for (let k = expr; k < words.length; k += 1) {
     const w = words[k];
-    if (['!', '-not', '-o', '-or', ',', '(', ')'].includes(w)) return false;
     if (w === '-name') {
       if (!CACHE_DIRS.has(words[k + 1])) return false;
       names += 1;
       k += 1;
-    } else if (w === '-delete') {
-      if (printsOnly || !names) return false;
-    } else if (FIND_EXEC.includes(w)) {
+    } else if (FIND_NARROWING.has(w)) {
+      if (k + 1 >= words.length) return false;
+      k += 1;
+    } else if (FIND_PLAIN.has(w)) {
+      // matches nothing more, writes nothing
+    } else if (w === '-delete' && !printsOnly && names) {
+      // deletes what the -name before it matched
+    } else if (FIND_EXEC.includes(w) && !printsOnly && names) {
       let end = k + 1;
       while (end < words.length && words[end] !== ';' && words[end] !== '+') end += 1;
       const run = words.slice(k + 1, end);
-      if (printsOnly || !RM_COMMANDS.has(path.basename(run[0] || ''))) return false;
+      if (!RM_COMMANDS.has(path.basename(run[0] || ''))) return false;
       const args = run.slice(1).filter((a) => !/^-[a-zA-Z]+$/.test(a) && a !== '--');
-      if (!names || args.length !== 1 || args[0] !== '{}') return false;
+      if (args.length !== 1 || args[0] !== '{}') return false;
       k = end;
-    } else if (printsOnly && /^-(f?print|fls|ls|printf|fprintf)/.test(w) && !['-print', '-print0'].includes(w)) {
+    } else {
       return false;
     }
   }
@@ -880,13 +1032,29 @@ function onlyFindsCaches(words, start, printsOnly = false) {
 /** Roots a cache-only find may search: resolved, and not a catastrophic folder (those keep their deny). */
 const cacheRootsOk = (roots, vars, dir) => roots.every((r) => ['internal', 'other'].includes(classifyTarget(r, vars, dir)));
 
+/**
+ * xargs options (before its command) that split its input on NUL only: -0 or --null, plus options that change
+ * nothing about which words reach the command. -d, -a, -I, -E and anything else return false.
+ */
+function xargsSplitsOnNul(options) {
+  let nul = false;
+  for (let k = 0; k < options.length; k += 1) {
+    const o = options[k];
+    if (o === '--null' || /^-[0rt]+$/.test(o)) nul = nul || o === '--null' || o.includes('0');
+    else if (o === '--no-run-if-empty' || o === '--verbose' || /^-[nP]\d+$/.test(o)) continue;
+    else if ((o === '-n' || o === '-P') && /^\d+$/.test(options[k + 1] || '')) k += 1;
+    else return false;
+  }
+  return nul;
+}
+
 /** find … -delete, or find … -exec rm …: everything under the folders it searches. */
 function findDeletes(words, start, vars, dir) {
   const deletes = words.includes('-delete') || words.some(
     (w, k) => FIND_EXEC.includes(w) && RM_COMMANDS.has(path.basename(words[k + 1] || '')));
   if (!deletes) return null;
-  const roots = findRoots(words, start);
-  if (onlyFindsCaches(words, start) && cacheRootsOk(roots, vars, dir)) return null;
+  const { roots, expr } = findParts(words, start);
+  if (onlyFindsCaches(words, expr) && cacheRootsOk(roots, vars, dir)) return null;
   return judgeTargets(roots, true, vars, dir);
 }
 
@@ -896,7 +1064,7 @@ function codeDeletes(code, vars, dir) {
   const rm = /(^|[\s;&|("'`])(rm|rmdir|unlink)(?=\s)/g;
   let m;
   while ((m = rm.exec(code))) {
-    const words = tokenize(splitSegments(code.slice(m.index + m[0].length))[0] || '');
+    const words = tokenize(splitSegments(code.slice(m.index + m[0].length), null, 1)[0] || '');
     // A cd inside the code moves where a relative target points, and the guard cannot follow it.
     const here = /\b(cd|pushd)\b/.test(code.slice(0, m.index)) ? null : dir;
     found.push(rmCall(['rm', ...words], 0, vars, here));
@@ -920,40 +1088,41 @@ function codeDeletes(code, vars, dir) {
 /**
  * Deletes, judged by target. Only where something runs them: an rm, rmdir or unlink command, xargs rm, find -delete
  * or -exec rm, code given to an interpreter, or a heredoc that is run. An rm inside echo text, a grep pattern or a
- * commit message is not a delete.
+ * commit message is not a delete. `vars` are known in this shell; code run by another program gets `codeVars`.
  */
-function deleteVerdict(shell, code, vars, cwd, pwdBound = false) {
+function deleteVerdict(shell, code, vars, cwd, codeVars = vars) {
   const found = [];
   let dir = cwd;
   const ops = [];
   const segments = splitSegments(shell, ops);
-  let prev = { words: [], i: 0, cmd: '', vars };
+  let prev = { words: [], i: 0, cmd: '' };
   segments.forEach((segment, n) => {
     const words = tokenize(segment);
     const i = commandIndex(words);
     const cmd = i < words.length ? path.basename(words[i]) : '';
-    // $PWD is the folder the guard tracks for relative paths, unless the line assigns PWD itself.
-    const here = dir !== null && !pwdBound ? { ...vars, PWD: dir } : vars;
     if (cmd === 'cd' || cmd === 'pushd') {
-      dir = nextDir(words[i + 1], here, dir);
+      dir = nextDir(words[i + 1], vars, dir);
     } else if (RM_COMMANDS.has(cmd)) {
-      found.push(rmCall(words, i, here, dir));
+      found.push(rmCall(words, i, vars, dir));
     } else if (cmd === 'xargs') {
       const r = words.findIndex((w, k) => k > i && RM_COMMANDS.has(path.basename(w)));
-      // `find … -name __pycache__ | xargs rm -rf`: the only targets are what a cache-only find prints.
-      const fromCacheFind = r !== -1 && n > 0 && ops[n - 1] === '|' && prev.cmd === 'find' &&
-        onlyFindsCaches(prev.words, prev.i, true) && cacheRootsOk(findRoots(prev.words, prev.i), prev.vars, dir) &&
-        !words.slice(i + 1, r).some((w) => /^-[A-Za-z0-9]*a/.test(w) || w.startsWith('--arg-file')) &&
-        words.slice(r + 1).every((w) => w.startsWith('-'));
-      if (r !== -1 && !fromCacheFind) found.push(rmCall(words, r, here, dir));
+      // `find … -name __pycache__ -print0 | xargs -0 rm -rf`: the only targets are the paths a cache-only find
+      // matched. Newline-separated output is split on blanks and quotes too, so it needs -print0 and -0.
+      const finder = prev.cmd === 'find' ? findParts(prev.words, prev.i) : null;
+      const fromCacheFind = r !== -1 && n > 0 && ops[n - 1] === '|' && finder &&
+        onlyFindsCaches(prev.words, finder.expr, true) && cacheRootsOk(finder.roots, vars, dir) &&
+        prev.words.slice(finder.expr).includes('-print0') && !prev.words.slice(finder.expr).includes('-print') &&
+        xargsSplitsOnNul(words.slice(i + 1, r)) &&
+        words.slice(r + 1).every((w) => /^-[A-Za-z]+$/.test(w) || ['--recursive', '--force', '--verbose'].includes(w));
+      if (r !== -1 && !fromCacheFind) found.push(rmCall(words, r, vars, dir));
     } else if (cmd === 'find') {
-      found.push(findDeletes(words, i, here, dir));
+      found.push(findDeletes(words, i, vars, dir));
     } else if (EXECUTORS.test(cmd)) {
-      found.push(...codeDeletes(segment, vars, dir));
+      found.push(...codeDeletes(segment, codeVars, dir));
     }
-    prev = { words, i, cmd, vars: here };
+    prev = { words, i, cmd };
   });
-  for (const body of code) found.push(...codeDeletes(body, vars, dir));
+  for (const body of code) found.push(...codeDeletes(body, codeVars, dir));
   return worstOf(found);
 }
 
@@ -964,19 +1133,31 @@ function deleteVerdict(shell, code, vars, cwd, pwdBound = false) {
  * database client, or a heredoc fed to one), any quoted text or heredoc on the line may reach it, so the whole line
  * is scanned as code and no safe signal excuses any part of it. Otherwise each simple command is scanned on its own:
  * a commit message or an echoed line is only text, and a dry run excuses only its own command.
- *
- * One exception to the whole-line scan: SQL in a heredoc written to a file (cat, tee) or in the source of a
- * `python3 - <<'EOF'` program is text, unless the line names a database client or the body calls a database or a
- * subprocess (SQL_RUNNERS, DB_CALL). It is still scanned for every other rule.
  */
 function decideShell(rawCommand, cwd) {
   if (!rawCommand.trim()) return null;
   const bound = bindings(withoutHeredocBodies(rawCommand));
+  let hidden = hidesAssignments(rawCommand);
   let command = rawCommand;
-  for (let k = 0, prev = null; k < 8 && command !== prev; k += 1) [prev, command] = [command, resolveAssignedVariables(command)];
-  // HOME and PWD are known unless the line rebinds them, or IFS (which would split their values differently).
+  // One pass resolves a whole chain (B=$A/x). A chain that grows the text past the budget (B=$A$A$A…, geometric) is
+  // not resolved at all, so it asks instead of exhausting memory (adversarial review, 2026-11-18). A resolved line
+  // that now hides assignments (X=eval; $X "S=…") is judged unresolved too.
+  const budget = Math.min(RESOLVE_MAX_LENGTH, Math.max(8 * rawCommand.length, RESOLVE_MIN_BUDGET));
+  if (!hidden) {
+    const next = resolveAssignedVariables(rawCommand, budget);
+    if (next !== null && hidesAssignments(next)) hidden = true;
+    else if (next !== null) command = next;
+  }
+  // HOME is known unless the line rebinds it or IFS (which would split it differently). Kept on a `hidden` line, so
+  // `eval "rm -rf ~"` is still denied.
   const ifs = changesIfs(rawCommand);
   const vars = bound.has('HOME') || ifs ? {} : { HOME };
+  // $PWD is the working directory only on a line that cannot change folder: a cd that fails, one in a subshell, or
+  // pushd then popd leaves $PWD elsewhere than a tracked folder would say. Code run by another program never gets it.
+  const changesDir = /\b(?:cd|pushd|popd)\b/.test(`${rawCommand}\n${command}`) || hidden;
+  const shellVars = changesDir || ifs || bound.has('PWD') ? vars : { ...vars, PWD: cwd };
+  // A recursive chmod's relative targets are judged against cwd only when nothing on the line changes folder.
+  const where = { cwd: changesDir ? null : cwd, vars };
   const parsed = parseHeredocs(command);
   const { code, data } = parsed;
   // Each substitution runs where it appears, not after the line's last cd: the cd to an unknown folder in front of
@@ -986,12 +1167,11 @@ function decideShell(rawCommand, cwd) {
   const segments = splitSegments(shell);
   const runsText = code.length > 0 || segments.some((s) => runsGivenText(commandWord(tokenize(s))));
   const executed = runsText ? [...code, ...data] : [];
-  const sqlText = new Set(SQL_RUNNERS.test(command) ? [] : [...data, ...parsed.python].filter((b) => !DB_CALL.test(b)));
-  const text = [shell, ...executed.filter((b) => !sqlText.has(b))].join('\n');
+  const text = [shell, ...executed].join('\n');
   if (!executed.length && segments.length && segments.every(isReadOnly) && !SYSTEM_OVERWRITE.test(shell)) {
     return null;
   }
-  const deletion = deleteVerdict(shell, executed, vars, cwd, bound.has('PWD') || ifs);
+  const deletion = deleteVerdict(shell, executed, shellVars, cwd, vars);
   if (deletion.level === 'deny') {
     return {
       decision: 'deny',
@@ -1007,9 +1187,8 @@ function decideShell(rawCommand, cwd) {
         'lines, including the shell that runs it. Kill a PID or process group you recorded instead.' }
     : null;
   const scanned = worstVerdict([selfKill, runsText
-    ? worstVerdict([scanPatterns(text, { strict: true }),
-      scanPatterns(executed.filter((b) => sqlText.has(b)).join('\n'), { strict: true, skipSql: true })])
-    : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s)))]);
+    ? scanPatterns(text, { strict: true, ...where })
+    : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s, where)))]);
   if (scanned) return scanned;
   if (deletion.level === 'ask') {
     return {
@@ -1059,18 +1238,19 @@ function decide(toolName, toolInput, cwd = process.cwd()) {
 
 /**
  * DENY and ASK patterns over one simple command or one SQL statement (deletes excluded: see deleteVerdict). With
- * `strict`, the text can be run by something on the same line, so no safe signal excuses it.
+ * `strict`, the text can be run by something on the same line, so no safe signal excuses it. `cwd` (null when unknown)
+ * and `vars` are where a recursive chmod's targets are judged (riskyChmod).
  */
-function scanPatterns(text, { strict = false, skipSql = false } = {}) {
+function scanPatterns(text, { strict = false, cwd = null, vars = { HOME } } = {}) {
   if (!text.trim()) return null;
-  const rules = (list) => (skipSql ? list.filter(([re]) => !SQL_RULES.has(re)) : list);
+  const matches = (re) => (re === CHMOD_R ? CHMOD_R.test(text) && riskyChmod(text, { cwd, vars }) : re.test(text));
 
-  const hasDestructiveVerb = SYSTEM_OVERWRITE.test(text) || [...rules(DENY), ...rules(ASK)].some(([re]) => re.test(text));
+  const hasDestructiveVerb = SYSTEM_OVERWRITE.test(text) || [...DENY, ...ASK].some(([re]) => matches(re));
   if (!hasDestructiveVerb) return null;
   const looksSafe = !strict && SAFE_SIGNALS.some((re) => re.test(text));
 
-  for (const [re, why] of rules(DENY)) {
-    if (re.test(text)) {
+  for (const [re, why] of DENY) {
+    if (matches(re)) {
       return {
         decision: 'deny',
         reason:
@@ -1085,8 +1265,8 @@ function scanPatterns(text, { strict = false, skipSql = false } = {}) {
   const asks = SYSTEM_OVERWRITE.test(text) ? [[SYSTEM_OVERWRITE, 'overwriting a system path']] : [];
   if (looksSafe && !asks.length) return null; // e.g. `terraform plan`, `--dry-run`; never a write to a system path
 
-  for (const [re, why] of [...asks, ...rules(ASK)]) {
-    if (re.test(text)) {
+  for (const [re, why] of [...asks, ...ASK]) {
+    if (matches(re)) {
       return {
         decision: 'ask',
         reason:

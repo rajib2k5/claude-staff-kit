@@ -551,12 +551,19 @@ for (const [command, why] of unresolvedVariables) {
   });
 }
 
-test('$PWD is the folder the guard already tracks for relative paths', () => {
+test('$PWD is the working directory only on a line that never changes folder', () => {
   assert.equal(verdict(bash('rm -rf "$PWD/egv2"', LINUX_SCRATCH)), 'allow');
   assert.equal(verdict(bash('rm -rf "$PWD/build"', REPO)), 'ask');
   assert.equal(verdict(bash(`cd ${REPO} && rm -rf $PWD/build`, LINUX_SCRATCH)), 'ask');
-  assert.equal(verdict(bash(`cd ${LINUX_SCRATCH} && rm -rf $PWD/x`, REPO)), 'allow');
   assert.equal(verdict(bash(`PWD=${LINUX_SCRATCH}; cd ${REPO}; rm -rf $PWD/x`, REPO)), 'ask');
+  // A cd that fails, one in a subshell, or pushd then popd leaves $PWD where it was: any cd on the line, it asks.
+  assert.equal(verdict(bash(`cd ${LINUX_SCRATCH} && rm -rf $PWD/x`, REPO)), 'ask');
+  assert.equal(verdict(bash('cd /tmp/claude-1000/nonexistent; rm -rf "$PWD"/*', REPO)), 'ask');
+  assert.equal(verdict(bash(`(cd ${LINUX_SCRATCH}); rm -rf "$PWD"`, REPO)), 'ask');
+  assert.equal(verdict(bash(`pushd ${LINUX_SCRATCH}; popd; rm -rf "$PWD"`, REPO)), 'ask');
+  // A line that sets PWD itself, or runs a cd only once its variables are resolved.
+  assert.equal(verdict(bash(`PWD=${REPO}; rm -rf "$PWD/x"`, LINUX_SCRATCH)), 'ask');
+  assert.equal(verdict(bash('X=c; Y=${X}d; $Y /; rm -rf "$PWD/x"', LINUX_SCRATCH)), 'ask');
 });
 
 // Regenerable caches, named exactly, need no approval; anything that could be more still asks.
@@ -571,8 +578,8 @@ const cacheDeletes = [
   "find src tests -name '__pycache__' -type d -exec rm -rf {} \\;",
   'find . -name .pytest_cache -exec rm -rf {} + && find . -name __pycache__ -exec rm -rf {} +',
   'find . -name __pycache__ -print0 | xargs -0 rm -rf',
-  'find . -name .mypy_cache | xargs rm -rf',
   'find . -name __pycache__ -print0 2>&1 | xargs -0 rm -rf',
+  'find . -name .mypy_cache -print0 | xargs --null -r rm -rf',
 ];
 for (const command of cacheDeletes) {
   test(`a regenerable cache is not the user's data: ${command}`, () => {
@@ -605,6 +612,29 @@ const notOnlyCaches = [
   'find . -name __pycache__ | xargs -a list.txt rm -rf',
   'cat list.txt | xargs rm -rf',
   'echo src -name __pycache__ | xargs rm -rf',
+  // Newline-separated names split on blanks and quotes (a/__pycache__ x/__pycache__ can be read as a, x/...): only
+  // -print0 into xargs -0 hands rm exactly the paths find matched.
+  'find . -name .mypy_cache | xargs rm -rf',
+  `find ${REPO} -name __pycache__ | xargs rm -rf`,
+  'find . -name __pycache__ -print0 | xargs rm -rf',
+  'find . -name __pycache__ | xargs -0 rm -rf',
+  'find . -name __pycache__ -print -print0 | xargs -0 rm -rf',
+  'find . -name __pycache__ -print0 | xargs -0 -d / rm -rf',
+  'find . -name __pycache__ -print0 | xargs -0 rm -rf ~/dev',
+  // A find that writes a file is not only deleting caches.
+  `find . -name __pycache__ -fprint ${REPO}/notes.md -delete`,
+  `find . -name __pycache__ -fprintf ${REPO}/.bashrc x -exec rm -rf {} +`,
+  'find . -name __pycache__ -exec rm -rf {} + -fls x',
+  'find . -name __pycache__ -fprint0 x -delete',
+  // -o, or anything else that is not a plain test, widens what the delete reaches.
+  'find . -name __pycache__ -o -path ./src -exec rm -rf {} +',
+  'find . -name __pycache__ -newer x -o -delete',
+  // Brace expansion makes more than one target out of one word.
+  'rm -rf ~/dev{,/__pycache__}',
+  'rm -rf $HOME{,/__pycache__}',
+  'rm -rf {src,tests/__pycache__}',
+  'rm -rf "src"{,/__pycache__}',
+  'find {.,src} -name __pycache__ -delete',
 ];
 for (const command of notOnlyCaches) {
   test(`a delete that is not only caches still asks: ${command}`, () => {
@@ -613,9 +643,25 @@ for (const command of notOnlyCaches) {
 }
 test('a cache under a catastrophic root is still denied', () => {
   assert.equal(verdict(bash('find / -name __pycache__ -exec rm -rf {} +')), 'deny');
+  // -L, -H and -P come before the folders a find searches: / is still the root here.
+  assert.equal(verdict(bash('find -L / -name __pycache__ -exec rm -rf {} +')), 'deny');
 });
 
-const ownerChmod = ['chmod -R u+rwx build', 'chmod -R u+w,u+x out', 'chmod -R u+r data', `chmod -R u+rwx ${LINUX_SCRATCH}/x`];
+test('a brace word is never judged internal: it can expand to a folder outside the scratchpad', () => {
+  assert.equal(verdict(bash('rm -rf /tmp/claude-1000/{x,../../etc}')), 'ask');
+  assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/{a,../../../../../etc}`)), 'ask');
+  assert.equal(verdict(bash(`rm -rf {a,${REPO}}`, LINUX_SCRATCH)), 'ask');
+  assert.equal(verdict(bash('rm -rf {a,/}', LINUX_SCRATCH)), 'ask');
+});
+
+test("the temp root is claude-<uid>: another claude-* folder in /tmp is not Claude's", () => {
+  assert.equal(verdict(bash('rm -rf /tmp/claude-evil/x')), 'ask');
+  assert.equal(verdict(bash('rm -rf /tmp/claude-backups/important')), 'ask');
+  assert.equal(verdict(bash('rm -rf /tmp/claude-1000x/a')), 'ask');
+});
+
+const ownerChmod = ['chmod -R u+rwx build', 'chmod -R u+w,u+x out', 'chmod -R u+r data', `chmod -R u+rwx ${LINUX_SCRATCH}/x`,
+  'chmod -R u+X build', 'chmod -R u+x src/*', `chmod -R u+rwx ${REPO}/bin 2>/dev/null`];
 for (const command of ownerChmod) {
   test(`chmod -R that only adds owner bits does not ask: ${command}`, () => {
     assert.equal(verdict(bash(command)), 'allow', command);
@@ -623,7 +669,13 @@ for (const command of ownerChmod) {
 }
 const otherChmod = ['chmod -R 700 x', 'chmod -R 0755 x', 'chmod -R u-w x', 'chmod -R u=rwx x', 'chmod -R go+r x',
   'chmod -R a+x x', 'chmod -R +x x', 'chmod -R u+rwx,g+w x', 'chmod -R ug+rwx x', 'chmod -R u+rwx x && chmod -R 777 y',
-  'chown -R me x', 'chgrp -R staff x'];
+  'chown -R me x', 'chgrp -R staff x',
+  // Owner-add modes, but on a folder that is not a project's, by another user, or not only owner-add.
+  'chmod -R u+rwx /', 'chmod -R u+rwx ~', 'chmod -R u+rwx $HOME', 'chmod -R u+w /etc', 'chmod -R u+w /usr/local/lib',
+  'chmod -R u+x ~/*', 'chmod -R u+x /*', 'chmod -R u+x {src,/etc}', 'chmod -R u+x $DIR', 'sudo chmod -R u+rwx src',
+  'chmod -R u+w --reference=x src', 'chmod -R u+x -- -R 777 ~', 'chmod -R u+s ~/bin', 'chmod -R u+t src',
+  'bash -c "chmod -R u+rwx /"', 'cd / && chmod -R u+rwx etc', '/bin/chmod -R u+rwx /',
+  'find . -type d | xargs chmod -R u+x'];
 for (const command of otherChmod) {
   test(`any other recursive permission change asks: ${command}`, () => {
     assert.equal(verdict(bash(command)), 'ask', command);
@@ -638,23 +690,19 @@ test('redirections are not delete targets, and a redirect before the command doe
   assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/x 2>${REPO}/err.log`)), 'allow');
   assert.equal(verdict(bash('git push origin main 2>&1 | tail -1')), 'allow');
   assert.equal(verdict(bash('git push --force origin main 2>&1')), 'deny');
+  // >| writes even with noclobber set, and its | is not a pipe.
+  assert.equal(verdict(bash('echo x >| /etc/hosts')), 'ask');
+  assert.equal(verdict(bash('echo x 2>| /etc/hosts')), 'ask');
 });
 
-// SQL text in a file being written, or in a Python program's own source, runs nothing.
-const inertSql = [
-  `cat > ${REPO}/tests/test_sql.py <<'EOF'\nassert "DROP TABLE x" in refused\nEOF\npython3 -m pytest -q tests/test_sql.py`,
-  `cd ${REPO}; cat > SKILL.md <<'EOF'\nTo undo a run, DROP SCHEMA on the sandbox.\nEOF\npython3 scripts/check.py`,
-  `python3 - <<'EOF'\np = 'a.md'\ns = open(p).read().replace('x', 'DROP TABLE t needs approval')\nopen(p, 'w').write(s)\nEOF`,
-  `cd ${REPO} && python3 - <<'EOF'\n# append the torn tail, then truncate the file to its last newline\nEOF`,
-  `python3 - <<'EOF'\nnote = "DROP TABLE asks first in the guard"\nEOF`,
-  `tee notes.md <<'EOF'\nDELETE FROM visitors\nEOF\nnode x.js`,
-];
-for (const command of inertSql) {
-  test(`SQL text that nothing runs: ${command.split('\n')[0].slice(0, 70)}`, () => {
-    assert.equal(verdict(bash(command)), 'allow', command);
-  });
-}
+// SQL in a heredoc on a line that runs anything is judged as code: the guard cannot know which program reads the file
+// (2026-11-18 review: an exemption keyed on a list of SQL clients let `python3 run_sql.py f.sql` drop a table).
 const runSql = [
+  [`cat > f.sql <<EOF\nDROP TABLE t;\nEOF\npython3 run_sql.py f.sql`, 'ask'],
+  [`cat > f.sql <<'EOF'\nTRUNCATE TABLE orders;\nEOF\npython3 -m app.db.apply f.sql`, 'ask'],
+  [`cat > f.sql <<'EOF'\nDROP TABLE users;\nEOF\nbash apply.sh f.sql`, 'ask'],
+  [`python3 - <<'EOF'\nQ = "DROP TABLE users"\nEOF`, 'ask'],
+  [`python3 - <<'EOF'\nimport pty\npty.spawn(["snow", "sql", "-q", "TRUNCATE TABLE users"])\nEOF`, 'ask'],
   [`python3 - <<'EOF'\ncur.execute("DROP TABLE t")\nEOF`, 'ask'],
   [`python3 - <<'EOF'\nimport sqlite3\nsqlite3.connect('x.db').executescript('DROP TABLE t')\nEOF`, 'ask'],
   [`python3 - <<'EOF'\nimport subprocess\nsubprocess.run(['psql', '-c', 'DROP TABLE t'])\nEOF`, 'ask'],
@@ -672,7 +720,6 @@ const runSql = [
   [`mytool <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
   [`uv run python - <<'EOF'\nDROP_NOTE = "DROP TABLE t"\nEOF`, 'ask'],
   [`python3 - <<'EOF'\nimport shutil\nshutil.rmtree('/')\nEOF`, 'deny'],
-  // Only the ask-tier SQL rules are lifted from these bodies; DROP DATABASE stays denied as it was before.
   [`python3 - <<'EOF'\nprint("DROP DATABASE prod")\nEOF`, 'deny'],
   [`cat > x.sql <<'EOF'\nDROP DATABASE prod;\nEOF\nbash -c true`, 'deny'],
 ];
@@ -681,3 +728,77 @@ for (const [command, expected] of runSql) {
     assert.equal(verdict(bash(command)), expected, command);
   });
 }
+
+// --- Review holes in the variable resolver (2026-11-18 adversarial review) ----------------------------------------
+// Each line assigns a scratch path, but bash may not have it in the variable when rm runs: they must not be allowed.
+const notResolved = [
+  // A newline after && || or | continues the list: the assignment is conditional or in a pipeline.
+  [`[ 1 = 2 ] &&\n  S=${LINUX_SCRATCH}/x; rm -rf "$S"/*`, '&& then a newline'],
+  [`false &&\nS=${LINUX_SCRATCH}/x\nrm -rf "$S"/*`, '&& then a newline, used on the next line'],
+  [`true ||\nS=${LINUX_SCRATCH}/x\nrm -rf "$S"/*`, '|| then a newline'],
+  [`echo hi |\nS=${LINUX_SCRATCH}/x\nrm -rf "$S"/*`, '| then a newline'],
+  [`true && # note\nS=${LINUX_SCRATCH}/x\nrm -rf "$S"/*`, '&& then a comment and a newline'],
+  // A heredoc body is data, whatever its delimiter looks like.
+  [`cat > /dev/null <<\\EOF\nS=${LINUX_SCRATCH}/x\nEOF\nrm -rf "$S"/*`, 'a <<\\EOF body'],
+  [`cat > /dev/null <<EOF.\nS=${LINUX_SCRATCH}/x\nEOF.\nrm -rf "$S"/*`, 'a body whose delimiter has a dot'],
+  [`cat > /dev/null <<"E O"\nS=${LINUX_SCRATCH}/x\nE O\nrm -rf "$S"/*`, 'a quoted delimiter with a space'],
+  [`cat <<A >/dev/null <<B\nx\nA\nS=${LINUX_SCRATCH}/x\nB\nrm -rf "$S"/*`, 'the second of two heredocs on one line'],
+  // Something on the line can set the variable in a way the guard does not parse.
+  [`S=${LINUX_SCRATCH}/x; eval "S=${REPO}"; rm -rf $S`, 'eval'],
+  [`S=${LINUX_SCRATCH}/x; declare "S=${REPO}"; rm -rf $S`, 'declare with a quoted assignment'],
+  [`S=${LINUX_SCRATCH}/x; export 'S=${REPO}'; rm -rf $S`, 'export with a quoted assignment'],
+  [`S=${LINUX_SCRATCH}/x; V=S; declare $V=${REPO}; rm -rf $S`, 'declare with an indirect name'],
+  [`S=${LINUX_SCRATCH}/x; printf -v "S" %s ${REPO}; rm -rf $S`, 'printf -v'],
+  [`S=${LINUX_SCRATCH}/x; read "S" <<< ${REPO}; rm -rf $S`, 'read'],
+  [`S=${LINUX_SCRATCH}/x; V=S; read $V <<< ${REPO}; rm -rf $S`, 'read with an indirect name'],
+  [`S=${LINUX_SCRATCH}/x; source ./env.sh; rm -rf $S`, 'source'],
+  [`S=${LINUX_SCRATCH}/x; . ./env.sh; rm -rf $S`, '. (source)'],
+  [`S=${LINUX_SCRATCH}/x; exec {S}>/dev/null; rm -rf $S`, 'exec {VAR}> (a file descriptor number)'],
+  [`S=${LINUX_SCRATCH}/x; declare -n R=S; R=${REPO}; rm -rf $S`, 'a nameref'],
+  [`S=${LINUX_SCRATCH}/x; trap 'S=${REPO}' DEBUG; rm -rf $S`, 'a DEBUG trap'],
+  [`S=${LINUX_SCRATCH}/x; wait -n -p S; rm -rf $S`, 'wait -p'],
+  [`X='S=${LINUX_SCRATCH}/x'; $X; rm -rf $S/*`, 'a variable as the command word (never an assignment)'],
+  [`X=S; $X=${LINUX_SCRATCH}/x; rm -rf "$S"/*`, 'a variable that expands to an assignment'],
+  [`S=${LINUX_SCRATCH}/x; X=eval; $X "S=${REPO}"; rm -rf $S`, 'a command word that expands to eval'],
+  [`cd /nonexistent && A=${LINUX_SCRATCH}; B=$A/x; rm -rf $B`, 'a chain through a value set only if cd succeeds'],
+  [`HOME=/x; S=~/.claude/cache; rm -rf $S`, 'a ~ value after HOME is rebound'],
+  [`S='${LINUX_SCRATCH}/x > /dev/null'; rm -rf $S`, 'a value with a > (bash splits it into words, not a redirection)'],
+  [`A=${LINUX_SCRATCH}; B='$A/x'; rm -rf $B`, 'a single-quoted value keeps $A as text'],
+];
+for (const [command, why] of notResolved) {
+  test(`variable not resolved (${why}): asks`, () => {
+    assert.equal(verdict(bash(command)), 'ask', command);
+  });
+}
+
+test('a quoted "2" before > is a file to delete, not a file descriptor', () => {
+  assert.equal(verdict(bash(`rm -rf "${LINUX_SCRATCH}/x" "2">/dev/null`)), 'ask');
+});
+
+test('a heredoc delimiter with a dot or a space hides nothing after its body', () => {
+  assert.equal(verdict(bash('cat <<EOF.\nhello\nEOF.\nrm -rf ~')), 'deny');
+  assert.equal(verdict(bash("cat <<'E O'\nhello\nE O\nrm -rf ~")), 'deny');
+});
+
+/** blow.js from the review: each assignment uses the one before it ten times, so each level is ten times longer. */
+function chainedAssignments(levels, last) {
+  const names = 'ABCDEFGHIJKLMNOP';
+  let command = `A=${LINUX_SCRATCH}/x`;
+  for (let i = 1; i <= levels; i += 1) command += `; ${names[i]}=${`$${names[i - 1]}`.repeat(10)}`;
+  return `${command}; ${last}`;
+}
+
+test('variable resolution has a size budget: a chain that grows 10x per level decides fast and does not allow', () => {
+  for (const [last, expected] of [['rm -rf ~', 'deny'], ['rm -rf $H/y', 'ask']]) {
+    const command = chainedAssignments(7, last);
+    const started = process.hrtime.bigint();
+    const result = verdict(bash(command));
+    const ms = Number(process.hrtime.bigint() - started) / 1e6;
+    assert.equal(result, expected, command);
+    assert.ok(ms < 200, `${ms.toFixed(0)} ms for ${command.length} characters`);
+  }
+});
+
+test('a chain of a few uses is still resolved', () => {
+  assert.equal(verdict(bash(`A=${LINUX_SCRATCH}; B=$A/x; C=$B/y$B; rm -rf $C/z`)), 'allow');
+});
