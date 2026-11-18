@@ -20,9 +20,10 @@
  *     `[cd <path> && ]... git add <paths> && [git add <paths> && ]... git commit -m <message> [&& git push ...]`
  *     (see NARROW), has no control character other than newline and tab, and the repository has no commit hook (no
  *     core.hooksPath, no `hook.*` configuration, no hook file, a readable hooks folder), the scan is the full staged
- *     diff plus each added path's working-tree change against HEAD (the empty tree in a new repository) and its untracked files. Any other line,
- *     or a commit with -a, a pathspec or -o/-i, scans the whole working-tree change against HEAD; after a staging
- *     call, plus every untracked file not ignored.
+ *     diff plus each added path's working-tree change against HEAD (the empty tree in a new repository) and its
+ *     untracked files. Any other line, or a commit with -a, a pathspec or -o/-i, scans the whole working-tree change
+ *     against HEAD; after a staging call, plus every untracked file not ignored. When a line with a staging call is
+ *     scanned wide, an ASK says why: "(scanned the whole tree: <reason>)".
  *   - push: every commit the push publishes that the DESTINATION remote does not have
  *     (`git rev-list <refs> --not --remotes=<remote>`), message and patch, one by one: history already on another
  *     remote is still published to a new one, and a path added in one commit and removed in the next is still in
@@ -37,8 +38,8 @@
  * target (git commits the link text), and a link whose text holds the home path is missed; CDPATH and bash's
  * physical-path fallback for `cd` (the folder the hook resolves can differ from the shell's); clean/smudge filters
  * (they can change what `git add` stages); the wide scan skips ignored files that `git add -f` stages, and reads the
- * working tree, not the index, so a leak staged and then cleaned in the working copy is missed there. The push check re-reads every outgoing commit message and patch, so a commit-time gap is caught
- * there.
+ * working tree, not the index, so a leak staged and then cleaned in the working copy is missed there. The push check
+ * re-reads every outgoing commit message and patch, so a commit-time gap is caught there.
  *
  * Tests: pre-publish-guard.test.js (node --test hooks/pre-publish-guard.test.js).
  */
@@ -145,40 +146,62 @@ const NARROW = new RegExp(String.raw`^[ \t]*((?:cd[ \t]+${P}[ \t]*&&[ \t]*)*)((?
   String.raw`git[ \t]+commit(?:[ \t]+(?:-[qvs]|--no-verify))*(?:[ \t]+${MSG})+` +
   String.raw`(?:[ \t]*&&[ \t]*git[ \t]+push(?:[ \t]+(?:-u|${P}))*)?[ \t]*$`);
 
-/**
- * Whether the repository can run a commit hook (which may stage more): core.hooksPath, a hook defined in the
- * configuration (`hook.<name>.command`, git 2.54 and later; older git stores the key and ignores it), a non-sample hook
- * file, or a hooks folder that cannot be read.
- */
-function hasCommitHooks(dir) {
-  if (tryGit(['config', '--get', 'core.hooksPath'], dir) !== null) return true;
-  if ((tryGit(['config', '--get-regexp', '^hook\\.'], dir) || '').trim()) return true;
-  const hooks = tryGit(['rev-parse', '--git-path', 'hooks'], dir);
-  if (hooks === null) return true;
+/** The value of a git config key, or null when the key is absent (exit 1). Throws when git itself fails. */
+function configGet(args, dir) {
   try {
-    return fs.readdirSync(path.resolve(dir, hooks.trim())).some((f) => !f.endsWith('.sample'));
+    return git(['config', ...args], dir);
   } catch (err) {
-    return err.code !== 'ENOENT';
+    if (err.status === 1) return null;
+    throw err;
   }
 }
 
 /**
- * The paths the line stages, as [{ dir, specs, force }], when the raw command matches NARROW, the delimiter line
- * EOF appears at most once, and the repository has no commit hook; otherwise null and the commit is scanned wide.
+ * Why the repository may run a commit hook (which may stage more), or null when it cannot: core.hooksPath, a hook
+ * defined in the configuration (`hook.<name>.command`, git 2.54 and later; older git stores the key and ignores it),
+ * a non-sample hook file, or a hooks folder that cannot be read. A missing hooks folder holds no hook; a failing
+ * `git config` is not "key absent".
+ */
+function hasCommitHooks(dir) {
+  try {
+    if (configGet(['--get', 'core.hooksPath'], dir) !== null) return 'core.hooksPath is set';
+    if ((configGet(['--get-regexp', '^hook\\.'], dir) || '').trim()) return 'hook.* config';
+  } catch {
+    return 'git config failed';
+  }
+  const hooks = tryGit(['rev-parse', '--git-path', 'hooks'], dir);
+  if (hooks === null) return 'hooks folder unreadable';
+  try {
+    const hook = fs.readdirSync(path.resolve(dir, hooks.trim())).find((f) => !f.endsWith('.sample'));
+    return hook ? `repository has hook ${hook}` : null;
+  } catch (err) {
+    return err.code === 'ENOENT' ? null : 'hooks folder unreadable';
+  }
+}
+
+/**
+ * The paths the line stages, { scope: [{ dir, specs, force }] }, when the raw command matches NARROW, the delimiter
+ * line EOF appears at most once, and the repository has no commit hook; otherwise { reason } and the commit is
+ * scanned wide.
  */
 function narrowScope(command, cwd) {
   const m = NARROW.exec(command);
+  if (!m) return { reason: 'command is not a plain add/commit line' };
+  if (cwd === null) return { reason: 'cannot tell which folder the command runs in' };
   // A control character other than newline and tab (NUL, CR, ...) is read differently by bash and by this regex.
-  if (!m || cwd === null || /[\x00-\x08\x0b-\x1f\x7f]/.test(command)) return null;
-  if (command.split('\n').filter((l) => l === 'EOF').length > 1) return null;
+  if (/[\x00-\x08\x0b-\x1f\x7f]/.test(command)) return { reason: 'control character in command' };
+  if (command.split('\n').filter((l) => l === 'EOF').length > 1) return { reason: 'more than one EOF line' };
   let dir = cwd;
   for (const [, to] of m[1].matchAll(new RegExp(`cd[ \\t]+(${P})`, 'g'))) dir = path.resolve(dir, to);
-  if (hasCommitHooks(dir)) return null;
-  return m[2].split('&&').filter((s) => s.trim()).map((add) => {
-    const words = add.trim().split(/[ \t]+/).slice(2);
-    const flags = words.filter((w) => w.startsWith('-'));
-    return { dir, specs: words.filter((w) => !w.startsWith('-')), force: flags.some((w) => w.includes('f')) };
-  });
+  const hooks = hasCommitHooks(dir);
+  if (hooks) return { reason: hooks };
+  return {
+    scope: m[2].split('&&').filter((s) => s.trim()).map((add) => {
+      const words = add.trim().split(/[ \t]+/).slice(2);
+      const flags = words.filter((w) => w.startsWith('-'));
+      return { dir, specs: words.filter((w) => !w.startsWith('-')), force: flags.some((w) => w.includes('f')) };
+    }),
+  };
 }
 
 /** Every judged git call on the command line, with the folder it runs in and whether something staged before it. */
@@ -187,7 +210,7 @@ function publishCalls(command, cwd) {
   const calls = [];
   let dir = cwd;
   let addedBefore = false;
-  const addScope = narrowScope(command, cwd);
+  const narrow = narrowScope(command, cwd);
   for (const segment of sh.splitSegments([shell, ...sh.substitutions(shell)].join('\n'))) {
     const words = sh.tokenize(segment);
     const i = sh.commandIndex(words);
@@ -199,7 +222,7 @@ function publishCalls(command, cwd) {
       const call = gitCall(words, i, dir);
       if (!call) continue;
       if (STAGING.has(call.sub)) addedBefore = true;
-      if (JUDGED.has(call.sub)) calls.push({ ...call, addedBefore, addScope });
+      if (JUDGED.has(call.sub)) calls.push({ ...call, addedBefore, addScope: narrow.scope || null, wideReason: narrow.reason });
     }
   }
   // Every heredoc body on the line may be a message: `-m "$(cat <<'EOF' ...)"` (data) or `-F - <<'EOF'` (code).
@@ -292,35 +315,44 @@ const hasHead = (top) => tryGit(['rev-parse', '--verify', '--quiet', 'HEAD'], to
 
 /**
  * What the index plus the paths named by earlier `git add`s would commit: the staged diff, each pathspec's
- * working-tree change against base, and its untracked files. null when any part cannot be read in this repository.
+ * working-tree change against base, and its untracked files. { lines }, or { reason } when any part cannot be read in
+ * this repository (a part git fails on is never treated as empty).
  */
 function scopedLines(scope, base, top) {
-  if (!scope) return null;
   const lines = addedLines(git(['diff', '--cached', ...DIFF], top));
   for (const s of scope) {
-    if ((tryGit(['rev-parse', '--show-toplevel'], s.dir) || '').trim() !== top) return null;
+    if ((tryGit(['rev-parse', '--show-toplevel'], s.dir) || '').trim() !== top) {
+      return { reason: 'an added path is outside this repository' };
+    }
     const patch = tryGit(['diff', base, ...DIFF, '--no-relative', '--', ...s.specs], s.dir);
-    const untracked = patch === null ? null : untrackedLines(top, s);
-    if (untracked === null) return null;
+    if (patch === null) return { reason: 'git could not diff an added path' };
+    const untracked = untrackedLines(top, s);
+    if (untracked === null) return { reason: 'git could not list untracked files' };
     lines.push(...addedLines(patch), ...untracked);
   }
   const seen = new Set();
-  return lines.filter((l) => {
-    const key = `${l.file}:${l.line}:${l.text}`;
-    return seen.has(key) ? false : seen.add(key);
-  });
+  return {
+    lines: lines.filter((l) => {
+      const key = `${l.file}:${l.line}:${l.text}`;
+      return seen.has(key) ? false : seen.add(key);
+    }),
+  };
 }
 
-/** What a commit would add. */
+/** What a commit would add, and, when a staging call on the line was scanned wide, why it was not narrowed. */
 function commitLines(opts, call, top) {
   const wide = opts.wide || call.addedBefore;
   const base = hasHead(top) ? 'HEAD' : EMPTY_TREE;
+  let reason = call.addedBefore ? call.wideReason || null : null;
   // The licensed-data scanner still gets the working tree (wide) after any git add: it cannot take pathspecs.
-  const scoped = !opts.wide && call.addedBefore ? scopedLines(call.addScope, base, top) : null;
-  if (scoped) return { lines: scoped, wide };
+  if (!opts.wide && call.addedBefore && call.addScope) {
+    const scoped = scopedLines(call.addScope, base, top);
+    if (scoped.lines) return { lines: scoped.lines, wide, reason: null };
+    reason = scoped.reason;
+  }
   const lines = addedLines(wide ? git(['diff', base, ...DIFF], top) : git(['diff', '--cached', ...DIFF], top));
   if (call.addedBefore) lines.push(...untrackedLines(top));
-  return { lines, wide };
+  return { lines, wide, reason };
 }
 
 /** The message parts of a commit, tag or merge, as git would write them. */
@@ -455,6 +487,7 @@ function judgeCall(call, heredocs, opts) {
 
   let lines = [];
   let scanMode = null;
+  let wideReason = null;
   if (call.sub === 'push') {
     const t = pushTargets(call.args, top);
     const commits = pushCommits(t, top);
@@ -480,6 +513,7 @@ function judgeCall(call, heredocs, opts) {
     try {
       const c = commitLines(copts, call, top);
       lines = c.lines;
+      wideReason = c.reason;
       scanMode = c.wide ? [] : ['--staged'];
     } catch (err) {
       found.ask.push(`could not read what this commit adds (${err.message.split('\n')[0]}); not scanned.`);
@@ -490,7 +524,8 @@ function judgeCall(call, heredocs, opts) {
   const homeHits = lines.filter((l) => home.test(l.text)).map((l) => `${l.file}:${l.line}`);
   if (homeHits.length) {
     found.ask.push(`home-directory path in ${homeHits.length} added line(s) (a personal path would be published):\n` +
-      `${firstLines(homeHits)}\nReplace it with ~, $HOME or a relative path unless the user wants it published.`);
+      `${firstLines(homeHits)}\nReplace it with ~, $HOME or a relative path unless the user wants it published.` +
+      (wideReason ? ` (scanned the whole tree: ${wideReason})` : ''));
   }
 
   if (scanMode) {

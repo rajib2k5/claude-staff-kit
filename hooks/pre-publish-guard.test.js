@@ -6,6 +6,10 @@
 
 'use strict';
 
+// Isolate every git call and hook spawn from the machine's git configuration (core.hooksPath, hook.*, diff.*, ...).
+process.env.GIT_CONFIG_GLOBAL = '/dev/null';
+process.env.GIT_CONFIG_NOSYSTEM = '1';
+
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -21,7 +25,7 @@ const run = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8',
 
 function repo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ppg-'));
-  run(dir, 'init', '-q', '-b', 'main');
+  run(dir, 'init', '-q', '--template=', '-b', 'main');
   run(dir, 'config', 'user.email', 'dev@example.com');
   run(dir, 'config', 'user.name', 'Dev');
   run(dir, 'config', 'commit.gpgsign', 'false');
@@ -34,7 +38,7 @@ function repo() {
 /** A remote that already has the current history, so later commits are the outgoing ones. */
 function withRemote(dir) {
   const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'ppg-remote-'));
-  run(bare, 'init', '-q', '--bare');
+  run(bare, 'init', '-q', '--template=', '--bare');
   run(dir, 'remote', 'add', 'origin', bare);
   run(dir, 'push', '-q', 'origin', 'main');
   return bare;
@@ -271,7 +275,7 @@ test('review: an annotated tag message with the trailer, at tag time and at push
 
 test('review: the first commit of a new repository is checked (no HEAD yet)', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ppg-fresh-'));
-  run(dir, 'init', '-q', '-b', 'main');
+  run(dir, 'init', '-q', '--template=', '-b', 'main');
   write(dir, 'a.txt', `${HOME}/x\n`);
   assert.equal(verdict(bash(`git add -A && git commit -m "init" -m "${TRAILER}"`, dir)), 'deny');
   const v = bash('git add -A && git commit -m init', dir);
@@ -564,6 +568,7 @@ test('review 3: a hooks folder that node cannot list, but git can run, scans the
   if (process.getuid && process.getuid() === 0) return t.skip('root reads any folder');
   const dir = addRepo();
   const hooks = path.join(dir, run(dir, 'rev-parse', '--git-path', 'hooks').trim());
+  fs.mkdirSync(hooks, { recursive: true }); // --template= leaves no hooks folder
   fs.chmodSync(hooks, 0o111); // x without r: git can run a hook inside, readdir fails with EACCES
   try {
     assert.equal(verdict(bash('git add c.txt && git commit -q -m c', dir)), 'ask');
@@ -596,6 +601,96 @@ test('review 3: a control character in the command scans the whole tree', () => 
     assert.match(String((bash(msg(c), dir) || {}).reason), /untracked\.log:3/, JSON.stringify(c));
   }
   assert.equal(verdict(bash(msg('\t'), dir)), 'allow'); // a tab is ordinary text
+});
+
+// Review of the narrowed scan (2026-11-17): the wide fallback says why, and a git failure never stays narrow.
+/** A `git` on PATH that fails every call whose arguments match the shell glob `pattern`, and runs real git otherwise. */
+function withFailingGit(pattern, fn) {
+  const real = execFileSync('sh', ['-c', 'command -v git'], { encoding: 'utf8' }).trim();
+  const bin = fs.mkdtempSync(path.join(os.tmpdir(), 'ppg-bin-'));
+  const script = `#!/bin/sh\ncase " $* " in ${pattern}) exit 128;; esac\nexec ${real} "$@"\n`;
+  fs.writeFileSync(path.join(bin, 'git'), script, { mode: 0o755 });
+  const saved = process.env.PATH;
+  process.env.PATH = `${bin}${path.delimiter}${saved}`;
+  try {
+    return fn();
+  } finally {
+    process.env.PATH = saved;
+  }
+}
+
+test('the ask names why the scan was wide: a hook in the repository', () => {
+  const dir = hiddenAddRepo();
+  const hooks = run(dir, 'rev-parse', '--git-path', 'hooks').trim();
+  write(dir, path.join(hooks, 'post-commit'), '#!/bin/sh\ntrue\n');
+  const v = bash('git add c.txt && git commit -q -m x', dir);
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /\(scanned the whole tree: repository has hook post-commit\)/);
+});
+
+test('the ask names why the scan was wide: the command is not a plain add/commit line', () => {
+  const dir = hiddenAddRepo();
+  const v = bash('git add c.txt && git commit -q -m x; true', dir);
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /\(scanned the whole tree: command is not a plain add\/commit line\)/);
+});
+
+test('the ask names why the scan was wide: core.hooksPath, hook.* config and a control character', () => {
+  const dir = hiddenAddRepo();
+  run(dir, 'config', 'core.hooksPath', 'hk');
+  assert.match(bash('git add c.txt && git commit -q -m x', dir).reason, /scanned the whole tree: core\.hooksPath is set\)/);
+  const other = hiddenAddRepo();
+  run(other, 'config', 'hook.x.command', 'true');
+  assert.match(bash('git add c.txt && git commit -q -m x', other).reason, /scanned the whole tree: hook\.\* config\)/);
+  const msg = `git add c.txt && git commit -q -m "$(cat <<'EOF'\nfeat\x00\nEOF\n)"`;
+  assert.match(bash(msg, hiddenAddRepo()).reason, /scanned the whole tree: control character in command\)/);
+});
+
+test('a narrowed scan has no wide-scan note', () => {
+  const dir = hiddenAddRepo();
+  write(dir, 'c.txt', `${HOME}/c\n`);
+  const v = bash('git add c.txt && git commit -q -m x', dir);
+  assert.equal(verdict(v), 'ask');
+  assert.doesNotMatch(v.reason, /scanned the whole tree/);
+});
+
+test('an added path git cannot diff (outside the repository) falls back to the whole tree, not an empty scan', () => {
+  const dir = addRepo();
+  const v = bash('git add ../outside && git commit -q -m x', dir);
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /untracked\.log:3/);
+  assert.match(v.reason, /scanned the whole tree: git could not diff an added path\)/);
+});
+
+test('an added path whose untracked files git cannot list falls back to the whole tree, not an empty scan', () => {
+  const dir = hiddenAddRepo();
+  const v = withFailingGit('*" ls-files "*" --full-name "*', () => bash('git add c.txt && git commit -q -m x', dir));
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /scanned the whole tree: git could not list untracked files\)/);
+  assert.match(v.reason, /o\.txt:1/);
+});
+
+test('a repository whose hooks folder does not exist keeps the narrowed scan', () => {
+  const dir = addRepo();
+  const hooks = path.join(dir, run(dir, 'rev-parse', '--git-path', 'hooks').trim());
+  fs.rmSync(hooks, { recursive: true, force: true });
+  assert.equal(verdict(bash('git add c.txt && git commit -q -m x', dir)), 'allow'); // untracked.log is not read
+});
+
+test('a failing `git config` counts as a possible hook, not as an absent key', () => {
+  const dir = addRepo();
+  assert.equal(verdict(bash('git add c.txt && git commit -q -m x', dir)), 'allow');
+  const v = withFailingGit('*" config "*', () => bash('git add c.txt && git commit -q -m x', dir));
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /untracked\.log:3/);
+  assert.match(v.reason, /scanned the whole tree: git config failed\)/);
+});
+
+test('diff.relative does not hide an added path outside the folder the command runs in', () => {
+  const dir = hiddenAddRepo();
+  run(dir, 'config', 'diff.relative', 'true');
+  write(dir, 'c.txt', `${HOME}/c\n`); // tracked, changed; `git diff` from d/ with diff.relative would omit it
+  assert.match(String((bash('cd d && git add ../c.txt && git commit -q -m x', dir) || {}).reason), /c\.txt:1/);
 });
 
 // --- 4. Scope ------------------------------------------------------------------------------------------------------
