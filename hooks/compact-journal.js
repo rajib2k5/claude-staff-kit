@@ -10,7 +10,9 @@
  *
  * Journal: $CLAUDE_COMPACT_JOURNAL_DIR/<session_id>.md, default ~/.claude/compact-journal/. Each
  * PreCompact overwrites the session's journal (the newest state is the one that matters); the
- * previous one is kept as <session_id>.prev.md. Re-injection is capped at MAX_INJECT characters.
+ * previous one is kept as <session_id>.prev.md. The whole re-injection is capped at MAX_INJECT characters,
+ * because Claude Code keeps a hook's additionalContext only up to 10,000 characters (above that it passes
+ * a path and a short preview). So the instructions come first, newest first, within INSTRUCTION_BUDGET.
  *
  * Fails OPEN on any error (stderr note, exit 0): compaction must never be blocked by this hook.
  */
@@ -23,7 +25,8 @@ const { execFileSync } = require('child_process');
 
 const N_USER = 10;          // recent user instructions kept verbatim
 const MAX_USER_CHARS = 4000; // per instruction; longer ones are cut with a marker
-const MAX_INJECT = 30000;    // characters re-injected after compaction
+const MAX_INJECT = 9500;     // whole re-injection, wrapper included; Claude Code keeps 10,000
+const INSTRUCTION_BUDGET = 5000; // characters of verbatim instructions in the journal
 const MAX_STATUS_LINES = 40;
 
 function journalDir(env = process.env) {
@@ -48,9 +51,11 @@ const MACHINE_PREFIX = /^(<task-notification|<agent-message|<\\?~agent-message|<
 
 const originKind = (d) => (d && d.origin && typeof d.origin === 'object' ? d.origin.kind : undefined);
 
-/** True when the transcript labels input origins (Claude Code 2.1.29x+): any line has origin.kind "human". */
+/** True when the transcript labels input origins (Claude Code 2.1.29x+). */
 function hasOriginLabels(lines) {
-  return lines.some((d) => d && d.type === 'user' && originKind(d) === 'human');
+  // Any origin field at all: a session started by another session has labelled peer lines before its
+  // first human line, and its unlabelled spawning prompt must not pass as the user's words.
+  return lines.some((d) => d && d.origin && typeof d.origin === 'object');
 }
 
 /**
@@ -159,6 +164,22 @@ function render(p, lines, git, now = new Date()) {
   const L = [];
   L.push(`# Compact journal — session ${p.session_id || '?'}`);
   L.push(`Written ${now.toISOString()} by hooks/compact-journal.js before a ${p.trigger || '?'} compaction. Facts only, no model call.`);
+  // Instructions first and newest first, within a budget, so a cut never removes the newest one.
+  const shown = [];
+  let used = 0;
+  for (let i = users.length - 1; i >= 0; i -= 1) {
+    const u = users[i].replace(/```/g, "'''");
+    const room = INSTRUCTION_BUDGET - used;
+    if (shown.length && u.length > room) break;
+    const t = u.length > room ? u.slice(0, Math.max(0, room)) + '\n[...cut by compact-journal]' : u;
+    shown.push(t);
+    used += t.length;
+  }
+  L.push('', `## Last ${shown.length} user instruction(s), verbatim, newest first`);
+  if (shown.length < users.length) {
+    L.push(`(${users.length - shown.length} older instruction(s) not shown: over the ${INSTRUCTION_BUDGET}-character budget; see the transcript.)`);
+  }
+  shown.forEach((u, i) => L.push('', `### ${i + 1}${i === 0 ? ' (newest)' : ''}`, '```text', u, '```'));
   L.push('', '## Where', `- cwd: ${p.cwd || '?'}`);
   if (git.branch) {
     L.push(`- git branch: ${git.branch}`, `- HEAD: ${git.head || '?'}`);
@@ -176,11 +197,9 @@ function render(p, lines, git, now = new Date()) {
   if (tasks.length) for (const t of tasks) L.push(`- [${t.status}] ${t.content}`);
   else L.push('- none recorded');
   if (p.custom_instructions) L.push('', '## /compact instructions', p.custom_instructions);
-  L.push('', '## Decision-like lines (heuristic match, check against the instructions below)');
+  L.push('', '## Decision-like lines (heuristic match, check against the instructions above)');
   if (dec.length) for (const d of dec) L.push(`- ${d}`);
   else L.push('- none matched');
-  L.push('', `## Last ${users.length} user instruction(s), verbatim, oldest first`);
-  users.forEach((u, i) => L.push('', `### ${i + 1}`, '```text', u.replace(/```/g, "'''"), '```'));
   return L.join('\n') + '\n';
 }
 
@@ -237,11 +256,15 @@ function onSessionStartCompact(p, env = process.env) {
   const jp = journalPath(p.session_id, env);
   if (!fs.existsSync(jp)) return null;
   let md = fs.readFileSync(jp, 'utf8');
-  if (md.length > MAX_INJECT) md = md.slice(0, MAX_INJECT) + '\n[...journal cut at re-injection cap]\n';
-  return '<compact-journal>\n' +
+  const head = '<compact-journal>\n' +
     'Facts recorded by a hook just before this session was compacted (no model wrote them). ' +
     'The user instructions below are the user\'s exact words and still apply; the open tasks and git ' +
-    `state are as they were at compaction. Full file: ${jp}\n\n` + md + '</compact-journal>';
+    `state are as they were at compaction. Full file: ${jp}\n\n`;
+  const tail = '</compact-journal>';
+  const CUT = '\n[...journal cut at re-injection cap]\n';
+  const room = MAX_INJECT - head.length - tail.length;
+  if (md.length > room) md = md.slice(0, Math.max(0, room - CUT.length)) + CUT;
+  return head + md + tail;
 }
 
 function main() {

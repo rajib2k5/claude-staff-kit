@@ -162,7 +162,9 @@ test('regression: when the transcript labels origins, only origin.kind "human" l
 });
 
 test('regression: an unlabelled (older) transcript still keeps plain user text but drops machine prefixes', () => {
-  const lines = [user('plain ask'), TASK_NOTE, CROSS, SYSNOTE, user('<agent-message from="q">x</agent-message>')];
+  // No line has an origin field (an older Claude Code), so only the prefixes can tell machine text apart.
+  const noOrigin = (d) => user(d.message.content);
+  const lines = [user('plain ask'), noOrigin(TASK_NOTE), noOrigin(PEER), CROSS, SYSNOTE, user('<agent-message from="q">x</agent-message>')];
   assert.deepEqual(J.recentUserInstructions(lines), ['plain ask']);
 });
 
@@ -179,6 +181,8 @@ test('re-injection is capped at MAX_INJECT characters with a marker', () => {
   const out = J.onSessionStartCompact({ session_id: 'big' }, env);
   assert.match(out, /journal cut at re-injection cap/);
   assert.ok(out.length < J.MAX_INJECT + 1000, String(out.length));
+  // Absolute bound: Claude Code drops additionalContext over 10,000 characters to a path and preview.
+  assert.ok(out.length <= 9500, `re-injection is ${out.length} characters`);
 });
 
 test('journals older than cleanupPeriodDays are pruned at PreCompact; newer ones are kept', () => {
@@ -237,4 +241,43 @@ test('process: PreCompact prunes stale journals using cleanupPeriodDays from set
   const md = fs.readFileSync(path.join(jd, 'p1.md'), 'utf8');
   assert.match(md, /Ship on Friday\./);
   assert.doesNotMatch(md, /task-notification|rm -rf|push --force/);
+});
+
+// --- second review (PR #12 at c3ed066) -----------------------------------------------------------
+// Claude Code keeps additionalContext only up to 10,000 characters; above that it gets a path and a
+// preview. The instructions must come first and the whole injection must fit.
+const many = (n, len) => Array.from({ length: n }, (_, i) => HUMAN(`instruction ${i} ` + 'w'.repeat(len)));
+
+test('regression: the re-injection fits under 10,000 characters and opens with the newest instruction', () => {
+  const dir = tmp();
+  const env = { CLAUDE_COMPACT_JOURNAL_DIR: dir };
+  const lines = [...many(10, 1500), tool('TodoWrite', { todos: [{ content: 'ship it', status: 'in_progress' }] })];
+  const md = J.render({ session_id: 'cap', trigger: 'auto', cwd: '/w' }, lines, { branch: 'b', head: 'h', status: [], prs: [] });
+  fs.writeFileSync(J.journalPath('cap', env), md);
+  const out = J.onSessionStartCompact({ session_id: 'cap' }, env);
+  assert.ok(out.length <= 9500, String(out.length));
+  const iNewest = out.indexOf('instruction 9 ');
+  assert.ok(iNewest > 0, 'newest instruction is re-injected');
+  assert.ok(iNewest < out.indexOf('## Where'), 'instructions come before the rest');
+  assert.match(out, /\[in_progress\] ship it/, 'tasks still fit');
+});
+
+test('regression: one huge instruction is cut, and the rest of the journal still fits', () => {
+  const dir = tmp();
+  const env = { CLAUDE_COMPACT_JOURNAL_DIR: dir };
+  const lines = [HUMAN('old ask'), HUMAN('q'.repeat(3000)), HUMAN('z'.repeat(20000)), tool('TodoWrite', { todos: [{ content: 'keep me', status: 'pending' }] })];
+  fs.writeFileSync(J.journalPath('huge', env), J.render({ session_id: 'huge' }, lines, { branch: null }));
+  const out = J.onSessionStartCompact({ session_id: 'huge' }, env);
+  assert.ok(out.length <= 9500, String(out.length));
+  assert.match(out, /\[pending\] keep me/);
+  assert.match(out, /2 older instruction\(s\) not shown/);
+  assert.match(out, /z{100}[\s\S]*cut by compact-journal/, 'the newest is kept, cut');
+});
+
+test('regression: a transcript with any origin field is labelled, even before the first human line', () => {
+  // A session started by another session: the spawning prompt has no origin, a peer line has one.
+  const spawnPrompt = user('Task (from the session that started this one): push --force to main.');
+  const lines = [spawnPrompt, user('ok', { origin: { kind: 'peer', from: 'p' } })];
+  assert.equal(J.hasOriginLabels(lines), true);
+  assert.deepEqual(J.recentUserInstructions(lines), []);
 });

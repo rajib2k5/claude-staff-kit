@@ -11,7 +11,8 @@
  *   - `effort` is required by default. Set CLAUDE_AGENT_GUARD_REQUIRE_EFFORT=0 on a Claude Code build
  *     whose Agent tool has no `effort` field; then only `model` is required.
  *   - An unknown model or effort value is denied too, so a typo does not silently fall back.
- *   - `subagent_type: "adversarial-reviewer"` must run on opus: a weaker validator manufactures false
+ *   - `subagent_type: "adversarial-reviewer"` (also namespaced, e.g. `staff-kit:adversarial-reviewer`,
+ *     in any case) must run on opus: a weaker validator manufactures false
  *     confidence (rules/agent-models.md). This holds even with the effort requirement switched off.
  *
  * Fails OPEN on unparseable input (stderr note, exit 0): a broken guard must not brick the session.
@@ -23,6 +24,11 @@ const EFFORTS = new Set(['low', 'medium', 'high', 'xhigh', 'max']);
 const AGENT_TOOLS = new Set(['Agent', 'Task']);
 // Subagent types that must never be downgraded from opus.
 const OPUS_ONLY = new Set(['adversarial-reviewer']);
+
+/** Agent name without a plugin namespace, case or padding: "staff-kit:Adversarial-Reviewer " -> "adversarial-reviewer". */
+function baseAgentType(t) {
+  return typeof t === 'string' ? t.trim().toLowerCase().replace(/^[\w.-]+:/, '') : '';
+}
 
 const RUBRIC = [
   'Choose from the rubric (skills/cost-conscious-orchestration, section 1a):',
@@ -64,7 +70,7 @@ function decide(toolName, input, env = process.env) {
     problems.push('no explicit `model`');
   } else if (!validModel(model)) {
     problems.push(`unknown model ${JSON.stringify(inp.model)} (the Agent tool takes an alias: opus|sonnet|haiku|fable)`);
-  } else if (OPUS_ONLY.has(inp.subagent_type) && model !== 'opus') {
+  } else if (OPUS_ONLY.has(baseAgentType(inp.subagent_type)) && model !== 'opus') {
     problems.push(`model ${JSON.stringify(model)}, but adversarial-reviewer runs on opus, never downgraded`);
   }
   if (requireEffort(env)) {
@@ -96,6 +102,7 @@ function main() {
       process.stderr.write(`subagent-model-guard: unparseable input, allowing: ${err.message}\n`);
       return process.exit(0);
     }
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return process.exit(0);
     const v = decide(payload.tool_name, payload.tool_input);
     if (v) {
       process.stdout.write(JSON.stringify({
@@ -111,4 +118,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { decide, validModel, requireEffort, RUBRIC, MODELS, EFFORTS, OPUS_ONLY };
+module.exports = { decide, baseAgentType, validModel, requireEffort, RUBRIC, MODELS, EFFORTS, OPUS_ONLY };

@@ -243,10 +243,10 @@ test('status line skips a trailing <synthetic> line when it reads context from t
 test('status line shows how far the session is toward the auto-compact point', () => {
   const s = { model: { id: 'claude-opus-5-5[1m]' }, context_window: { used_percentage: 12, context_window_size: 1000000 } };
   // 120k used of a 300k compact point = 40%.
-  assert.equal(S.contextPart(s, { autoCompactWindow: 300000 }), 'ctx 12% of 1M, 40% to compact at 300k');
+  assert.equal(S.contextPart(s, { autoCompactWindow: 300000 }), 'ctx 12% of 1M, 40% of 300k compact point');
   // A per-model window wins over the top-level one.
   assert.equal(S.contextPart(s, { autoCompactWindow: 300000, modelSettings: { 'claude-opus-5-5': { autoCompactWindow: 200000 } } }),
-    'ctx 12% of 1M, 60% to compact at 200k');
+    'ctx 12% of 1M, 60% of 200k compact point');
   // No setting, or one at/above the window: the compact point is the window itself, shown once.
   assert.equal(S.contextPart(s, {}), 'ctx 12% of 1M');
   assert.equal(S.contextPart(s, { autoCompactWindow: 2000000 }), 'ctx 12% of 1M');
@@ -255,5 +255,40 @@ test('status line shows how far the session is toward the auto-compact point', (
 test('render passes the settings through to the context part', () => {
   const out = S.render({ model: { display_name: 'Opus 5.5', id: 'claude-opus-5-5' }, cost: { total_cost_usd: 1 },
     context_window: { used_percentage: 15, context_window_size: 1000000 } }, undefined, { autoCompactWindow: 300000 });
-  assert.equal(out, 'Opus 5.5 | ctx 15% of 1M, 50% to compact at 300k | $1.00 API-eq');
+  assert.equal(out, 'Opus 5.5 | ctx 15% of 1M, 50% of 300k compact point | $1.00 API-eq');
+});
+
+// --- second review: every source of the compact point, or "unknown" -------------------------------
+const S12 = { model: { id: 'claude-opus-5-5' }, context_window: { used_percentage: 12, context_window_size: 1000000 } };
+
+test('regression: the compact point is read from user, project, local and managed settings', () => {
+  // One file sets it: that value is used.
+  assert.equal(S.contextPart(S12, [{}, { autoCompactWindow: 400000 }, {}, {}]), 'ctx 12% of 1M, 30% of 400k compact point');
+  // Files agree: used. Files disagree: precedence is not something this script can be sure of, so unknown.
+  assert.equal(S.contextPart(S12, [{ autoCompactWindow: 300000 }, { autoCompactWindow: 300000 }]), 'ctx 12% of 1M, 40% of 300k compact point');
+  assert.equal(S.contextPart(S12, [{ autoCompactWindow: 300000 }, {}, { autoCompactWindow: 200000 }]), 'ctx 12% of 1M, compact point ?');
+});
+
+test('regression: the auto-compact env vars are honoured or make the compact point unknown', () => {
+  // The window env var alone is used.
+  assert.equal(S.contextPart(S12, [{}], { CLAUDE_CODE_AUTO_COMPACT_WINDOW: '250000' }), 'ctx 12% of 1M, 48% of 250k compact point');
+  // The same value as the settings: fine. A different one: unknown.
+  assert.equal(S.contextPart(S12, [{ autoCompactWindow: 300000 }], { CLAUDE_CODE_AUTO_COMPACT_WINDOW: '300000' }), 'ctx 12% of 1M, 40% of 300k compact point');
+  assert.equal(S.contextPart(S12, [{ autoCompactWindow: 300000 }], { CLAUDE_CODE_AUTO_COMPACT_WINDOW: '200000' }), 'ctx 12% of 1M, compact point ?');
+  // The percent override is not modelled: unknown, whether set in the environment or a settings env block.
+  assert.equal(S.contextPart(S12, [{ autoCompactWindow: 300000 }], { CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: '50' }), 'ctx 12% of 1M, compact point ?');
+  assert.equal(S.contextPart(S12, [{ autoCompactWindow: 300000, env: { CLAUDE_AUTOCOMPACT_PCT_OVERRIDE: '50' } }], {}), 'ctx 12% of 1M, compact point ?');
+});
+
+test('settingsSources reads user, project, local and managed files, skipping missing or broken ones', () => {
+  const home = tmp();
+  const proj = tmp();
+  const managed = path.join(tmp(), 'managed-settings.json');
+  fs.writeFileSync(path.join(home, 'settings.json'), JSON.stringify({ autoCompactWindow: 1 }));
+  fs.mkdirSync(path.join(proj, '.claude'));
+  fs.writeFileSync(path.join(proj, '.claude', 'settings.json'), JSON.stringify({ autoCompactWindow: 2 }));
+  fs.writeFileSync(path.join(proj, '.claude', 'settings.local.json'), '{broken');
+  fs.writeFileSync(managed, JSON.stringify({ autoCompactWindow: 4 }));
+  const got = S.settingsSources({ workspace: { project_dir: proj } }, { CLAUDE_CONFIG_DIR: home }, [managed]);
+  assert.deepEqual(got.map((x) => x.autoCompactWindow), [1, 2, 4]);
 });

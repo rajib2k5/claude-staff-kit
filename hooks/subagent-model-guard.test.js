@@ -103,3 +103,21 @@ test('the opus rule for adversarial-reviewer holds even when effort is not requi
   assert.equal(v && v.decision, 'deny');
   assert.equal(decide('Agent', { prompt: 'x', subagent_type: 'implementer', model: 'sonnet' }, OFF), null);
 });
+
+test('regression: the opus-only rule holds for namespaced, mixed-case and padded subagent types', () => {
+  for (const t of ['staff-kit:adversarial-reviewer', 'Adversarial-Reviewer', '  adversarial-reviewer ', 'my.plugin-2:ADVERSARIAL-REVIEWER']) {
+    const v = decide('Agent', { prompt: 'x', subagent_type: t, model: 'sonnet', effort: 'high' }, ON);
+    assert.equal(v && v.decision, 'deny', t);
+    assert.equal(decide('Agent', { prompt: 'x', subagent_type: t, model: 'opus', effort: 'high' }, ON), null, t);
+  }
+  // A different agent whose name only contains the word is not caught.
+  assert.equal(decide('Agent', { prompt: 'x', subagent_type: 'adversarial-reviewer-notes', model: 'sonnet', effort: 'high' }, ON), null);
+});
+
+test('process: a null or non-object payload exits 0 with no output', () => {
+  for (const p of ['null', '42', '"x"', '[]']) {
+    const r = runHook(p);
+    assert.equal(r.code, 0, `${p}: ${r.err}`);
+    assert.equal(r.out, '', p);
+  }
+});
