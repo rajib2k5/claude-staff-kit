@@ -5,9 +5,11 @@ USD here is an API-equivalent estimate (usd_basis: estimated_api_equivalent): to
 On a Max plan this is NOT money spent; the plan is a flat fee.
 
 The semantics mirror hooks/subagent-cost-ledger.js (sumUsage, priceKey):
-  * one count per API message id (message.id); the last line for an id wins, because streaming writes the same
-    message several times and the last line carries the final output count. Ids are de-duplicated across files,
-    because a resumed or forked session copies earlier messages into its new transcript;
+  * one count per API message id (message.id), de-duplicated across files, because a resumed or forked session
+    copies earlier messages into its new transcript. Of the lines for one id, the one with the most output tokens
+    is kept (ties: the later timestamp, then the larger usage object by its sorted JSON text), whatever order the
+    files are read in. Streaming writes a message several times with a growing output count, so within a file this
+    is the last line, as in the ledger hook;
   * ``<synthetic>`` model lines are skipped;
   * a model is priced only by an exact price-table id or that id plus a -YYYYMMDD date snapshot (a trailing
     ``[1m]``-style tag is dropped first). claude-opus-5-6 never takes claude-opus-5's price: it is unpriced.
@@ -80,6 +82,12 @@ def _timestamp(text: Any) -> datetime | None:
     return moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)
 
 
+def _rank(entry: tuple[str, str, datetime, dict[str, Any]]) -> tuple[int, datetime, str]:
+    """Which line for one message id is kept: most output tokens, then the later timestamp, then a fixed order."""
+    _model, _project, moment, usage = entry
+    return int(usage.get("output_tokens") or 0), moment, json.dumps(usage, sort_keys=True, default=str)
+
+
 def scan(root: Path, window: sc.Window, prices: dict[str, Any] | None, *, prices_path: str | None = None,
          now: datetime | None = None) -> dict[str, Any]:
     latest: dict[str, tuple[str, str, datetime, dict[str, Any]]] = {}  # message id -> (model, project, ts, usage)
@@ -116,12 +124,16 @@ def scan(root: Path, window: sc.Window, prices: dict[str, Any] | None, *, prices
                     bad += 1
                     continue
                 key = message.get("id") or f"{data.get('requestId', '')}:{data.get('uuid') or f'{path}:{n}'}"
-                latest[key] = (model, project, moment, message["usage"])
+                entry = (model, project, moment, message["usage"])
+                if key not in latest or _rank(entry) > _rank(latest[key]):
+                    latest[key] = entry
     groups: dict[tuple[str, str, str], dict[str, int]] = {}
     tier_exceeded: set[str] = set()
+    in_window = 0
     for model, project, moment, usage in latest.values():
         if not window.contains(moment):
             continue
+        in_window += 1
         totals = groups.setdefault((moment.date().isoformat(), model, project), dict.fromkeys(sc.TOKEN_FIELDS, 0))
         call = _tokens(usage)
         for field, value in call.items():
@@ -152,7 +164,8 @@ def scan(root: Path, window: sc.Window, prices: dict[str, Any] | None, *, prices
     if bad:
         notes.append(f"{bad} unreadable transcript lines or files skipped")
     return sc.make_doc(SOURCE, window, rows, notes=notes, fetched_at=now,
-                       meta={"files_read": files, "files_skipped_by_mtime": skipped, "messages": len(latest),
+                       meta={"files_read": files, "files_skipped_by_mtime": skipped, "messages": in_window,
+                             "messages_read": len(latest),
                              "prices_path": prices_path, "unpriced_models": sorted(unpriced)})
 
 

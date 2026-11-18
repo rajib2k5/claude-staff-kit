@@ -8,12 +8,14 @@ import http.server
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
 import threading
 import unittest
 import urllib.error
+import urllib.parse
 from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
@@ -274,11 +276,31 @@ class BedrockFilter(unittest.TestCase):
         with contextlib.redirect_stderr(stderr):
             doc = bedrock.fetch(ce, WINDOW, now=NOW)
         cost_calls = [kw for kind, kw in ce.calls if kind == "cost"]
-        self.assertEqual(cost_calls[0]["Filter"]["Dimensions"]["Values"], names[:3])
+        self.assertEqual(cost_calls[0]["Filter"]["And"][0]["Dimensions"]["Values"], names[:3])
         self.assertEqual(doc["meta"]["ce_requests"], 3)
         self.assertIn("3", stderr.getvalue())
         self.assertEqual([Decimal(r["usd"]) for r in doc["rows"]], [Decimal("1.2345678901")] * 2)
         self.assertEqual(doc["rows"][0]["model"], "Claude Sonnet 5.5")
+
+    def test_cost_request_keeps_usage_records_only(self) -> None:
+        # 4fd2620 sent no RECORD_TYPE filter, so credits and refunds netted into "billed".
+        class FakeCE:
+            calls: list = []
+
+            def get_dimension_values(self, **kw):  # noqa: ANN003
+                return {"DimensionValues": [{"Value": "Amazon Bedrock"}]}
+
+            def get_cost_and_usage(self, **kw):  # noqa: ANN003
+                self.calls.append(kw)
+                return {"ResultsByTime": []}
+
+        ce = FakeCE()
+        with contextlib.redirect_stderr(io.StringIO()):
+            doc = bedrock.fetch(ce, WINDOW, now=NOW)
+        self.assertEqual(ce.calls[0]["Filter"], {"And": [
+            {"Dimensions": {"Key": "SERVICE", "Values": ["Amazon Bedrock"]}},
+            {"Dimensions": {"Key": "RECORD_TYPE", "Values": ["Usage"]}}]})
+        self.assertTrue(any("credits" in n and "Usage" in n for n in doc["notes"]))
 
 
 class _EchoKey(http.server.BaseHTTPRequestHandler):
@@ -337,6 +359,353 @@ class CanaryKey(unittest.TestCase):
                 code = anthropic_api.main(argv, env={})
             self.assertEqual(code, 2, argv)
             self.assertNotIn(CANARY, err.getvalue(), argv)
+
+
+# A fake key with no repeated 8-character run, so "no 8-character piece of it" is a strict check.
+LONG_KEY = "sk-ant-admin01-aB3dE6gH9jK2mN5pQ8sT1vW4yZ7_cF0iL3oR6uX9-bE2hK5nQ8tW1zC4fI7lO0rU3xA6"
+
+
+def key_pieces(text: str, key: str = LONG_KEY) -> list[str]:
+    """Every 8-character piece of ``key`` that appears in ``text``."""
+    return [key[i:i + 8] for i in range(len(key) - 7) if key[i:i + 8] in text]
+
+
+def run_main(argv: list[str], key: str, opener, **kw) -> tuple[object, str]:  # noqa: ANN001
+    out, err = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+        try:
+            code = anthropic_api.main(argv, env={"ANTHROPIC_ADMIN_KEY": key}, opener=opener, sleep=lambda s: None,
+                                      **kw)
+        except BaseException as exc:  # noqa: BLE001 - the test reports an escaped exception as a failure
+            code = f"raised {type(exc).__name__}"
+    return code, out.getvalue() + err.getvalue()
+
+
+class _RecordKey(http.server.BaseHTTPRequestHandler):
+    seen: list = []
+
+    def do_GET(self) -> None:  # noqa: N802
+        type(self).seen.append((self.path, self.headers.get("x-api-key")))
+        if self.path.startswith("/v1/organizations/analytics/") and getattr(self.server, "redirect", False):
+            self.send_response(302)
+            self.send_header("Location", f"http://127.0.0.1:{self.server.server_port}/elsewhere")
+            self.end_headers()
+            return
+        body = json.dumps({"error": {"message": f"bad key {self.headers.get('x-api-key')}"}}).encode()
+        self.send_response(200 if self.path == "/elsewhere" else 401)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(body if self.path != "/elsewhere" else json.dumps(page([])).encode())
+
+    def log_message(self, *args: object) -> None:
+        pass
+
+
+@contextlib.contextmanager
+def local_server(redirect: bool = False):  # noqa: ANN201
+    _RecordKey.seen = []
+    server = http.server.HTTPServer(("127.0.0.1", 0), _RecordKey)
+    server.redirect = redirect
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        yield server
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+class HTTPErrorOpener:
+    def __init__(self, body: str, code: int = 400) -> None:
+        self.body, self.code, self.calls = body, code, 0
+
+    def open(self, request, timeout=None):  # noqa: ANN001
+        self.calls += 1
+        raise urllib.error.HTTPError(request.full_url, self.code, "x", {}, io.BytesIO(self.body.encode()))
+
+
+class KeyHygiene(unittest.TestCase):
+    ARGS = ["--since", "2026-11-10", "--until", "2026-11-17"]
+
+    def test_key_with_trailing_newline_or_spaces_is_stripped_before_it_reaches_a_header(self) -> None:
+        # 4fd2620: http.client refused the header with a ValueError that quoted the whole key, unscrubbed.
+        for suffix in ("\n", "\r\n", "  "):
+            with local_server() as server, tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp) / "a.json"
+                code, text = run_main(self.ARGS + ["--base-url", f"http://127.0.0.1:{server.server_port}",
+                                                   "--out", str(out)], LONG_KEY + suffix, None)
+                written = out.read_text() if out.exists() else ""
+            self.assertEqual(code, 1, repr(suffix))
+            self.assertEqual(key_pieces(text + written), [], repr(suffix))
+            self.assertTrue(_RecordKey.seen, repr(suffix))
+            self.assertEqual({k for _, k in _RecordKey.seen}, {LONG_KEY}, repr(suffix))
+
+    def test_key_with_characters_outside_the_allowlist_is_refused_and_never_sent(self) -> None:
+        for bad in (LONG_KEY[:30] + "\n" + LONG_KEY[30:], LONG_KEY[:30] + " " + LONG_KEY[30:],
+                    LONG_KEY[:30] + "é" + LONG_KEY[30:], LONG_KEY + "\x00"):
+            opener = FakeOpener({"cost": {None: page([])}, **EMPTY_USAGE})
+            code, text = run_main(self.ARGS, bad, opener)
+            self.assertEqual(code, 2, repr(bad))
+            self.assertEqual(opener.urls, [], repr(bad))
+            self.assertEqual(key_pieces(text), [], repr(bad))
+
+    def test_key_in_an_error_body_is_masked_in_place_and_the_rest_is_kept(self) -> None:
+        code, text = run_main(self.ARGS, LONG_KEY, HTTPErrorOpener(f"bad key {LONG_KEY} for workspace wrkspc_9"))
+        self.assertEqual(code, 1)
+        self.assertIn("bad key [REDACTED] for workspace wrkspc_9", text)
+        self.assertEqual(key_pieces(text), [])
+
+    def test_error_body_cut_at_2000_bytes_does_not_leak_a_key_prefix(self) -> None:
+        code, text = run_main(self.ARGS, LONG_KEY, HTTPErrorOpener("x" * 1960 + "key=" + LONG_KEY))
+        self.assertEqual(code, 1)
+        self.assertIn("400", text)
+        self.assertEqual(key_pieces(text), [])
+
+    def test_percent_and_backslash_escaped_key_in_an_error_body_is_redacted(self) -> None:
+        percent = "".join(f"%{b:02X}" for b in LONG_KEY.encode())
+        escaped = "".join(f"\\u{ord(c):04x}" for c in LONG_KEY)
+        for body in (f"echo {percent}", '{"error": "' + escaped + '"}', f"echo {LONG_KEY!r}"):
+            code, text = run_main(self.ARGS, LONG_KEY, HTTPErrorOpener(body))
+            self.assertEqual(code, 1, body[:20])
+            decoded = urllib.parse.unquote(text)
+            decoded = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), decoded)
+            self.assertEqual(key_pieces(decoded), [], body[:20])
+
+    def test_unwritable_out_after_a_keyed_exception_returns_1_without_a_traceback(self) -> None:
+        class Boom:
+            def open(self, request, timeout=None):  # noqa: ANN001
+                raise RuntimeError("boom " + LONG_KEY)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            blocker = Path(tmp) / "a-file"
+            blocker.write_text("")
+            code, text = run_main(self.ARGS + ["--out", str(blocker / "x.json")], LONG_KEY, Boom())
+        self.assertEqual(code, 1)
+        self.assertNotIn("Traceback", text)
+        self.assertEqual(key_pieces(text), [])
+
+
+class AnthropicWindowLimits(unittest.TestCase):
+    KEY = "sk-ant-admin01-test"
+
+    def test_window_before_2026_is_a_usage_error_and_nothing_is_sent(self) -> None:
+        opener = FakeOpener({})
+        code, text = run_main(["--since", "2025-12-30", "--until", "2026-01-05"], self.KEY, opener)
+        self.assertEqual(code, 2)
+        self.assertIn("2026-01-01", text)
+        self.assertEqual(opener.urls, [])
+
+    def test_window_older_than_365_days_is_a_usage_error(self) -> None:
+        opener = FakeOpener({})
+        code, text = run_main(["--since", "2026-01-02", "--until", "2026-01-09"], self.KEY, opener,
+                              now=datetime(2027, 2, 1, tzinfo=timezone.utc))
+        self.assertEqual(code, 2)
+        self.assertIn("365", text)
+        self.assertEqual(opener.urls, [])
+
+
+class AnthropicStatus(unittest.TestCase):
+    def test_refresh_before_the_window_end_marks_the_source_and_subtotal_partial(self) -> None:
+        opener = FakeOpener({"cost": {None: page([cost_row("2026-11-10", "100.000000")],
+                                                 refreshed="2026-11-12T03:00:00Z")},
+                             "usage": {None: page([], refreshed="2026-11-12T03:00:00Z")}})
+        doc = anthropic_api.fetch(WINDOW, "k", opener=opener, now=NOW)
+        self.assertEqual(doc["status"], "partial")
+        self.assertTrue(any("2026-11-12T03:00:00Z" in n for n in doc["notes"]))
+        built = report.build([doc])
+        self.assertTrue(built["subtotals"]["billed"]["partial"])
+        self.assertIn("PARTIAL", report.render(built))
+
+    def test_one_unknown_chunk_of_two_is_partial(self) -> None:
+        class ByChunk:
+            def open(self, request, timeout=None):  # noqa: ANN001
+                start = parse_qs(urlsplit(request.full_url).query)["starting_at"][0]
+                if start.startswith("2026-09-01"):
+                    return FakeResponse(page([], refreshed=None))
+                return FakeResponse(page([cost_row("2026-10-05", "100.000000")]))
+
+        window = spend_common.parse_window(since="2026-09-01", until="2026-11-01", now=NOW)
+        doc = anthropic_api.fetch(window, "k", opener=ByChunk(), now=NOW)
+        self.assertEqual(doc["status"], "partial")
+
+    def test_non_usd_currency_is_not_priced(self) -> None:
+        row = cost_row("2026-11-10", "100.000000")
+        row["cost"]["currency"] = "EUR"
+        doc = anthropic_api.fetch(WINDOW, "k", opener=FakeOpener({"cost": {None: page([row])}, **EMPTY_USAGE}),
+                                  now=NOW)
+        self.assertEqual([r["usd"] for r in doc["rows"] if r["counts_toward_total"]], [None])
+        self.assertNotIn("billed", report.build([doc])["subtotals"])
+
+
+class AnthropicTransport(unittest.TestCase):
+    def test_redirect_is_refused_and_the_key_is_not_resent(self) -> None:
+        with local_server(redirect=True) as server:
+            client = anthropic_api.Client(LONG_KEY, f"http://127.0.0.1:{server.server_port}", sleep=lambda s: None)
+            with self.assertRaises(anthropic_api.ApiError) as ctx:
+                client.get("cost", [])
+        self.assertIn("redirect", str(ctx.exception))
+        self.assertEqual([p for p, _ in _RecordKey.seen if p == "/elsewhere"], [])
+
+    def test_expired_cursor_restarts_the_chunk_from_page_one(self) -> None:
+        class Expire(FakeOpener):
+            expired = False
+
+            def open(self, request, timeout=None):  # noqa: ANN001
+                if "page=p2" in request.full_url and not self.expired:
+                    self.expired = True
+                    raise urllib.error.HTTPError(request.full_url, 410, "gone", {}, io.BytesIO(b"{}"))
+                return super().open(request, timeout)
+
+        opener = Expire({"cost": {None: page([cost_row("2026-11-10", "100.000000")], nxt="p2"),
+                                  "p2": page([cost_row("2026-11-11", "200.000000")])}, **EMPTY_USAGE})
+        doc = anthropic_api.fetch(WINDOW, "k", opener=opener, now=NOW, sleep=lambda s: None)
+        self.assertEqual(sorted(r["day"] for r in doc["rows"] if r["usd"] is not None), ["2026-11-10", "2026-11-11"])
+
+    def test_a_4xx_is_not_retried(self) -> None:
+        opener = HTTPErrorOpener("{}", code=400)
+        client = anthropic_api.Client("k", sleep=lambda s: None, opener=opener)
+        with self.assertRaises(anthropic_api.ApiError):
+            client.get("cost", [])
+        self.assertEqual(opener.calls, 1)
+
+
+class ReportRules(unittest.TestCase):
+    def test_unknown_source_rows_are_never_counted(self) -> None:
+        doc = doc_with("anthropic_api", "billed", "5.00")
+        doc["status"] = "unknown"
+        built = report.build([doc])
+        self.assertEqual(built["subtotals"], {})
+        self.assertTrue(any("UNKNOWN" in line for line in built["not_in_any_subtotal"]))
+
+    def test_unpriced_counting_row_is_listed_not_summed_as_zero(self) -> None:
+        row = spend_common.make_row("aws_bedrock", usd=None, usd_basis="billed", service="Amazon Bedrock")
+        built = report.build([spend_common.make_doc("aws_bedrock", WINDOW, [row], fetched_at=NOW)])
+        self.assertNotIn("billed", built["subtotals"])
+        self.assertTrue(any("unpriced" in line for line in built["not_in_any_subtotal"]))
+
+    def test_partial_source_marks_its_subtotal_partial(self) -> None:
+        doc = doc_with("aws_bedrock", "billed", "5.00")
+        doc["status"] = "partial"
+        self.assertTrue(report.build([doc])["subtotals"]["billed"]["partial"])
+
+    def test_display_rounds_half_up(self) -> None:
+        text = report.render(report.build([doc_with("aws_bedrock", "billed", "0.125")]))
+        self.assertIn("0.13", text)
+        self.assertNotIn("0.12 ", text)
+
+
+def write_transcript(root: Path, name: str, lines: list[str], mtime: datetime | None = None) -> Path:
+    path = root / "p" / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n")
+    if mtime is not None:
+        os.utime(path, (mtime.timestamp(), mtime.timestamp()))
+    return path
+
+
+class LocalWindowAndChoice(unittest.TestCase):
+    def test_messages_count_only_the_window(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            write_transcript(Path(tmp), "s.jsonl", [
+                transcript_line("in", "claude-opus-5", 1),
+                transcript_line("before", "claude-opus-5", 1, ts="2026-11-01T00:00:00Z")])
+            doc = claude_code_local.scan(Path(tmp), WINDOW, PRICES)
+        self.assertEqual(doc["meta"]["messages"], 1)
+
+    def test_duplicate_id_keeps_the_copy_with_most_output_whatever_the_file_order(self) -> None:
+        # a.jsonl sorts first; "last line wins" across files took the smaller, earlier copy from b.jsonl
+        with tempfile.TemporaryDirectory() as tmp:
+            write_transcript(Path(tmp), "a.jsonl", [transcript_line("m1", "claude-opus-5", 9)])
+            write_transcript(Path(tmp), "b.jsonl", [transcript_line("m1", "claude-opus-5", 5)])
+            doc = claude_code_local.scan(Path(tmp), WINDOW, PRICES)
+        self.assertEqual([r["tokens"]["output"] for r in doc["rows"]], [9])
+
+    def test_window_end_is_exclusive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            write_transcript(Path(tmp), "s.jsonl", [
+                transcript_line("first", "claude-opus-5", 3, ts="2026-11-10T00:00:00Z"),
+                transcript_line("at_end", "claude-opus-5", 4, ts="2026-11-17T00:00:00Z")])
+            doc = claude_code_local.scan(Path(tmp), WINDOW, PRICES)
+        self.assertEqual(sum(r["tokens"]["output"] for r in doc["rows"]), 3)
+
+    def test_file_last_written_inside_the_window_is_read(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            write_transcript(Path(tmp), "s.jsonl", [transcript_line("m", "claude-opus-5", 3)],
+                             mtime=datetime(2026, 11, 12, 11, tzinfo=timezone.utc))
+            doc = claude_code_local.scan(Path(tmp), WINDOW, PRICES)
+        self.assertEqual(sum(r["tokens"]["output"] for r in doc["rows"]), 3)
+
+    def test_prompt_over_the_tier_cap_is_flagged(self) -> None:
+        capped = {"models": {"claude-opus-5": {**PRICES["models"]["claude-opus-5"], "tier_max_prompt_tokens": 100}}}
+        with tempfile.TemporaryDirectory() as tmp:
+            write_transcript(Path(tmp), "s.jsonl", [transcript_line("m", "claude-opus-5", 3)])
+            doc = claude_code_local.scan(Path(tmp), WINDOW, capped)
+        self.assertTrue(any(n.startswith("price_tier_exceeded") for n in doc["notes"]))
+
+
+class FakeSfResult:
+    def __init__(self, rows: list) -> None:
+        self.rows = rows
+
+    def as_dicts(self) -> list:
+        return self.rows
+
+
+class FakeSfClient:
+    """Answers the metering query with ``metering`` and every attribution query with no rows."""
+
+    def __init__(self, metering: list) -> None:
+        self.metering, self.statements = metering, []
+
+    def run(self, sql: str, binds: list) -> list:
+        self.statements.append(sql)
+        return [FakeSfResult(self.metering if "metering_daily_history" in sql.lower() else [])]
+
+
+def metering_row(credits: object, offset: object = "+00:00") -> dict:
+    return {"USAGE_DAY": "2026-11-10", "SERVICE_TYPE": "AI_SERVICES", "CREDITS_BILLED": credits,
+            "CREDITS_USED": credits, "DAY_UTC_OFFSET": offset}
+
+
+class CortexStatus(unittest.TestCase):
+    """fetch() with the real snowflake-sql guard and binds, and a fake client (no Snowflake call)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sf = snowflake_cortex._load_sf()
+
+    def fetch(self, metering: list) -> tuple[dict, FakeSfClient]:
+        client = FakeSfClient(metering)
+        return snowflake_cortex.fetch(self.sf, client, WINDOW, rate=Decimal("2.00"), now=NOW), client
+
+    def test_every_query_is_read_only_and_every_dollar_is_list(self) -> None:
+        doc, client = self.fetch([metering_row(Decimal("3"))])
+        self.assertEqual(len(client.statements), len(snowflake_cortex.QUERIES))
+        self.assertEqual(doc["status"], "ok")
+        self.assertEqual({r["usd_basis"] for r in doc["rows"]}, {"list"})
+        self.assertEqual([Decimal(r["usd"]) for r in doc["rows"]], [Decimal("6.00")])
+
+    def test_empty_metering_is_unknown_not_zero(self) -> None:
+        doc, _ = self.fetch([])
+        self.assertEqual(doc["status"], "unknown")
+        text = report.render(report.build([doc]))
+        self.assertIn("UNKNOWN", text)
+        self.assertNotIn("0.00", text)
+
+    def test_null_credits_billed_is_unpriced_not_zero(self) -> None:
+        doc, _ = self.fetch([metering_row(None), {**metering_row(Decimal("1")), "SERVICE_TYPE": "CORTEX_CODE_CLI"}])
+        null_row = next(r for r in doc["rows"] if r["service"] == "AI_SERVICES")
+        self.assertIsNone(null_row["usd"])
+        self.assertIsNone(null_row["credits"])
+        self.assertEqual(doc["status"], "partial")
+        built = report.build([doc])
+        self.assertEqual(Decimal(built["subtotals"]["list"]["usd"]), Decimal("2.00"))
+        self.assertTrue(any("AI_SERVICES" in line for line in built["not_in_any_subtotal"]))
+
+    def test_session_time_zone_days_are_labelled_not_passed_off_as_utc(self) -> None:
+        doc, _ = self.fetch([metering_row(Decimal("3"), offset="-08:00")])
+        self.assertEqual(doc["status"], "partial")
+        self.assertTrue(any("-08:00" in n and "not UTC" in n for n in doc["notes"]))
+        self.assertTrue(report.build([doc])["subtotals"]["list"]["partial"])
 
 
 if __name__ == "__main__":

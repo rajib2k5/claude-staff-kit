@@ -18,7 +18,7 @@ import argparse
 import json
 import sys
 from collections import defaultdict
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
@@ -103,7 +103,8 @@ def build(docs: Iterable[dict[str, Any]], *, generated_at: Any = None) -> dict[s
 
 
 def _money(value: Decimal | None) -> str:
-    return "unpriced" if value is None else f"{value.quantize(Decimal('0.01'))}"
+    """Cents for display, half up (0.125 -> 0.13), as a reader rounds; the JSON keeps the exact value."""
+    return "unpriced" if value is None else f"{value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)}"
 
 
 def _table(header: Sequence[str], rows: list[Sequence[str]]) -> list[str]:

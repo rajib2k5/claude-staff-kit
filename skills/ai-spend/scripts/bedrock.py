@@ -8,7 +8,9 @@
    third-party reports, not AWS documentation: check the matched list this script prints against your bill.
    Cost Explorer cannot filter a dimension by substring (MatchOptions for Dimensions are EQUALS and
    CASE_SENSITIVE only, per the GetCostAndUsage API reference), which is why the names are listed first.
-3. ce:GetCostAndUsage, DAILY, grouped by SERVICE and USAGE_TYPE, filtered to the matched services.
+3. ce:GetCostAndUsage, DAILY, grouped by SERVICE and USAGE_TYPE, filtered to the matched services and to
+   RECORD_TYPE Usage. Without the record-type filter, credits and refunds (negative records) net into the sum; with
+   it, "billed" here is usage before credits, refunds, discounts and tax.
 
 Cost: AWS charges USD 0.01 for each paginated Cost Explorer API request. The script counts its requests and prints
 the count. Credentials come from the default boto3 chain (environment, profile, SSO, instance role); nothing is
@@ -36,6 +38,7 @@ EDITION = re.compile(r"\s*\(Amazon Bedrock Edition\)\s*$")
 # Exact Bedrock, any "Amazon Bedrock <feature>" service, and any "<model> (Amazon Bedrock Edition)" service.
 SERVICE_PATTERNS = (re.compile(r"^Amazon Bedrock$"), re.compile(r"^Amazon Bedrock\s+\S"), EDITION)
 METRIC = "UnblendedCost"
+RECORD_TYPE = "Usage"
 MAX_PAGES = 1000
 
 
@@ -62,13 +65,15 @@ def fetch(ce: Any, window: sc.Window, *, now: datetime | None = None) -> dict[st
     near = [n for n in names if n not in services and re.search(r"bedrock|claude|anthropic", n, re.I)]
     notes = [f"services matched: {services or 'none'}; Bedrock-like names not matched: {near or 'none'}. "
              f"Check both against your bill.",
-             "Claude on Bedrock is billed by AWS (it is not in the Anthropic Console cost)"]
+             "Claude on Bedrock is billed by AWS (it is not in the Anthropic Console cost)",
+             f"{METRIC} of RECORD_TYPE {RECORD_TYPE} only: before credits, refunds, discounts and tax"]
     rows: list[dict[str, Any]] = []
     if services:
         token = None
         for _ in range(MAX_PAGES):
             kw = {"TimePeriod": period, "Granularity": "DAILY", "Metrics": [METRIC],
-                  "Filter": {"Dimensions": {"Key": "SERVICE", "Values": services}},
+                  "Filter": {"And": [{"Dimensions": {"Key": "SERVICE", "Values": services}},
+                                     {"Dimensions": {"Key": "RECORD_TYPE", "Values": [RECORD_TYPE]}}]},
                   "GroupBy": [{"Type": "DIMENSION", "Key": "SERVICE"}, {"Type": "DIMENSION", "Key": "USAGE_TYPE"}]}
             if token:
                 kw["NextPageToken"] = token
@@ -97,7 +102,7 @@ def fetch(ce: Any, window: sc.Window, *, now: datetime | None = None) -> dict[st
     notes.append(f"this fetch made {requests} Cost Explorer requests (USD {spent} at USD 0.01 each)")
     return sc.make_doc(SOURCE, window, rows, notes=notes, fetched_at=now,
                        meta={"ce_requests": requests, "ce_request_cost_usd": spent, "metric": METRIC,
-                             "services": services})
+                             "record_type": RECORD_TYPE, "services": services})
 
 
 def main(argv: Sequence[str] | None = None) -> int:
