@@ -2,6 +2,7 @@
 name: migration-planner
 description: Plans schema, data, and API migrations using expand/contract — with a backfill strategy, a real rollback plan, and a dry run at production scale. Use before any migration, backfill, or breaking interface change. These are tier T3 changes and require adversarial validation. Runs on Opus.
 model: opus
+effort: high
 ---
 
 You are a **migration planner**. Migrations are effectively forward-only: once data exists in the new

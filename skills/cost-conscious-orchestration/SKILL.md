@@ -69,6 +69,25 @@ latest Haiku `claude-haiku-5-5` (Claude Code v2.1.293+), as of 2026-10-28. **Use
 roll forward — confirm from `/model` or the session banner before pinning, and never silently
 fall back to a weaker model for validation; say the intended model was unavailable instead.
 
+### 1a. Effort — set it with the model, every time
+
+The `Agent` tool takes an `effort` (`low` | `medium` | `high` | `xhigh` | `max`) next to `model`.
+The PreToolUse hook `subagent-model-guard.js` denies a launch that omits either one (forks are
+exempt: they run on the parent's model and effort). Pick both from this table:
+
+| Difficulty | `model` | `effort` | Looks like |
+|---|---|---|---|
+| Very simple | `sonnet` | `low` | Find a symbol, read one file and report, list or count files, copy values |
+| Simple to moderate | `sonnet` | `medium` | Mechanical multi-file edit, scaffold from a template, tests against a stated oracle, re-measure a number, doc update |
+| Complex | `opus` | `high` | Design with trade-offs, unknown root cause, concurrency, money, data deletion, research that will be acted on |
+| Adversarial validation (when routed) | `opus` | `high` | Never downgraded; `xhigh` when the claim is a number headed to a decision |
+| Hardest open-ended | `opus` | `xhigh` | A multi-module design or a bug nobody has explained after a first pass |
+
+`max` is for the rare case where `xhigh` already failed. `effort` raises thinking tokens, and
+thinking tokens are output tokens, the most expensive kind: a `high` default on a lookup is waste.
+The agent files in `agents/` carry the same defaults in their `effort:` frontmatter, for launches
+the guard does not see. Measured cost per subagent is in the ledger (section 6).
+
 **When it is ambiguous, use Opus.** A mis-routed simple task costs tokens. A mis-routed complex
 task costs a bad change, and the bad change is found later by someone with no context.
 
@@ -158,3 +177,36 @@ Forbidden without a command executed in this session: "tests pass", "the build i
 - Put throwaway scripts and intermediate output in the scratchpad directory, not the project.
 - When a long task is mostly mechanical, template it once, verify the template, then fan out —
   verifying the pattern before 30 copies of it is the cheapest correctness you will ever buy.
+
+## 6. Measured spend — the ledger and the status line
+
+- `hooks/subagent-cost-ledger.js` (SubagentStop) appends one JSON line per finished subagent to
+  `~/.claude/cost-ledger/subagents.jsonl`: agent type, model, tokens (input, output, cache read,
+  cache write 5m and 1h) and the **API-equivalent** USD from `hooks/lib/model-prices.json` (dated,
+  sourced). On a Max plan nothing is billed per token; the tokens are the budget. A resumed agent
+  gets a second, cumulative line; read the last line per `agent_id`.
+- On Stop it prints the session total (main thread plus subagents) when it moved since the last turn.
+- `hooks/cost-statusline.js` shows model, context used, session API-equivalent cost and subagent tokens.
+- "Report measured spend after a wave" means: quote the ledger lines, not an estimate.
+
+## 7. Compaction and durable memory — lose nothing important
+
+Compaction summarises the conversation, and a summary paraphrases. Two things stop that from losing
+facts:
+
+1. **The fact journal (automatic).** `hooks/compact-journal.js` runs at PreCompact with no model
+   call. It writes the recent user instructions verbatim, the open task list, cwd, git branch and
+   status, open PRs and decision-like lines to `~/.claude/compact-journal/<session>.md`, and the
+   SessionStart `compact` hook re-injects it. After a compaction, read the `<compact-journal>` block
+   before acting: the user's exact words there outrank the summary's paraphrase.
+2. **Milestone memory writes (your job).** At each milestone — a PR opened or merged, a decision the
+   user made, a measured number someone will rely on, a constraint discovered the hard way, the end
+   of a work session — save the durable fact to the auto-memory folder (one fact per file, with the
+   index line), following the memory instructions in the system prompt. Save what a future session
+   needs and cannot rebuild from the repo: decisions and their reasons, user preferences, external
+   pointers, measured baselines with their date. Do not save what git, the code or CLAUDE.md already
+   records. Update an existing memory instead of adding a duplicate.
+
+Keep the main thread small so compaction is rare: delegate read-many work (section 2), and do not
+re-read files or re-derive facts already in the session.
+

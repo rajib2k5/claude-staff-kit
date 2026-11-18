@@ -9,6 +9,7 @@ Plugin mode does not need this: hooks/hooks.json registers them automatically.
     merge-settings.py ... --hook-dir DIR           where the hook scripts live (default ~/.claude/hooks)
 
 Contract:
+  - A "statusLine" (hooks/cost-statusline.js) is added only when the file has none.
   - Idempotent: an entry is added only when no existing hook for that event already runs
     the same command string. Existing hooks, permissions, and every other key are untouched.
   - A symlinked settings.json is updated in place (the link is kept, the real file changes).
@@ -34,21 +35,42 @@ def hook_entries(hook_dir):
       name contains sql/query/snowflake/bigquery/postgres/mysql/duckdb. A narrower matcher would
       silently drop that protection.
     - PreToolUse "Bash" for pre-publish-guard: it judges only git commit and git push.
+    - PreToolUse "Agent|Task" for subagent-model-guard; SubagentStop and Stop for the cost ledger;
+      PreCompact and SessionStart "compact" for the compaction fact journal.
     - SessionStart startup|clear|compact, not resume or fork: those sessions already carry the
       policy in their transcript, so re-injecting it only costs tokens. Compaction can drop it.
     """
     guard = f"node {hook_dir}/evolv-destructive-guard.js"
     publish = f"node {hook_dir}/pre-publish-guard.js"
     enforcer = f"node {hook_dir}/evolv-skills-enforcer.js"
+    model_guard = f"node {hook_dir}/subagent-model-guard.js"
+    ledger = f"node {hook_dir}/subagent-cost-ledger.js"
+    journal = f"node {hook_dir}/compact-journal.js"
     return {
         "PreToolUse": [
             {"matcher": "", "hooks": [{"type": "command", "command": guard}]},
             # Bash only: it judges git commit and git push. 90 s covers the licensed-data scan (60 s cap).
             {"matcher": "Bash", "hooks": [{"type": "command", "command": publish, "timeout": 90}]},
+            # Agent (Task is the pre-2.1.63 name): deny a subagent launch without model and effort.
+            {"matcher": "Agent|Task", "hooks": [{"type": "command", "command": model_guard, "timeout": 10}]},
         ],
-        "SessionStart": [{"matcher": "startup|clear|compact", "hooks": [{"type": "command", "command": enforcer}]}],
-        "Stop": [{"matcher": "", "hooks": [{"type": "command", "command": enforcer}]}],
+        "SessionStart": [
+            {"matcher": "startup|clear|compact", "hooks": [{"type": "command", "command": enforcer}]},
+            # compact only: re-inject the fact journal written at PreCompact.
+            {"matcher": "compact", "hooks": [{"type": "command", "command": journal, "timeout": 10}]},
+        ],
+        "Stop": [
+            {"matcher": "", "hooks": [{"type": "command", "command": enforcer}]},
+            {"matcher": "", "hooks": [{"type": "command", "command": ledger, "timeout": 15}]},
+        ],
+        "SubagentStop": [{"matcher": "", "hooks": [{"type": "command", "command": ledger, "timeout": 15}]}],
+        "PreCompact": [{"matcher": "", "hooks": [{"type": "command", "command": journal, "timeout": 20}]}],
     }
+
+
+def status_line(hook_dir):
+    """The status line entry. Set only when the settings file has none: a user's own is never replaced."""
+    return {"type": "command", "command": f"node {hook_dir}/cost-statusline.js", "padding": 0}
 
 
 class ShapeError(ValueError):
@@ -87,8 +109,13 @@ def commands_in(groups):
     return out
 
 
-def merge(settings, entries):
-    """Return (merged_settings, added_count). Pure: does not touch disk. Call validate_shape first."""
+def merge(settings, entries, statusline=None):
+    """Return (merged_settings, added_count). Pure: does not touch disk. Call validate_shape first.
+    statusline: an entry to set when settings has no "statusLine" yet (an existing one is kept)."""
+    added_status = 0
+    if statusline is not None and settings.get("statusLine") is None:
+        settings["statusLine"] = json.loads(json.dumps(statusline))
+        added_status = 1
     if settings.get("hooks") is None:  # absent or explicit null: both mean "no hooks yet"
         settings["hooks"] = {}
     hooks = settings["hooks"]
@@ -102,7 +129,7 @@ def merge(settings, entries):
                 existing.append(json.loads(json.dumps(g)))
                 have.add(cmd)
                 added += 1
-    return settings, added
+    return settings, added + added_status
 
 
 def load(path):
@@ -148,7 +175,7 @@ def main(argv=None):
         p.print_help()
         return 2
     if a.show:
-        print(json.dumps({"hooks": entries}, indent=2))
+        print(json.dumps({"hooks": entries, "statusLine": status_line(a.hook_dir)}, indent=2))
         if not a.apply:
             return 0
 
@@ -163,9 +190,9 @@ def main(argv=None):
         print(f"error: {path}: {e}; file not touched", file=sys.stderr)
         return 1
 
-    settings, added = merge(settings, entries)
+    settings, added = merge(settings, entries, status_line(a.hook_dir))
     if added == 0:
-        print(f"nothing to do: all staff-kit hooks already registered in {path}")
+        print(f"nothing to do: all staff-kit hooks (and a status line) already registered in {path}")
         return 0
 
     write_in_place(path, settings)

@@ -29,6 +29,8 @@ for p in sorted(glob.glob("agents/*.md")):
     f = fm(p)
     if not f or not re.search(r"^model:\s*(opus|sonnet|haiku|fable)", f, re.M):
         bad.append(f"{p}: needs an explicit model: opus|sonnet|haiku|fable")
+    if not f or not re.search(r"^effort:\s*(low|medium|high|xhigh|max)\s*$", f, re.M):
+        bad.append(f"{p}: needs a default effort: low|medium|high|xhigh|max")
     if not f or not re.search(r"^description:", f, re.M):
         bad.append(f"{p}: needs description")
 for p in sorted(glob.glob("commands/*.md")):
@@ -48,6 +50,10 @@ echo "== index sync (counts and lists in README, manifests, INVENTORY, standards
 python3 scripts/sync-index.py --check || fail "indexes are stale; run: python3 scripts/sync-index.py --write"
 python3 -B scripts/test_sync_index.py 2>&1 | tail -3
 python3 -B scripts/test_sync_index.py >/dev/null 2>&1 || fail "scripts/test_sync_index.py failed"
+
+echo "== merge-settings tests"
+python3 -B scripts/test_merge_settings.py 2>&1 | tail -1
+python3 -B scripts/test_merge_settings.py >/dev/null 2>&1 || fail "scripts/test_merge_settings.py failed"
 
 echo "== bundled evidence-gated-validation copy"
 EGV_SRC="${EGV_SRC:-$HOME/dev/evidence-gated-validation}"
