@@ -972,7 +972,8 @@ function deleteVerdict(shell, code, vars, cwd, pwdBound = false) {
 function decideShell(rawCommand, cwd) {
   if (!rawCommand.trim()) return null;
   const bound = bindings(withoutHeredocBodies(rawCommand));
-  const command = resolveAssignedVariables(rawCommand);
+  let command = rawCommand;
+  for (let k = 0, prev = null; k < 8 && command !== prev; k += 1) [prev, command] = [command, resolveAssignedVariables(command)];
   // HOME and PWD are known unless the line rebinds them, or IFS (which would split their values differently).
   const ifs = changesIfs(rawCommand);
   const vars = bound.has('HOME') || ifs ? {} : { HOME };

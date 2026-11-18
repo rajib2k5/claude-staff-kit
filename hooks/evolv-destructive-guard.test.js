@@ -503,6 +503,10 @@ const resolvedVariables = [
   [`S=${LINUX_SCRATCH}; for m in "a|b"; do n=\${m%%|*}; rm -rf $S/dbg; done`, 'allow'],
   [`S=${REPO}; rm -rf $S/build`, 'ask'],
   ['S=/; rm -rf $S', 'deny'],
+  // A value that names an earlier resolved variable is resolved too (chained), then judged by its real path.
+  [`B=${LINUX_SCRATCH}; S=$B/x; rm -rf $S/y`, 'allow'],
+  [`B=${REPO}; S=$B/x; rm -rf $S/y`, 'ask'],
+  ['B=/; S=$B; rm -rf $S', 'deny'],
 ];
 // ...anything else is left unresolved, so it still asks.
 const unresolvedVariables = [
@@ -521,7 +525,7 @@ const unresolvedVariables = [
   [`S=${LINUX_SCRATCH} && true & rm -rf $S/x`, 'assigned in a backgrounded list'],
   [`S=${LINUX_SCRATCH} | cat; rm -rf $S/x`, 'assigned in a pipeline'],
   ['S=$(mktemp -d); rm -rf $S/x', 'from a command substitution'],
-  [`B=${LINUX_SCRATCH}; S=$B/x; rm -rf $S/y`, 'a value that itself expands'],
+  [`B=$(mktemp -d); S=$B/x; rm -rf $S/y`, 'a chain through a command substitution'],
   [`S=${LINUX_SCRATCH}; bash -c 'rm -rf $S/x'`, 'a use in single quotes (not exported to the inner shell)'],
   [`S=${LINUX_SCRATCH}; bash <<'EOF'\nrm -rf $S/x\nEOF`, 'a use in a quoted heredoc'],
   ['read S; rm -rf $S/x', 'read from input'],
