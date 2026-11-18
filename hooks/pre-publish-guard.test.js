@@ -323,6 +323,281 @@ test('review: pathspec commits and git stage on the line scan the working tree',
   assert.equal(verdict(bash('git stage README.md && git commit -m x', dir)), 'ask');
 });
 
+// --- 2b. A git add of named paths scans those paths, not every untracked file ------------------------------------
+/** A repo with a clean tracked c.txt and an untracked log that holds the home path, which no command here commits. */
+function addRepo() {
+  const dir = repo();
+  write(dir, 'c.txt', 'clean\n');
+  run(dir, 'add', 'c.txt');
+  run(dir, 'commit', '-q', '-m', 'c');
+  write(dir, 'untracked.log', `one\ntwo\n${HOME}/x\n`);
+  return dir;
+}
+
+test('git add <file> && git commit does not ask about an untracked file the add does not name', () => {
+  const dir = addRepo();
+  write(dir, 'c.txt', 'changed\n');
+  assert.equal(verdict(bash('git add c.txt && git commit -q -m c', dir)), 'allow');
+  assert.equal(verdict(bash('git add -v -- c.txt && git commit -q -m c', dir)), 'allow');
+});
+
+test('git add <file> asks when the named file holds the home path: untracked, or tracked and modified', () => {
+  const dir = addRepo();
+  write(dir, 'n.txt', `${HOME}/n\n`);
+  const v = bash('git add n.txt && git commit -m n', dir);
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /n\.txt:1/);
+  assert.ok(!v.reason.includes('untracked.log'), v.reason);
+  write(dir, 'c.txt', `clean\n${HOME}/c\n`);
+  const t = bash('git add c.txt && git commit -m c', dir);
+  assert.equal(verdict(t), 'ask');
+  assert.match(t.reason, /c\.txt:2/);
+});
+
+test('git add -A, git add . and git add <dir> still scan every untracked file they stage', () => {
+  const dir = addRepo();
+  assert.match(bash('git add -A && git commit -m a', dir).reason, /untracked\.log:3/);
+  assert.match(bash('git add --all && git commit -m a', dir).reason, /untracked\.log:3/);
+  assert.match(bash('git add . && git commit -m a', dir).reason, /untracked\.log:3/);
+  write(dir, 'src/deep/s.txt', `${HOME}/s\n`);
+  assert.match(bash('git add src && git commit -m a', dir).reason, /src\/deep\/s\.txt:1/);
+  assert.match(bash("git add '*.log' && git commit -m a", dir).reason, /untracked\.log:3/);
+});
+
+test('a git add that cannot be bounded scans the whole tree: a variable, an unknown flag, rm/mv on the line', () => {
+  const dir = addRepo();
+  write(dir, 'x.txt', 'x\n');
+  run(dir, 'add', 'x.txt');
+  run(dir, 'commit', '-q', '-m', 'x');
+  for (const cmd of ['git add "$F" && git commit -m c', 'git add c.txt && git rm -q x.txt && git commit -m c',
+    'git add c.txt && git mv x.txt y.txt && git commit -m c', 'git add -u c.txt && git commit -m c',
+    'git add -p c.txt && git commit -m c', 'git add --pathspec-from-file=l c.txt && git commit -m c',
+    'git add && git commit -m c', 'git --work-tree=. add c.txt && git commit -m c',
+    'git add c.txt > /dev/null && git commit -m c', 'git add ~/c.txt && git commit -m c']) {
+    assert.equal(verdict(bash(cmd, dir)), 'ask', cmd);
+  }
+  write(dir, 'list.txt', 'untracked.log\n'); // the paths come from a file, so the untracked log is staged
+  assert.match(bash('git add --pathspec-from-file=list.txt c.txt && git commit -m c', dir).reason, /untracked\.log:3/);
+});
+
+test('git add paths are resolved in the folder the cd commands lead to; a cd after an add scans wide', () => {
+  const dir = addRepo();
+  write(dir, 'sub/c.txt', 'clean\n');
+  assert.equal(verdict(bash('cd sub && git add c.txt && git commit -m c', dir)), 'allow');
+  assert.match(String((bash('cd sub && git add c.txt && cd .. && git commit -m c', dir) || {}).reason),
+    /untracked\.log:3/);
+  write(dir, 'sub/c.txt', `${HOME}/sub\n`);
+  const v = bash('cd sub && git add c.txt && git commit -m c', dir);
+  assert.equal(verdict(v), 'ask');
+  assert.match(v.reason, /sub\/c\.txt:1/);
+  assert.equal(verdict(bash(`git -C ${dir}/sub add c.txt && git commit -m c`, dir)), 'ask');
+});
+
+test('git add -f names an ignored file: the scan includes it', () => {
+  const dir = addRepo();
+  write(dir, '.gitignore', 'secret.txt\n');
+  run(dir, 'add', '.gitignore');
+  run(dir, 'commit', '-q', '-m', 'ignore');
+  write(dir, 'secret.txt', `${HOME}/s\n`);
+  assert.equal(verdict(bash('git add c.txt && git commit -m c', dir)), 'allow');
+  assert.match(bash('git add -f secret.txt && git commit -m c', dir).reason, /secret\.txt:1/);
+  assert.match(bash('git add -vf secret.txt && git commit -m c', dir).reason, /secret\.txt:1/);
+  assert.match(bash('git add -Nfv -- secret.txt && git commit -m c', dir).reason, /secret\.txt:1/);
+  write(dir, '-f', `${HOME}/f\n`); // after --, git stages the file named -f
+  assert.match(String((bash('git add -- -f && git commit -m c', dir) || {}).reason), /-f:1/);
+});
+
+// Adversarial review of the scoped add (2026-11-17): each line stages o.txt where the hook could not follow it.
+/** addRepo plus a clean tracked d/c and an untracked o.txt that holds the home path. */
+function hiddenAddRepo() {
+  const dir = addRepo();
+  write(dir, 'd/c', 'clean\n');
+  run(dir, 'add', 'd/c');
+  run(dir, 'commit', '-q', '-m', 'd');
+  write(dir, 'o.txt', `${HOME}/o\n`);
+  return dir;
+}
+
+test('review: a line the hook cannot follow in full scans the whole tree', () => {
+  const dir = hiddenAddRepo();
+  for (const cmd of [
+    '( cd d && git add c ) && git add o.txt && git commit -q -m x',
+    'git add c.txt && echo o.txt | xargs git add && git commit -q -m x',
+    'false && cd d; git add o.txt && git commit -q -m x',
+    "sh -c 'git add o.txt' && git add c.txt && git commit -q -m x",
+    'git a o.txt && git add c.txt && git commit -q -m x', // an alias
+    'git update-index --add o.txt && git add c.txt && git commit -q -m x',
+    'pushd d && popd && git add o.txt && git commit -q -m x',
+    "eval 'git add o.txt' && git add c.txt && git commit -q -m x",
+    'GIT_WORK_TREE=. git add c.txt && git commit -q -m x',
+    'git add * && git commit -q -m x',
+  ]) {
+    assert.match(String((bash(cmd, dir) || {}).reason), /o\.txt:1/, cmd);
+  }
+  // The shell expands ?A to the file name -A, so git runs `git add -A`; git's own ?A would match only that file.
+  write(dir, '-A', 'x\n');
+  assert.match(String((bash('git add ?A && git commit -q -m x', dir) || {}).reason), /o\.txt:1/);
+});
+
+test('review: a cd keeps the scan scoped; a read-only git call on the line scans wide (diff.external can stage)', () => {
+  const dir = hiddenAddRepo();
+  write(dir, 'd/c', 'changed\n');
+  assert.equal(verdict(bash('cd d && git add c && git commit -q -m x', dir)), 'allow');
+  assert.match(String((bash('cd d && git add c && git status && git diff && git commit -q -m x', dir) || {}).reason),
+    /o\.txt:1/);
+});
+
+test('review: a leak already staged is found by a scoped add even after the working copy is cleaned', () => {
+  const dir = addRepo();
+  write(dir, 'leak.txt', `${HOME}/leak\n`);
+  run(dir, 'add', 'leak.txt');
+  write(dir, 'leak.txt', 'clean\n'); // the index still holds the leak, and git commit commits the index
+  assert.match(String((bash('git add c.txt && git commit -q -m x', dir) || {}).reason), /leak\.txt:1/);
+});
+
+test('quoted and $(cat <<\'EOF\') messages and a push after the commit keep the scan scoped', () => {
+  const dir = addRepo();
+  write(dir, 'c.txt', 'changed\n');
+  const msg = (delim) => `git add c.txt && git commit -q -m "$(cat <<${delim}\nfeat: c (x) it's \\ $(y)\n\nbody\nEOF\n)"`;
+  for (const cmd of [msg("'EOF'"), `${msg("'EOF'")} && git push`, `${msg("'EOF'")} && git push -u origin main`,
+    "git add c.txt && git commit -qm 'feat: c \"x\" $y'", 'git add c.txt && git commit -s -m "feat: c (x)" -m b']) {
+    assert.equal(verdict(bash(cmd, dir)), 'allow', cmd);
+  }
+});
+
+test('any other message form, a second EOF line, a ; or a git call after the push scans the whole tree', () => {
+  const dir = addRepo();
+  write(dir, 'c.txt', 'changed\n');
+  write(dir, 'd/c', 'new\n');
+  const msg = (delim) => `git add c.txt && git commit -q -m "$(cat <<${delim}\nfeat: c\nEOF\n)"`;
+  for (const cmd of [msg('EOF'), msg('"EOF"'), msg("'END'"), `${msg("'EOF'")} && git push && git tag v1`,
+    "git add c.txt && git commit -q -F - <<'EOF'\nfeat: c\nEOF",
+    `git add c.txt && git commit -q -m "$(cat <<'EOF'\nEOF\nEOF\n)"`, // bash ends the heredoc at the first EOF
+    `${msg("'EOF'")} -m "$(cat <<'EOF'\ntwo\nEOF\n)"`,
+    'git add c.txt && git commit -q -m "a $x"', 'git add c.txt && git commit -qam x',
+    'git add c.txt && git commit -q -m x c.txt', 'git add c.txt && git commit -q -m x; true',
+    'git add c.txt && git commit -q -m x # c', 'cd d; git add c && git commit -q -m x',
+    'git add c.txt; git add d/c && git commit -q -m x']) {
+    assert.match(String((bash(cmd, dir) || {}).reason), /untracked\.log:3/, cmd);
+  }
+});
+
+test('the push after a heredoc commit is still judged: an outgoing attribution trailer is denied', () => {
+  const dir = addRepo();
+  withRemote(dir);
+  run(dir, 'commit', '-q', '--allow-empty', '-m', `old\n\n${TRAILER}`);
+  write(dir, 'c.txt', 'changed\n');
+  const v = bash(`git add c.txt && git commit -q -m "$(cat <<'EOF'\nfeat: c\nEOF\n)" && git push`, dir);
+  assert.equal(verdict(v), 'deny');
+  assert.match(v.reason, /outgoing commit/);
+});
+
+test('any other substitution, heredoc or a push before the commit scans the whole tree', () => {
+  const dir = addRepo();
+  for (const cmd of [
+    'git add c.txt && git commit -q -m "$(cat <<EOF\nmsg $(git add untracked.log)\nEOF\n)"', // unquoted body runs it
+    'git add c.txt && git commit -q -m "$(cat <<EOF\nmsg `git add untracked.log`\nEOF\n)"',
+    "git add c.txt && git commit -q -m \"$(git add untracked.log; cat <<'EOF'\nmsg\nEOF\n)\"",
+    "git add c.txt && git commit -q -m \"$(printf x <<'EOF'\nmsg\nEOF\n)\"",
+    "git add c.txt \"$(echo untracked.log)\" && git commit -q -m \"$(cat <<'EOF'\nmsg\nEOF\n)\"",
+    "git add \"$(cat <<'EOF'\nuntracked.log\nEOF\n)\" && git commit -q -m x", // the body names the path
+    "git add c.txt && cat <<'EOF' | xargs git add && git commit -q -m x\nuntracked.log\nEOF",
+    'git push && git add c.txt && git commit -q -m x',
+    'git push && git add untracked.log && git commit -q -m x',
+    'git tag v1 && git add c.txt && git commit -q -m x',
+  ]) {
+    assert.match(String((bash(cmd, dir) || {}).reason), /untracked\.log:3/, cmd);
+  }
+});
+
+// Second adversarial review (2026-11-17): the heredoc model of the line differed from bash's, and git global options
+// and repository hooks could stage what the scoped scan did not read. Each line commits o.txt with git.
+test('review 2: a quoted or split heredoc word, a git global option or a substitution scans the whole tree', () => {
+  const dir = hiddenAddRepo();
+  for (const cmd of [
+    'git add c.txt && git commit -qm "<<EOF"\ngit add o.txt && git commit -qm y',
+    "git add c.txt && git commit -qm '<<EOF'\ngit add o.txt && git commit -qm y",
+    'git add c.txt && git commit -qm "fix <<EOF parsing"\ngit add o.txt && git commit -qm y',
+    'git add c.txt && git commit -q -F - <<E"OF"\nmsg\nEOF\ngit add o.txt && git commit -qm y',
+    'git add c.txt && git commit -q -F - <<"E"OF\nmsg\nEOF\ngit add o.txt && git commit -qm y',
+    "git add c.txt && git -c diff.external='git add -A; true' diff HEAD && git commit -qm x",
+    "git add c.txt && git -c diff.external='git add -A; true' show --ext-diff HEAD && git commit -qm x",
+    'git add c.txt && git -c core.hooksPath=hk commit -qm x',
+    "git add c.txt && git commit -qm \"$(sh <<'EOF'\ngit add o.txt; echo msg\nEOF\n)\"",
+    "git add c.txt && git commit -qm \"$(sh -c 'git add o.txt; echo m')\"",
+    'git add c.txt o.t\\\nxt && git commit -qm x', // the shell joins the continuation into o.txt
+  ]) {
+    assert.match(String((bash(cmd, dir) || {}).reason), /o\.txt:1/, cmd);
+  }
+});
+
+test('review 2: a git diff written to a file that is then added scans the whole tree', () => {
+  const dir = hiddenAddRepo();
+  write(dir, 'c.txt', `clean\n${HOME}/c\n`); // git diff writes this change into d.patch, which the commit adds
+  assert.match(String((bash('git diff > d.patch && git add d.patch && git commit -qm x', dir) || {}).reason),
+    /c\.txt:2/);
+});
+
+test('review 2: a commit hook in the repository or a core.hooksPath scans the whole tree', () => {
+  const dir = hiddenAddRepo();
+  const hooks = run(dir, 'rev-parse', '--git-path', 'hooks').trim();
+  write(dir, path.join(hooks, 'pre-commit'), '#!/bin/sh\ngit add -A\n');
+  fs.chmodSync(path.join(dir, hooks, 'pre-commit'), 0o755);
+  assert.match(String((bash('git add c.txt && git commit -qm x', dir) || {}).reason), /o\.txt:1/);
+  const other = hiddenAddRepo();
+  run(other, 'config', 'core.hooksPath', 'hk');
+  assert.match(String((bash('git add c.txt && git commit -qm x', other) || {}).reason), /o\.txt:1/);
+});
+
+// Third adversarial review (2026-11-17): mutants of hasCommitHooks and of the heredoc terminator survived.
+test('review 3: a hooks folder that holds only a post-commit or post-index-change hook scans the whole tree', () => {
+  for (const hook of ['post-commit', 'post-index-change']) {
+    const dir = addRepo();
+    const hooks = run(dir, 'rev-parse', '--git-path', 'hooks').trim();
+    write(dir, path.join(hooks, hook), '#!/bin/sh\ngit add -A\n');
+    fs.chmodSync(path.join(dir, hooks, hook), 0o755);
+    assert.equal(verdict(bash('git add c.txt && git commit -q -m c', dir)), 'ask', hook);
+  }
+});
+
+test('review 3: a hooks folder that node cannot list, but git can run, scans the whole tree', (t) => {
+  if (process.getuid && process.getuid() === 0) return t.skip('root reads any folder');
+  const dir = addRepo();
+  const hooks = path.join(dir, run(dir, 'rev-parse', '--git-path', 'hooks').trim());
+  fs.chmodSync(hooks, 0o111); // x without r: git can run a hook inside, readdir fails with EACCES
+  try {
+    assert.equal(verdict(bash('git add c.txt && git commit -q -m c', dir)), 'ask');
+  } finally {
+    fs.chmodSync(hooks, 0o755);
+  }
+});
+
+test('review 3: a hook defined in the git configuration scans the whole tree', () => {
+  const dir = addRepo();
+  assert.equal(verdict(bash('git add c.txt && git commit -q -m c', dir)), 'allow');
+  run(dir, 'config', 'hook.x.command', 'true'); // git 2.54 runs it; older git stores the key and ignores it
+  assert.equal(verdict(bash('git add c.txt && git commit -q -m c', dir)), 'ask');
+});
+
+test('review 3: a heredoc terminator line with a trailing space is not a terminator: whole tree', () => {
+  const dir = hiddenAddRepo();
+  const cmd = `git add c.txt && git commit -q -m "$(cat <<'EOF'\nmsg\nEOF \n)"\ngit add o.txt && git commit -q -m y`;
+  assert.match(String((bash(cmd, dir) || {}).reason), /o\.txt:1/);
+  // Alone, the near-miss line leaves the heredoc open to the end of the command, which is not the narrow shape.
+  const lone = `git add c.txt && git commit -q -m "$(cat <<'EOF'\nmsg\nEOF \n)"`;
+  assert.match(String((bash(lone, addRepo()) || {}).reason), /untracked\.log:3/);
+});
+
+test('review 3: a control character in the command scans the whole tree', () => {
+  const dir = addRepo();
+  const msg = (c) => `git add c.txt && git commit -q -m "$(cat <<'EOF'\nfeat: a${c}b\nEOF\n)"`;
+  assert.equal(verdict(bash(msg('x'), dir)), 'allow');
+  for (const c of ['\x00', '\r', '\x01', '\x1b', '\x7f']) {
+    assert.match(String((bash(msg(c), dir) || {}).reason), /untracked\.log:3/, JSON.stringify(c));
+  }
+  assert.equal(verdict(bash(msg('\t'), dir)), 'allow'); // a tab is ordinary text
+});
+
 // --- 4. Scope ------------------------------------------------------------------------------------------------------
 test('ignores other tools, other git commands, and git commit as quoted text', () => {
   const dir = repo();
