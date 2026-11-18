@@ -759,3 +759,30 @@ test('integration: the real scanner denies a staged copy of a raw row and allows
     delete process.env.PPG_IT_DATA;
   }
 });
+
+// --- Redirections after a push are not refspecs (2026-11-18: "cannot resolve what this push publishes (main 2> to
+// origin)" asked on every `git push origin main 2>&1`) ---------------------------------------------------------------
+test('redirections and pipes after a push are not read as refspecs', () => {
+  const dir = repo();
+  write(dir, 'p.txt', `${HOME}/old\n`);
+  run(dir, 'add', '.');
+  run(dir, 'commit', '-q', '-m', 'old, already on the remote');
+  withRemote(dir);
+  run(dir, 'checkout', '-q', '-b', 'br');
+  run(dir, 'push', '-q', 'origin', 'br');
+  for (const cmd of ['git push 2>&1 | tail -1', 'git push origin main 2>&1', 'git push -u origin br 2>&1',
+    'git push origin main 2>/dev/null', 'git push origin main >/dev/null 2>&1', 'git push origin main &>/dev/null',
+    'git push origin main > push.log', 'git push origin main >> push.log 2>&1 | tail -1', 'git push origin br 2>&1 >&2']) {
+    assert.equal(verdict(bash(cmd, dir)), 'allow', cmd);
+  }
+});
+
+test('a push with a redirect still judges what it publishes', () => {
+  const dir = repo();
+  withRemote(dir);
+  write(dir, 'a.txt', 'x\n');
+  run(dir, 'add', 'a.txt');
+  run(dir, 'commit', '-q', '-m', `feat: a\n\n${TRAILER}`);
+  assert.equal(verdict(bash('git push origin main 2>&1 | tail -1', dir)), 'deny');
+  assert.equal(verdict(bash('git push origin main no-such-branch 2>&1', dir)), 'ask');
+});

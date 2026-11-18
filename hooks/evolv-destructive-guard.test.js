@@ -449,3 +449,231 @@ test('asks before writing to every sensitive path', () => {
     assert.equal(verdict(decide('Write', { file_path: file }, REPO)), 'ask', file);
   }
 });
+
+// --- Trivial prompts seen in a week of transcripts (2026-11-18): temp files, caches, owner chmod, redirects -------
+const { spawnSync } = require('node:child_process');
+const LINUX_SCRATCH = `/tmp/claude-1000/-home-someone-dev/${SESSION}/scratchpad`;
+
+/** The hook as Claude Code runs it: a child process with a chosen environment, the payload on stdin. */
+function hookProcess(command, env, cwd = REPO) {
+  const r = spawnSync(process.execPath, [path.join(__dirname, 'evolv-destructive-guard.js')], {
+    input: JSON.stringify({ tool_name: 'Bash', tool_input: { command }, cwd }),
+    env: { PATH: process.env.PATH, HOME, ...env },
+    encoding: 'utf8',
+  });
+  return r.stdout ? JSON.parse(r.stdout).hookSpecificOutput.permissionDecision : 'allow';
+}
+
+test('Claude temp root: folders inside <tmp>/claude-<uid>/ are internal, the root itself asks', () => {
+  assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/egv2`)), 'allow');
+  assert.equal(verdict(bash(`rm -rf /tmp/claude-1000/-home-someone-dev/${SESSION}/tasks`)), 'allow');
+  assert.equal(verdict(bash('rm -rf /tmp/claude-1000')), 'ask');
+  assert.equal(verdict(bash('rm -rf /tmp/claude-1000/')), 'ask');
+  assert.equal(verdict(bash('rm -rf /tmp/claude-1000/*')), 'ask');
+  assert.equal(verdict(bash('rm -rf /private/tmp/claude-502')), 'ask');
+  assert.equal(verdict(bash('rm -rf /tmp')), 'deny');
+  assert.equal(verdict(bash('rm -rf /tmp/claudette/x')), 'ask');
+});
+
+test('Claude temp root follows CLAUDE_CODE_TMPDIR, else TMPDIR (os.tmpdir())', () => {
+  const cc = { CLAUDE_CODE_TMPDIR: '/var/tmp/cc' };
+  assert.equal(hookProcess('rm -rf /var/tmp/cc/claude-1000/sess/scratchpad/x', cc), 'allow');
+  assert.equal(hookProcess('rm -rf /var/tmp/cc/claude-1000', cc), 'ask');
+  assert.equal(hookProcess('rm -rf /var/tmp/cc', cc), 'deny');
+  assert.equal(hookProcess('rm -rf /var/tmp/tt/claude-1000/sess/x', { TMPDIR: '/var/tmp/tt' }), 'allow');
+  assert.equal(hookProcess('rm -rf /var/tmp/cc/claude-1000/sess/x', {}), 'ask');
+  assert.equal(hookProcess(`rm -rf ${LINUX_SCRATCH}/x`, cc), 'allow');
+});
+
+// A variable assigned a literal path earlier on the same line, at top level and once, is judged by that path.
+const resolvedVariables = [
+  [`S=${LINUX_SCRATCH}; rm -rf $S/x`, 'allow'],
+  [`export O=${LINUX_SCRATCH}\nrm -rf "\${O}/bt" "$O/pt"`, 'allow'],
+  [`O='${LINUX_SCRATCH}' && rm -rf $O/bt`, 'allow'],
+  [`cd ${REPO} && S="${LINUX_SCRATCH}" && rm -rf "$S/w7" && ls`, 'allow'],
+  [`S=${LINUX_SCRATCH}; bash -c "rm -rf $S/x"`, 'allow'],
+  [`S=${LINUX_SCRATCH}; cat <<EOF | bash\nrm -rf $S/x\nEOF`, 'allow'],
+  [`S=${LINUX_SCRATCH}; rm -rf $S/x 2>/dev/null; rm -rf "$S/y" >/dev/null 2>&1`, 'allow'],
+  [`S=${LINUX_SCRATCH}; for f in a b; do if test -e $f; then echo y; else echo n; fi; done; rm -rf $S/x`, 'allow'],
+  [`S=${LINUX_SCRATCH} && rm -rf $S/h && python3 - <<'EOF'\nS = "elsewhere"\nEOF`, 'allow'],
+  [`S=${LINUX_SCRATCH}; source /dev/stdin <<'EOF'\nS=${REPO}\nEOF\nrm -rf $S/x`, 'ask'],
+  [`S=${LINUX_SCRATCH}; python3 - <<'EOF'\nmodel.eval()\nS = 1\nEOF\nrm -rf $S/x`, 'allow'],
+  [`S=${LINUX_SCRATCH}\nrm -rf "$S/x"\ngit ls-files | while IFS= read -r f; do echo "$f"; done`, 'allow'],
+  [`S=${LINUX_SCRATCH}; cp1(){ for f in "$@"; do cp "$f" .; done; }; rm -rf "$S/x"`, 'allow'],
+  [`S=${LINUX_SCRATCH}; for m in "a|b"; do n=\${m%%|*}; rm -rf $S/dbg; done`, 'allow'],
+  [`S=${REPO}; rm -rf $S/build`, 'ask'],
+  ['S=/; rm -rf $S', 'deny'],
+];
+// ...anything else is left unresolved, so it still asks.
+const unresolvedVariables = [
+  [`S=${REPO}; rm -rf $S/a; S=${LINUX_SCRATCH}`, 'reassigned later'],
+  [`S=${LINUX_SCRATCH}; S=${REPO}; rm -rf $S/a`, 'reassigned before the use'],
+  [`rm -rf $S/x; S=${LINUX_SCRATCH}`, 'used before the assignment'],
+  [`for d in a; do S=${LINUX_SCRATCH}; done; rm -rf $S/x`, 'assigned in a loop'],
+  [`while false; do echo x; S=${LINUX_SCRATCH}; done; rm -rf $S/x`, 'assigned later in a loop body'],
+  [`for S in ${LINUX_SCRATCH}; do :; done; rm -rf $S/x`, 'a loop variable'],
+  [`if true; then S=${LINUX_SCRATCH}; fi; rm -rf $S/x`, 'assigned in a conditional block'],
+  [`test -d /nope && S=${LINUX_SCRATCH}; rm -rf $S/x`, 'assigned behind && but used after ;'],
+  [`false || S=${LINUX_SCRATCH}; rm -rf $S/x`, 'assigned behind ||'],
+  [`(S=${LINUX_SCRATCH}); rm -rf $S/x`, 'assigned in a subshell'],
+  [`f() { S=${LINUX_SCRATCH}; }; f; rm -rf $S/x`, 'assigned in a function'],
+  [`S=${LINUX_SCRATCH} true; rm -rf $S/x`, 'an assignment prefixed to a command'],
+  [`S=${LINUX_SCRATCH} && true & rm -rf $S/x`, 'assigned in a backgrounded list'],
+  [`S=${LINUX_SCRATCH} | cat; rm -rf $S/x`, 'assigned in a pipeline'],
+  ['S=$(mktemp -d); rm -rf $S/x', 'from a command substitution'],
+  [`B=${LINUX_SCRATCH}; S=$B/x; rm -rf $S/y`, 'a value that itself expands'],
+  [`S=${LINUX_SCRATCH}; bash -c 'rm -rf $S/x'`, 'a use in single quotes (not exported to the inner shell)'],
+  [`S=${LINUX_SCRATCH}; bash <<'EOF'\nrm -rf $S/x\nEOF`, 'a use in a quoted heredoc'],
+  ['read S; rm -rf $S/x', 'read from input'],
+  [`S=${LINUX_SCRATCH}; unset S; rm -rf $S/x`, 'unset'],
+  ['rm -rf $GUARD_TEST_ENV_DIR/x', 'a variable only the real environment sets'],
+  [`cd /nope && HOME=${REPO}; rm -rf ~/.claude/cache`, 'a home folder rebound on the line'],
+  [`IFS=a; S=${LINUX_SCRATCH}/xa/home; rm -rf $S`, 'IFS changed, so the value splits differently'],
+  [`OLDPWD=${LINUX_SCRATCH}; cd ${REPO}; rm -rf $OLDPWD/x`, 'a name the shell itself changes'],
+];
+for (const [command, expected] of resolvedVariables) {
+  test(`variable resolved: ${command.split('\n')[0].slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), expected, command);
+  });
+}
+for (const [command, why] of unresolvedVariables) {
+  test(`variable left unresolved (${why}): asks`, () => {
+    process.env.GUARD_TEST_ENV_DIR = LINUX_SCRATCH;
+    try {
+      assert.equal(verdict(bash(command)), 'ask', command);
+    } finally {
+      delete process.env.GUARD_TEST_ENV_DIR;
+    }
+  });
+}
+
+test('$PWD is the folder the guard already tracks for relative paths', () => {
+  assert.equal(verdict(bash('rm -rf "$PWD/egv2"', LINUX_SCRATCH)), 'allow');
+  assert.equal(verdict(bash('rm -rf "$PWD/build"', REPO)), 'ask');
+  assert.equal(verdict(bash(`cd ${REPO} && rm -rf $PWD/build`, LINUX_SCRATCH)), 'ask');
+  assert.equal(verdict(bash(`cd ${LINUX_SCRATCH} && rm -rf $PWD/x`, REPO)), 'allow');
+  assert.equal(verdict(bash(`PWD=${LINUX_SCRATCH}; cd ${REPO}; rm -rf $PWD/x`, REPO)), 'ask');
+});
+
+// Regenerable caches, named exactly, need no approval; anything that could be more still asks.
+const cacheDeletes = [
+  `rm -rf ${REPO}/src/__pycache__`,
+  'rm -rf .pytest_cache .hypothesis .mypy_cache .ruff_cache',
+  'rm -rf tools/a/__pycache__ src/__pycache__ ./analysis/forward/__pycache__',
+  'rm -rf node_modules/.cache',
+  'rm -rf */__pycache__',
+  'find . -name __pycache__ -exec rm -rf {} +',
+  'find . -type d -name __pycache__ -prune -exec rm -rf {} +',
+  "find src tests -name '__pycache__' -type d -exec rm -rf {} \\;",
+  'find . -name .pytest_cache -exec rm -rf {} + && find . -name __pycache__ -exec rm -rf {} +',
+  'find . -name __pycache__ -print0 | xargs -0 rm -rf',
+  'find . -name .mypy_cache | xargs rm -rf',
+  'find . -name __pycache__ -print0 2>&1 | xargs -0 rm -rf',
+];
+for (const command of cacheDeletes) {
+  test(`a regenerable cache is not the user's data: ${command}`, () => {
+    assert.equal(verdict(bash(command)), 'allow', command);
+  });
+}
+const notOnlyCaches = [
+  'rm -rf .venv',
+  'rm -rf node_modules',
+  'rm -rf .tox',
+  'rm -rf .cache',
+  'rm -rf src/.cache',
+  'rm -rf __pycache__*',
+  'rm -rf *cache*',
+  'rm -rf src/__pycache__/..',
+  'rm -rf src/__pycache__/',
+  'rm -rf $X/__pycache__',
+  'rm -rf __pycache__ build',
+  'find . -name "*.pyc" -exec rm -rf {} +',
+  'find . -name __pycache__ -o -name src -exec rm -rf {} +',
+  'find . ! -name __pycache__ -exec rm -rf {} +',
+  'find . -not -name __pycache__ -delete',
+  'find . -exec rm -rf {} + -name __pycache__',
+  'find . -name __pycache__ -exec rm -rf {} build +',
+  'find . -name __pycache__ -name src -exec rm -rf {} +',
+  'find $X -name __pycache__ -exec rm -rf {} +',
+  'find . -name src | xargs rm -rf',
+  'find . -name __pycache__ | grep x | xargs rm -rf',
+  "find . -name __pycache__ -printf '%h\\n' | xargs rm -rf",
+  'find . -name __pycache__ | xargs -a list.txt rm -rf',
+  'cat list.txt | xargs rm -rf',
+  'echo src -name __pycache__ | xargs rm -rf',
+];
+for (const command of notOnlyCaches) {
+  test(`a delete that is not only caches still asks: ${command}`, () => {
+    assert.equal(verdict(bash(command)), 'ask', command);
+  });
+}
+test('a cache under a catastrophic root is still denied', () => {
+  assert.equal(verdict(bash('find / -name __pycache__ -exec rm -rf {} +')), 'deny');
+});
+
+const ownerChmod = ['chmod -R u+rwx build', 'chmod -R u+w,u+x out', 'chmod -R u+r data', `chmod -R u+rwx ${LINUX_SCRATCH}/x`];
+for (const command of ownerChmod) {
+  test(`chmod -R that only adds owner bits does not ask: ${command}`, () => {
+    assert.equal(verdict(bash(command)), 'allow', command);
+  });
+}
+const otherChmod = ['chmod -R 700 x', 'chmod -R 0755 x', 'chmod -R u-w x', 'chmod -R u=rwx x', 'chmod -R go+r x',
+  'chmod -R a+x x', 'chmod -R +x x', 'chmod -R u+rwx,g+w x', 'chmod -R ug+rwx x', 'chmod -R u+rwx x && chmod -R 777 y',
+  'chown -R me x', 'chgrp -R staff x'];
+for (const command of otherChmod) {
+  test(`any other recursive permission change asks: ${command}`, () => {
+    assert.equal(verdict(bash(command)), 'ask', command);
+  });
+}
+
+test('redirections are not delete targets, and a redirect before the command does not hide it', () => {
+  assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/x 2>/dev/null`)), 'allow');
+  assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/x > /dev/null 2>&1`)), 'allow');
+  assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/x &>/dev/null`)), 'allow');
+  assert.equal(verdict(bash('>/dev/null rm -rf ~')), 'deny');
+  assert.equal(verdict(bash(`rm -rf ${LINUX_SCRATCH}/x 2>${REPO}/err.log`)), 'allow');
+  assert.equal(verdict(bash('git push origin main 2>&1 | tail -1')), 'allow');
+  assert.equal(verdict(bash('git push --force origin main 2>&1')), 'deny');
+});
+
+// SQL text in a file being written, or in a Python program's own source, runs nothing.
+const inertSql = [
+  `cat > ${REPO}/tests/test_sql.py <<'EOF'\nassert "DROP TABLE x" in refused\nEOF\npython3 -m pytest -q tests/test_sql.py`,
+  `cd ${REPO}; cat > SKILL.md <<'EOF'\nTo undo a run, DROP SCHEMA on the sandbox.\nEOF\npython3 scripts/check.py`,
+  `python3 - <<'EOF'\np = 'a.md'\ns = open(p).read().replace('x', 'DROP TABLE t needs approval')\nopen(p, 'w').write(s)\nEOF`,
+  `cd ${REPO} && python3 - <<'EOF'\n# append the torn tail, then truncate the file to its last newline\nEOF`,
+  `python3 - <<'EOF'\nnote = "DROP TABLE asks first in the guard"\nEOF`,
+  `tee notes.md <<'EOF'\nDELETE FROM visitors\nEOF\nnode x.js`,
+];
+for (const command of inertSql) {
+  test(`SQL text that nothing runs: ${command.split('\n')[0].slice(0, 70)}`, () => {
+    assert.equal(verdict(bash(command)), 'allow', command);
+  });
+}
+const runSql = [
+  [`python3 - <<'EOF'\ncur.execute("DROP TABLE t")\nEOF`, 'ask'],
+  [`python3 - <<'EOF'\nimport sqlite3\nsqlite3.connect('x.db').executescript('DROP TABLE t')\nEOF`, 'ask'],
+  [`python3 - <<'EOF'\nimport subprocess\nsubprocess.run(['psql', '-c', 'DROP TABLE t'])\nEOF`, 'ask'],
+  [`python3 - <<'EOF'\nimport duckdb\nduckdb.sql("DROP DATABASE prod")\nEOF`, 'deny'],
+  [`python3 run_sql.py <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
+  [`cat > x.sql <<'EOF'\nDROP TABLE t;\nEOF\nsnowsql -f x.sql`, 'ask'],
+  [`cat > x.sql <<'EOF'\nDROP DATABASE prod;\nEOF\npsql -f x.sql`, 'deny'],
+  [`cat > x.sh <<'EOF'\npsql -c "DROP TABLE t"\nEOF\nbash x.sh`, 'ask'],
+  [`cat > t.py <<'EOF'\nconn.execute("TRUNCATE TABLE accounts")\nEOF\npython3 t.py`, 'ask'],
+  [`cat <<'EOF' | psql\nDROP TABLE t;\nEOF`, 'ask'],
+  [`psql <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
+  [`duckdb x.db <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
+  [`dolt sql <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
+  [`snow sql <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
+  [`mytool <<'EOF'\nDROP TABLE t;\nEOF`, 'ask'],
+  [`uv run python - <<'EOF'\nDROP_NOTE = "DROP TABLE t"\nEOF`, 'ask'],
+  [`python3 - <<'EOF'\nimport shutil\nshutil.rmtree('/')\nEOF`, 'deny'],
+  // Only the ask-tier SQL rules are lifted from these bodies; DROP DATABASE stays denied as it was before.
+  [`python3 - <<'EOF'\nprint("DROP DATABASE prod")\nEOF`, 'deny'],
+  [`cat > x.sql <<'EOF'\nDROP DATABASE prod;\nEOF\nbash -c true`, 'deny'],
+];
+for (const [command, expected] of runSql) {
+  test(`SQL that something on the line can run is still judged: ${command.split('\n')[0].slice(0, 60)}`, () => {
+    assert.equal(verdict(bash(command)), expected, command);
+  });
+}
