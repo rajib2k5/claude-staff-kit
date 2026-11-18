@@ -39,8 +39,10 @@ function loadPrices(p = PRICES_PATH) {
 function priceKey(model, prices) {
   if (!model) return null;
   const m = String(model).replace(/\[.*\]$/, '');
+  // Only an exact id or an id plus an 8-digit date snapshot. claude-opus-5-6 must NOT match
+  // claude-opus-5: a newer version is unpriced until the table has its row.
   const keys = Object.keys(prices.models).sort((a, b) => b.length - a.length);
-  return keys.find((k) => m === k || m.startsWith(k + '-')) || null;
+  return keys.find((k) => m === k || (m.startsWith(k) && /^-\d{8}$/.test(m.slice(k.length)))) || null;
 }
 
 const ZERO = () => ({ input: 0, output: 0, cache_read: 0, cache_write_5m: 0, cache_write_1h: 0 });
@@ -78,6 +80,27 @@ function sumUsage(text, opts = {}) {
     t.cache_write_5m += Math.max(0, wAll - w1h);
   }
   return out;
+}
+
+/**
+ * Models whose price row has a prompt-size tier (tier_max_prompt_tokens) and that had at least one call
+ * whose prompt (input + cache read + cache write) went over it: those calls are priced at the wrong tier.
+ */
+function tierExceeded(text, prices) {
+  const out = new Set();
+  for (const line of String(text || '').split('\n')) {
+    if (!line.trim()) continue;
+    let d;
+    try { d = JSON.parse(line); } catch { continue; }
+    const u = d && d.type === 'assistant' && d.message && d.message.usage;
+    if (!u) continue;
+    const k = priceKey(d.message.model, prices);
+    const cap = k && prices.models[k].tier_max_prompt_tokens;
+    if (!cap) continue;
+    const prompt = (Number(u.input_tokens) || 0) + (Number(u.cache_read_input_tokens) || 0) + (Number(u.cache_creation_input_tokens) || 0);
+    if (prompt > cap) out.add(d.message.model);
+  }
+  return [...out];
 }
 
 /** API-equivalent USD for one model's tokens; null when the model has no price row. */
@@ -154,8 +177,10 @@ function ledgerRecord(p, prices, now = new Date(), opts = {}) {
     by_model: byModel,
     usd_api_equivalent: total,
     unpriced_models: unpriced,
+    price_tier_exceeded: tierExceeded(text, prices),
     price_table: { as_of: prices.as_of, source: prices.source },
-    transcript: tp && fs.existsSync(tp) ? tp : null,
+    // Kept even when the file is not on disk yet, so Stop can re-count it once it is.
+    transcript: tp || null,
     // Absence is not zero: no transcript, or one with no usage yet, means the tokens are UNKNOWN.
     tokens_known: models.length > 0,
   };
@@ -274,5 +299,5 @@ function main() {
 if (require.main === module) main();
 module.exports = {
   sumUsage, usd, priceKey, totals, ledgerRecord, agentTranscript, sessionAgents, sessionSummary,
-  summaryLine, onStop, onSubagentStop, loadPrices, ledgerPath, fmtTok, repairZeroLines, waitForSettle,
+  summaryLine, onStop, onSubagentStop, tierExceeded, loadPrices, ledgerPath, fmtTok, repairZeroLines, waitForSettle,
 };

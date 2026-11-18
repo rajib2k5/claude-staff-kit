@@ -2,11 +2,13 @@
 /**
  * Status line: model, context used, session cost (API-equivalent), and subagent count/tokens.
  *
- *   Opus 5.5 | ctx 18% of 1M | $3.41 API-eq | 4 subagents 812k tok
+ *   Opus 5.5 | ctx 18% of 1M, 60% to compact at 300k | $3.41 API-eq | 4 subagents 812k tok
  *
  * Reads the status-line JSON Claude Code writes on stdin. Context %: `context_window.used_percentage`
  * when present; otherwise the last main-thread message's input-side tokens (input + cache read + cache
- * write) over `context_window.context_window_size`. Cost: `cost.total_cost_usd` (Claude Code's own
+ * write) over `context_window.context_window_size`. The compact point is `autoCompactWindow` from
+ * ~/.claude/settings.json (per model under modelSettings.<id>, else top level); it is shown only when it
+ * is below the window, since otherwise the window itself is the compact point. Cost: `cost.total_cost_usd` (Claude Code's own
  * API-equivalent figure for the session). Subagents: the ledger written by subagent-cost-ledger.js.
  *
  * Never throws: on any error it prints a short fallback so the status line is never blank.
@@ -42,7 +44,25 @@ function lastContextTokens(transcriptPath, maxBytes = 400000) {
 
 const fmtWin = (n) => (n >= 1e6 ? `${n / 1e6}M` : `${Math.round(n / 1e3)}k`);
 
-function contextPart(s) {
+/** autoCompactWindow for this model: modelSettings.<id> first, then the top-level setting. */
+function compactWindow(settings, modelId) {
+  const st = settings || {};
+  const id = String(modelId || '').replace(/\[.*\]$/, '');
+  const per = st.modelSettings && st.modelSettings[id] && st.modelSettings[id].autoCompactWindow;
+  const v = Number(per || st.autoCompactWindow);
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
+function readSettings(env = process.env) {
+  try {
+    const dir = env.CLAUDE_CONFIG_DIR || path.join(require('os').homedir(), '.claude');
+    return JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function contextPart(s, settings = {}) {
   const cw = s.context_window || {};
   const size = Number(cw.context_window_size) || null;
   let pct = typeof cw.used_percentage === 'number' ? cw.used_percentage : null;
@@ -51,13 +71,18 @@ function contextPart(s) {
     if (used !== null) pct = (100 * used) / size;
   }
   if (pct === null) return 'ctx ?';
-  return `ctx ${Math.round(pct)}%${size ? ` of ${fmtWin(size)}` : ''}`;
+  let out = `ctx ${Math.round(pct)}%${size ? ` of ${fmtWin(size)}` : ''}`;
+  const cwin = compactWindow(settings, s.model && s.model.id);
+  if (size && cwin && cwin < size) {
+    out += `, ${Math.round((pct * size) / cwin)}% to compact at ${fmtWin(cwin)}`;
+  }
+  return out;
 }
 
-function render(s, lp) {
+function render(s, lp, settings = {}) {
   const parts = [];
   parts.push((s.model && (s.model.display_name || s.model.id)) || 'model ?');
-  parts.push(contextPart(s));
+  parts.push(contextPart(s, settings));
   const c = s.cost && typeof s.cost.total_cost_usd === 'number' ? s.cost.total_cost_usd : null;
   parts.push(c === null ? '$? API-eq' : `$${c.toFixed(2)} API-eq`);
   if (ledger && s.session_id) {
@@ -76,7 +101,7 @@ function main() {
   process.stdin.on('data', (c) => (raw += c));
   process.stdin.on('end', () => {
     try {
-      process.stdout.write(render(raw.trim() ? JSON.parse(raw) : {}, ledger ? ledger.ledgerPath() : undefined));
+      process.stdout.write(render(raw.trim() ? JSON.parse(raw) : {}, ledger ? ledger.ledgerPath() : undefined, readSettings()));
     } catch {
       process.stdout.write('status ?');
     }
@@ -84,4 +109,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { render, contextPart, lastContextTokens };
+module.exports = { render, contextPart, lastContextTokens, compactWindow };

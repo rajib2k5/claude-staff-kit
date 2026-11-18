@@ -2,7 +2,7 @@
   "as_of": "2026-11-17",
   "source": "https://platform.claude.com/docs/en/about-claude/pricing",
   "unit": "USD per million tokens, public API list price. Used only for API-equivalent figures: a Max plan is not billed per token.",
-  "notes": "Haiku 5.5 uses the prompts-up-to-100K-tokens tier. A model with no row is reported in unpriced_models, never guessed.",
+  "notes": "Haiku 5.5 uses the prompts-up-to-100K-tokens tier; a call over tier_max_prompt_tokens is listed in the ledger line's price_tier_exceeded, because its real price is higher. A model with no row is reported in unpriced_models, never guessed.",
   "models": {
     "claude-opus-5-5": {
       "input": 4.0,
@@ -23,7 +23,8 @@
       "cache_write_5m": 0.125,
       "cache_write_1h": 0.2,
       "cache_read": 0.01,
-      "output": 0.5
+      "output": 0.5,
+      "tier_max_prompt_tokens": 100000
     },
     "claude-fable-5-2": {
       "input": 8.0,

@@ -87,3 +87,19 @@ test('process: unparseable input fails open with a stderr note', () => {
   assert.equal(r.out, '');
   assert.match(r.err, /allowing/);
 });
+
+test('an adversarial-reviewer launch on any model but opus is denied', () => {
+  for (const m of ['sonnet', 'haiku', 'fable']) {
+    const v = decide('Agent', { prompt: 'x', subagent_type: 'adversarial-reviewer', model: m, effort: 'high' }, ON);
+    assert.equal(v && v.decision, 'deny', m);
+    assert.match(v.reason, /adversarial-reviewer runs on opus/);
+  }
+  assert.equal(decide('Agent', { prompt: 'x', subagent_type: 'adversarial-reviewer', model: 'opus', effort: 'high' }, ON), null);
+  assert.equal(decide('Agent', { prompt: 'x', subagent_type: 'adversarial-reviewer', model: ' opus ', effort: 'high' }, ON), null);
+});
+
+test('the opus rule for adversarial-reviewer holds even when effort is not required', () => {
+  const v = decide('Agent', { prompt: 'x', subagent_type: 'adversarial-reviewer', model: 'sonnet' }, OFF);
+  assert.equal(v && v.decision, 'deny');
+  assert.equal(decide('Agent', { prompt: 'x', subagent_type: 'implementer', model: 'sonnet' }, OFF), null);
+});

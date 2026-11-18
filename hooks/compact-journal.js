@@ -41,9 +41,27 @@ function parseLines(text) {
   return out;
 }
 
-/** The text a human typed in a user line, or null for tool results, meta lines and hook output. */
-function userText(d) {
+// Lines Claude Code writes as type "user" that no human typed: background task results, messages from
+// subagents and other sessions, system notes. Kept out of the journal, because the journal is
+// re-injected as the user's own words and would let model or web text pose as the user.
+const MACHINE_PREFIX = /^(<task-notification|<agent-message|<\\?~agent-message|<cross-session-message|<side-sessions-event|<ci-monitor-event|<system-reminder>|\[SYSTEM NOTIFICATION|\[Request interrupted|Another Claude session sent a message|This session is being continued|Base directory for this skill:)/;
+
+const originKind = (d) => (d && d.origin && typeof d.origin === 'object' ? d.origin.kind : undefined);
+
+/** True when the transcript labels input origins (Claude Code 2.1.29x+): any line has origin.kind "human". */
+function hasOriginLabels(lines) {
+  return lines.some((d) => d && d.type === 'user' && originKind(d) === 'human');
+}
+
+/**
+ * The text a human typed in a user line, or null for anything else: tool results, meta lines, hook
+ * output, task notifications, agent and session messages. With `labelled` (the transcript marks
+ * origins), only origin.kind "human" counts; without it, any non-human origin or machine prefix is out.
+ */
+function userText(d, labelled = false) {
   if (d.type !== 'user' || d.isMeta || d.isSidechain || d.isCompactSummary || !d.message) return null;
+  const kind = originKind(d);
+  if (labelled ? kind !== 'human' : kind !== undefined && kind !== 'human') return null;
   const c = d.message.content;
   let text;
   if (typeof c === 'string') text = c;
@@ -52,12 +70,13 @@ function userText(d) {
     text = c.filter((b) => b && b.type === 'text').map((b) => b.text).join('\n');
   } else return null;
   text = text.replace(/<system-reminder>[\s\S]*?<\/system-reminder>/g, '').trim();
-  if (!text || /^<(local-command-|command-name>|bash-)/.test(text)) return null;
+  if (!text || /^<(local-command-|command-name>|command-message>|bash-)/.test(text) || MACHINE_PREFIX.test(text)) return null;
   return text;
 }
 
 function recentUserInstructions(lines, n = N_USER) {
-  const all = lines.map(userText).filter(Boolean);
+  const labelled = hasOriginLabels(lines);
+  const all = lines.map((d) => userText(d, labelled)).filter(Boolean);
   return all.slice(-n).map((t) => (t.length > MAX_USER_CHARS ? t.slice(0, MAX_USER_CHARS) + '\n[...cut by compact-journal]' : t));
 }
 
@@ -165,6 +184,36 @@ function render(p, lines, git, now = new Date()) {
   return L.join('\n') + '\n';
 }
 
+/** Retention for journals (they hold verbatim user text): settings.cleanupPeriodDays, default 30. */
+function retentionDays(settings) {
+  const v = settings && settings.cleanupPeriodDays;
+  return Number.isFinite(v) && v > 0 ? v : 30;
+}
+
+function readSettings(env = process.env) {
+  try {
+    const dir = env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
+    return JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+/** Deletes journal files (*.md, *.prev.md) not modified in `days` days. Returns how many it removed. */
+function pruneJournals(dir, days, now = Date.now()) {
+  let n = 0;
+  let names = [];
+  try { names = fs.readdirSync(dir); } catch { return 0; }
+  for (const name of names) {
+    if (!name.endsWith('.md')) continue;
+    const f = path.join(dir, name);
+    try {
+      if (now - fs.statSync(f).mtimeMs > days * 86400e3) { fs.unlinkSync(f); n += 1; }
+    } catch { /* raced with another session */ }
+  }
+  return n;
+}
+
 function onPreCompact(p, env = process.env) {
   const text = p.transcript_path && fs.existsSync(p.transcript_path) ? fs.readFileSync(p.transcript_path, 'utf8') : '';
   const md = render(p, parseLines(text), gitFacts(p.cwd || process.cwd()));
@@ -172,6 +221,7 @@ function onPreCompact(p, env = process.env) {
   fs.mkdirSync(path.dirname(jp), { recursive: true });
   if (fs.existsSync(jp)) fs.copyFileSync(jp, jp.replace(/\.md$/, '.prev.md'));
   fs.writeFileSync(jp, md, { mode: 0o600 });
+  pruneJournals(path.dirname(jp), retentionDays(readSettings(env)));
   return jp;
 }
 
@@ -222,6 +272,6 @@ function main() {
 
 if (require.main === module) main();
 module.exports = {
-  userText, recentUserInstructions, openTasks, decisions, render, onPreCompact, onSessionStartCompact,
+  userText, recentUserInstructions, hasOriginLabels, pruneJournals, retentionDays, MAX_INJECT, openTasks, decisions, render, onPreCompact, onSessionStartCompact,
   journalPath, parseLines, gitFacts, compactInstructions,
 };

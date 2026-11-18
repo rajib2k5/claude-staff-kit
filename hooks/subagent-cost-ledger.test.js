@@ -21,8 +21,11 @@ const PRICES = {
 };
 
 /** One assistant transcript line, the shape Claude Code 2.1.296 writes. */
+// Every real line carries its own uuid, so a dedup keyed on uuid would count each content block again.
+let seq = 0;
 function aline(id, model, u, extra = {}) {
-  return JSON.stringify({ type: 'assistant', ...extra, message: { id, model, usage: u, content: [] } });
+  seq += 1;
+  return JSON.stringify({ type: 'assistant', uuid: `u-${seq}`, ...extra, message: { id, model, usage: u, content: [] } });
 }
 const U = (i, o, cr, cw, cw1h = 0) => ({
   input_tokens: i, output_tokens: o, cache_read_input_tokens: cr, cache_creation_input_tokens: cw,
@@ -165,6 +168,43 @@ test('regression: the SubagentStop settle wait picks up a write that lands after
   assert.equal(rec.tokens.output, 7);
 });
 
+test('regression: priceKey accepts only an exact id or an 8-digit date suffix; newer versions are unpriced', () => {
+  const P = { models: { 'claude-opus-5': {}, 'claude-sonnet-5': {}, 'claude-opus-5-5': {} } };
+  assert.equal(L.priceKey('claude-opus-5-6', P), null);
+  assert.equal(L.priceKey('claude-sonnet-5-6', P), null);
+  assert.equal(L.priceKey('claude-opus-5-20260101', P), 'claude-opus-5');
+  assert.equal(L.priceKey('claude-opus-5-5-20261001', P), 'claude-opus-5-5');
+  assert.equal(L.priceKey('claude-opus-5-2026', P), null);
+  assert.equal(L.priceKey('claude-opus-5-5[1m]', P), 'claude-opus-5-5');
+});
+
+test('regression: a ledger line for a transcript not yet on disk keeps its path, and Stop re-counts it later', () => {
+  const dir = tmp();
+  const lp = path.join(dir, 'l.jsonl');
+  const at = path.join(dir, 'agent-late.jsonl'); // does not exist at SubagentStop
+  const rec = L.onSubagentStop({ session_id: 's', agent_id: 'late', agent_transcript_path: at }, PRICES, lp, { settle: false });
+  assert.equal(rec.transcript, at);
+  assert.equal(rec.tokens_known, false);
+  fs.writeFileSync(at, aline('m', 'claude-sonnet-5-5', U(3, 9, 0, 0), { isSidechain: true }) + '\n');
+  assert.equal(L.repairZeroLines('s', PRICES, lp), 1);
+  assert.equal(L.sessionAgents('s', lp)[0].tokens.output, 9);
+});
+
+test('a model whose price row has a prompt-size tier is flagged when one call exceeds it', () => {
+  const P = { as_of: 'x', source: 'x', models: { 'claude-haiku-5-5': { input: 1, output: 1, cache_read: 1, cache_write_5m: 1, cache_write_1h: 1, tier_max_prompt_tokens: 100000 } } };
+  const dir = tmp();
+  const small = path.join(dir, 'a.jsonl');
+  const big = path.join(dir, 'b.jsonl');
+  fs.writeFileSync(small, aline('m1', 'claude-haiku-5-5', U(1000, 10, 99000, 0)) + '\n');
+  fs.writeFileSync(big, aline('m1', 'claude-haiku-5-5', U(1000, 10, 99000, 1)) + '\n');
+  assert.deepEqual(L.ledgerRecord({ agent_transcript_path: small }, P).price_tier_exceeded, []);
+  assert.deepEqual(L.ledgerRecord({ agent_transcript_path: big }, P).price_tier_exceeded, ['claude-haiku-5-5']);
+});
+
+test('the shipped Haiku 5.5 row carries its 100k prompt tier', () => {
+  assert.equal(L.loadPrices().models['claude-haiku-5-5'].tier_max_prompt_tokens, 100000);
+});
+
 // --- status line -------------------------------------------------------------------------------
 
 test('status line shows model, used_percentage, API-equivalent cost and subagents', () => {
@@ -191,4 +231,29 @@ test('process: status line never prints an empty line on bad input', () => {
   const r = spawnSync(process.execPath, [STATUS], { input: 'garbage', encoding: 'utf8' });
   assert.equal(r.status, 0);
   assert.equal(r.stdout, 'status ?');
+});
+
+test('status line skips a trailing <synthetic> line when it reads context from the transcript', () => {
+  const dir = tmp();
+  const tp = path.join(dir, 't.jsonl');
+  fs.writeFileSync(tp, [aline('b', 'claude-opus-5-5', U(10000, 0, 30000, 10000)), aline('s', '<synthetic>', U(0, 0, 0, 0))].join('\n'));
+  assert.equal(S.contextPart({ transcript_path: tp, context_window: { used_percentage: null, context_window_size: 200000 } }), 'ctx 25% of 200k');
+});
+
+test('status line shows how far the session is toward the auto-compact point', () => {
+  const s = { model: { id: 'claude-opus-5-5[1m]' }, context_window: { used_percentage: 12, context_window_size: 1000000 } };
+  // 120k used of a 300k compact point = 40%.
+  assert.equal(S.contextPart(s, { autoCompactWindow: 300000 }), 'ctx 12% of 1M, 40% to compact at 300k');
+  // A per-model window wins over the top-level one.
+  assert.equal(S.contextPart(s, { autoCompactWindow: 300000, modelSettings: { 'claude-opus-5-5': { autoCompactWindow: 200000 } } }),
+    'ctx 12% of 1M, 60% to compact at 200k');
+  // No setting, or one at/above the window: the compact point is the window itself, shown once.
+  assert.equal(S.contextPart(s, {}), 'ctx 12% of 1M');
+  assert.equal(S.contextPart(s, { autoCompactWindow: 2000000 }), 'ctx 12% of 1M');
+});
+
+test('render passes the settings through to the context part', () => {
+  const out = S.render({ model: { display_name: 'Opus 5.5', id: 'claude-opus-5-5' }, cost: { total_cost_usd: 1 },
+    context_window: { used_percentage: 15, context_window_size: 1000000 } }, undefined, { autoCompactWindow: 300000 });
+  assert.equal(out, 'Opus 5.5 | ctx 15% of 1M, 50% to compact at 300k | $1.00 API-eq');
 });
