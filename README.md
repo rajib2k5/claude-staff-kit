@@ -10,9 +10,9 @@ The same files also serve the Snowflake Cortex CLI, which reads `~/.claude/skill
 |---|---|---|
 | **Rules** (`rules/`) | <!-- sync-index:rules-count -->19<!-- /sync-index:rules-count --> | The standards: engineering bar, adversarial validation (validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13)), testing, code review, security, SQL, dbt, Snowflake, data modelling, migrations, docs. `rules/README.md` is the index and states the conflict order. |
 | **Contexts** (`contexts/`) | 6 | Tiered loading: tier 0 always (the four questions, irreversibility ladder T0 to T4), tier 1 per role, tier 2 per domain. |
-| **Skills** (`skills/`) | <!-- sync-index:skills-count -->41<!-- /sync-index:skills-count --> | Engineering workflows (design, tdd, debug, review, ship, migrate, ...), data-platform workflows (quality, metric, dbt audit, Snowflake audit and tune, cost, ...) and Claude-platform skills: <!-- sync-index:skill-families -->13 `staff-*`, 8 `data-*` and 10 `claude-*` skills, plus `cost-conscious-orchestration`, `destructive-ops-guard`, `diagram-kit`, `evidence-gated-validation`, `graphify-refresh`, `heavy-job`, `learn-as-you-build`, `real-run-screenshots`, `simple-english`, `snowflake-sql`.<!-- /sync-index:skill-families --> |
+| **Skills** (`skills/`) | <!-- sync-index:skills-count -->42<!-- /sync-index:skills-count --> | Engineering workflows (design, tdd, debug, review, ship, migrate, ...), data-platform workflows (quality, metric, dbt audit, Snowflake audit and tune, cost, ...) and Claude-platform skills: <!-- sync-index:skill-families -->13 `staff-*`, 8 `data-*` and 10 `claude-*` skills, plus `ai-spend`, `cost-conscious-orchestration`, `destructive-ops-guard`, `diagram-kit`, `evidence-gated-validation`, `graphify-refresh`, `heavy-job`, `learn-as-you-build`, `real-run-screenshots`, `simple-english`, `snowflake-sql`.<!-- /sync-index:skill-families --> |
 | **Agents** (`agents/`) | <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> | Each declares an explicit `model:`. `adversarial-reviewer` is pinned to Opus and is never downgraded. Mechanical agents (explorer, docs writer, release manager, dependency auditor) run on Sonnet. |
-| **Commands** (`commands/`) | <!-- sync-index:commands-count -->14<!-- /sync-index:commands-count --> | `/bootstrap` `/ship` `/validate` `/deep-review` `/design` `/rca` `/adr` `/dbt-audit` `/sf-audit` `/sf-tune` `/dq` `/standards`. Thin dispatchers onto the skills. |
+| **Commands** (`commands/`) | <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> | `/bootstrap` `/ship` `/validate` `/deep-review` `/design` `/rca` `/adr` `/dbt-audit` `/sf-audit` `/sf-tune` `/dq` `/standards`. Thin dispatchers onto the skills. |
 | **Hooks** (`hooks/`) | 3 scripts | `evolv-destructive-guard.js` (PreToolUse: asks or denies before DROP, TRUNCATE, `rm -rf`, force-push, `terraform destroy`, `snowddl destroy`, `pkill -f`, stake changes, ... across every technology). `pre-publish-guard.js` (PreToolUse on git commit, tag, merge and push: denies a Claude co-author trailer, asks on home-directory paths, runs the licensed-data scanner in `hooks/lib/` when the repo has `.licensed-data.json`). `evolv-skills-enforcer.js` (SessionStart: loads the mandatory-skills policy; Stop: flags "verified" claims with no executed command). |
 | **Memory** (`memory/`) | 7 | Global facts for the file-based memory. Opt-in at install. |
 | **Adapters** (`adapters/cortex/`) | 2 | How `~/.cortex` symlinks into the library, and the script that seeds `cortex ctx`. |
@@ -75,7 +75,7 @@ See [adapters/cortex/CORTEX.md](adapters/cortex/CORTEX.md) for why the adapter s
 | A bug | `/rca` reproduces first, one hypothesis at a time. |
 | A number, a migration, a "fixed", any claim | `/validate` classifies with the router, writes the route line, and dispatches the Opus adversarial validator only when routed. |
 | Before saying done | `/ship` executes build, tests, lint, types, and reports what was skipped. |
-| Data work | `/dq` hunts fan-out, freshness, and absence-vs-zero; `/dbt-audit`, `/sf-audit`, `/sf-tune` for the platform. |
+| Data work | `/dq` hunts fan-out, freshness, and absence-vs-zero; `/dbt-audit`, `/sf-audit`, `/sf-tune` for the platform; `/ai-spend` reports AI spend per source with every dollar labelled billed, list or estimated. |
 
 ## Recommended companion plugins
 
@@ -107,9 +107,9 @@ Checks the manifests, every skill and agent frontmatter (agents must declare a m
 
 ```
 .claude-plugin/   plugin.json, marketplace.json
-skills/           <!-- sync-index:skills-count -->41<!-- /sync-index:skills-count --> skills, one directory each with SKILL.md
+skills/           <!-- sync-index:skills-count -->42<!-- /sync-index:skills-count --> skills, one directory each with SKILL.md
 agents/           <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> agents (frontmatter: name, description, model)
-commands/         <!-- sync-index:commands-count -->14<!-- /sync-index:commands-count --> slash commands
+commands/         <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> slash commands
 rules/            <!-- sync-index:rules-standards -->18<!-- /sync-index:rules-standards --> standards files plus README.md, the index
 contexts/         tier0-always, tier1-role-*, tier2-domain-*
 hooks/            hooks.json (plugin wiring), the three hook scripts and their tests, lib/ (the licensed-data scanner)
