@@ -42,6 +42,57 @@ A command substitution inside that text, `$(...)` or backticks, does run, and is
 does any text on a line that also runs one (`echo "..." > x.sql && snowsql -f x.sql`). A read, a dry run or a plan
 excuses only its own command: `ls && git reset --hard` still asks.
 
+Three more cases need no approval. They do not change a deny, and they do not change how SQL text is judged. If
+one condition is not true, the old text rule applies and the guard asks.
+
+**The read-only list.** The first two cases need every other command on the line to be one of these: `ls`, `cat`
+without a heredoc, `head`, `tail`, `wc`, `grep`, `sed -n` with only print commands, `echo`, `printf`, `stat`,
+`diff`, `cmp`, `cd`, `mkdir -p`, `true`, `test`, `[`, `node --check`, `python3 -B -m py_compile`, or a plain
+variable assignment. The command name has no folder, and no assignment or wrapper is in front of it. No redirect on
+the line writes to a startup or autorun file (see below).
+
+- **A heredoc that `cat` or `tee` writes to a file is data** when all of these are true: it is the only heredoc on
+  its line, with no pipe or substitution around it; every other command on the line is on the read-only list; the
+  target is not a startup or autorun file; and with `py_compile` on the line, the file name is not a standard
+  Python module name. Startup and autorun files are: shell startup files (`.bashrc`, `.profile`, `.bash_profile`,
+  `.bash_aliases`, `.zshrc` and the other shells), `.envrc`, `.env`, `.npmrc`, `.yarnrc`, `.gitconfig`,
+  `.gitattributes`, `.pre-commit-config.yaml`, crontab, anything in `.git/`, `.husky/`, `.githooks/`, `.github/`,
+  `.gitlab/`, `.vscode/`, `.idea/`, `.devcontainer/`, `.direnv/` or `.claude/`, any dot folder or dotfile in the
+  home folder (the fish config, `~/.config/autostart`, systemd user units), `Makefile`, `GNUmakefile`, `justfile`,
+  a Taskfile, `package.json`, `pyproject.toml`, `setup.py`, `setup.cfg`, `tox.ini`, `noxfile.py`, `tasks.py`,
+  `conftest.py`, `sitecustomize.py`, `usercustomize.py`, `*.pth`, `*.service`, `*.timer`, `*.socket`, `*.desktop`,
+  a Dockerfile, Containerfile or compose file, a virtualenv `bin/activate`, and a system folder. A symlink to one
+  of these counts, and so does a target the guard cannot resolve (a variable, a glob, a relative path after an
+  unknown `cd`).
+- **Python code given with `-c` or on stdin, and Node code given with `-e`, `--eval` or `-p`, that only mentions a
+  delete.** Python is read with its own parser. Node is read with its strings and comments removed and is compiled
+  to check the read. A delete word in a string, a comment or a print is text. All of these must be true:
+  - The code calls no delete. It writes no file, and it calls nothing that can run other code: `exec`, `eval`,
+    `__import__`, `importlib`, `subprocess`, `os.system`, `pickle`, `ctypes`, `runpy`, `yaml.load`,
+    `yaml.unsafe_load`, `yaml.full_load`, `operator.methodcaller` or `operator.attrgetter`. In Node, the same
+    applies to `child_process`, `eval` and `Function`.
+  - Bash expands nothing in the code: it is in single quotes, or the heredoc delimiter is quoted.
+  - Every other command on the line is on the read-only list. Output goes into no pipe, except to a reader.
+  - Nothing on the line sets `PYTHONPATH`, `PYTHONSTARTUP`, `PYTHONHOME`, `PYTHONINSPECT`, `PYTHONUSERBASE`,
+    `NODE_OPTIONS`, `NODE_PATH`, `LD_PRELOAD`, `LD_LIBRARY_PATH` or `DYLD_*`.
+  - For Python, the code is UTF-8 and at most 64 KB. A coding cookie, if there is one, names utf-8 or ascii.
+  - For Node, the code has no U+2028, no U+2029, no bare CR, no `<!--` and no `-->`.
+- **A plain `rm` or `rm -f` (not recursive) of a glob that names files.** All of these must be true:
+  - The wildcard is in the last part of the path only. That part has a literal stem of 2 or more characters
+    before the first wildcard. `_probe*.py`, `out_*.log` and `r26m_*` pass. `*.py`, `*.db`, `?x*`, `*` and `.*`
+    do not.
+  - The path has no variable, `~user`, brace, extglob or substitution.
+  - The folder, resolved through symlinks, is in a git work tree and not under a `.git` folder. If the folder
+    cannot be resolved, the rm asks.
+  - The work tree root is not `/`, the home folder or a folder above it. Below the home folder, no folder on the
+    way to that root starts with a dot. `~/.config/x/repo` and `~/.aws` do not pass.
+
+Two parsing rules support these cases:
+- `#` starts a comment only at the start of a word and outside quotes, so `a\ #b` is not a comment. A quote in a
+  comment (`# it's done`) does not hide the next lines.
+- A line that has `case` and also a `$(...)` or backtick substitution asks, unless it is denied. The guard cannot
+  read a `case` pattern's `)` inside a substitution reliably.
+
 ## The three questions, before any destructive operation
 
 1. **What exactly is destroyed?** Name the object, the row count, the blast radius. "Some rows"

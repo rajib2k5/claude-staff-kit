@@ -29,6 +29,16 @@
  *    (resolveAssignedVariables), regenerable caches (CACHE_DIRS), `chmod -R u+…` on a project folder (riskyChmod)
  *    and redirections read as arguments. SQL text in a heredoc is judged as before: the guard cannot know which
  *    program reads a file, so a list of SQL clients was a hole (adversarial review, 2026-11-18).
+ *  - Second round (2026-11-18, 13 asks after the update). Only a delete that would ask is reread (textOnlyDeletes);
+ *    a deny and the SQL scan are unchanged. Python code is judged by its real calls (Python's ast, pythonFacts),
+ *    node code with its strings and comments removed (jsFacts); if either cannot be read, the text rule asks. A `<<`
+ *    in quotes or a comment is no longer read as a heredoc (quoteMasker).
+ *  - Narrowed after its adversarial review (2026-11-18). Interpreter code and a heredoc that cat or tee writes to a
+ *    file are relaxed only when every other command on the line is a read-only command from a short allowlist
+ *    (readOnlyAllowed) and nothing on the line writes a startup or autorun file (autorunPath): the guard cannot see a
+ *    script that imports or sources a file. A plain rm of a glob is allowed only when its last part starts with a
+ *    literal stem (`_probe*.py`, not `*.py`) and its real folder is in a git work tree (namesProjectFiles). A comment
+ *    ends at its newline, and a quote in a substitution inside double quotes is the substitution's own.
  *
  * Pairs with ~/.claude/skills/destructive-ops-guard/SKILL.md. Tests: evolv-destructive-guard.test.js
  * (node --test ~/.claude/hooks/evolv-destructive-guard.test.js).
@@ -36,6 +46,7 @@
 
 'use strict';
 
+const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
@@ -217,7 +228,8 @@ const FD_DUP = /(?:\d+-?|-)(?=$|[\s<>])/y;
 /**
  * Shell words of one simple command, quotes removed. An unmatched quote ends the word. Redirections are not words:
  * `rm -rf x 2>/dev/null` deletes x only, and `>/dev/null rm -rf ~` still runs rm (2026-11-18: `2>` and `2>/dev/null`
- * were read as a delete target and as a push refspec).
+ * were read as a delete target and as a push refspec). A # at the start of a word, outside quotes, starts a comment
+ * that ends at the newline (a quote in it opens nothing). In double quotes, $(…) and `…` are read whole (substitutionEnd).
  */
 function tokenize(s) {
   const words = [];
@@ -242,7 +254,15 @@ function tokenize(s) {
     } else if (quote) {
       if (c === quote) quote = null;
       else if (c === '\\' && quote === '"' && i + 1 < s.length) cur += s[(i += 1)];
-      else cur += c;
+      else if (quote === '"' && (c === '`' || (c === '$' && s[i + 1] === '('))) {
+        const end = c === '`' ? backquoteEnd(s, i) : substitutionEnd(s, i);
+        cur += s.slice(i, end);
+        i = end - 1;
+      } else cur += c;
+    } else if (c === '#' && !started) {
+      const newline = s.indexOf('\n', i);
+      if (newline === -1) break;
+      i = newline - 1;
     } else if (c === '$' && s[i + 1] === "'") {
       quote = ANSI;
       started = true;
@@ -284,11 +304,15 @@ function tokenize(s) {
  * Simple commands of a command line: split on unquoted ; & | newlines and parentheses, but not on the & of a
  * redirection (2>&1, &>file) or the | of >|. With `ops`, the separator after each segment is pushed to it ('||' for a
  * double bar). With `max`, stops after that many segments (the first command of a long text, read in linear time).
+ * A comment (a # that starts a word, outside quotes) stays in its segment but ends at the newline: before 2026-11-18,
+ * the apostrophe in `# it's⏎rm -rf ~` opened a quote that hid the rm (second adversarial review). In double quotes,
+ * $(…) and `…` are read whole, so the quote in x="$(echo "'")" is the substitution's own.
  */
 function splitSegments(text, ops = null, max = Infinity) {
   const out = [];
   let cur = '';
   let quote = null;
+  let wordStart = true; // the next character starts a word: a # there begins a comment
   const push = (op) => {
     if (!cur.trim()) return;
     out.push(cur.trim());
@@ -296,10 +320,19 @@ function splitSegments(text, ops = null, max = Infinity) {
   };
   for (let i = 0; i < text.length && out.length < max; i += 1) {
     const c = text[i];
-    if (quote) {
+    if (quote === '"' && (c === '`' || (c === '$' && text[i + 1] === '('))) {
+      const end = c === '`' ? backquoteEnd(text, i) : substitutionEnd(text, i);
+      cur += text.slice(i, end);
+      i = end - 1;
+    } else if (quote) {
       cur += c;
       if (c === (quote === ANSI ? "'" : quote)) quote = null;
       else if (c === '\\' && (quote === '"' || quote === ANSI) && i + 1 < text.length) cur += text[(i += 1)];
+    } else if (c === '#' && wordStart) {
+      const newline = text.indexOf('\n', i);
+      const stop = newline === -1 ? text.length : newline;
+      cur += text.slice(i, stop);
+      i = stop - 1;
     } else if (c === '$' && text[i + 1] === "'") {
       quote = ANSI;
       cur += "$'";
@@ -318,9 +351,74 @@ function splitSegments(text, ops = null, max = Infinity) {
     } else {
       cur += c;
     }
+    wordStart = !quote && /[\s;&|()<>]/.test(c);
   }
   if (out.length < max) push('');
   return out;
+}
+
+/**
+ * Index just past the `)` that closes the `$(` at text[i], read as bash reads it: quotes, escapes, comments and nested
+ * $(…), "…" and `…` inside; text.length + 1 when it is not closed. Iterative, so deep nesting cannot overflow the
+ * stack (the hook fails open on an exception). `case … in a)` is not followed: decideShell asks on such a line.
+ */
+function substitutionEnd(text, i) {
+  const stack = [{ depth: 0 }]; // frames: { depth } for $(…) code, or 'sq' | 'dq' | 'ansi' | 'bq'
+  let wordStart = true;
+  for (let j = i + 2; j < text.length; j += 1) {
+    const c = text[j];
+    const top = stack[stack.length - 1];
+    if (typeof top === 'string') {
+      wordStart = false;
+      if (top === 'sq') {
+        if (c === "'") stack.pop();
+      } else if (c === '\\') {
+        j += 1;
+      } else if (top === 'ansi' || top === 'bq') {
+        if (c === (top === 'bq' ? '`' : "'")) stack.pop();
+      } else if (c === '"') {
+        stack.pop();
+      } else if (c === '`') {
+        stack.push('bq');
+      } else if (c === '$' && text[j + 1] === '(') {
+        stack.push({ depth: 0 });
+        j += 1;
+        wordStart = true;
+      }
+      continue;
+    }
+    if (c === '#' && wordStart) {
+      const newline = text.indexOf('\n', j);
+      if (newline === -1) return text.length + 1;
+      j = newline - 1;
+      wordStart = true;
+      continue;
+    }
+    if (c === '\\') j += 1;
+    else if (c === "'") stack.push('sq');
+    else if (c === '"') stack.push('dq');
+    else if (c === '`') stack.push('bq');
+    else if (c === '$' && (text[j + 1] === "'" || text[j + 1] === '(')) {
+      stack.push(text[j + 1] === "'" ? 'ansi' : { depth: 0 });
+      j += 1;
+    } else if (c === '(') top.depth += 1;
+    else if (c === ')' && top.depth > 0) top.depth -= 1;
+    else if (c === ')') {
+      stack.pop();
+      if (!stack.length) return j + 1;
+    }
+    wordStart = /[\s;&|()<>]/.test(c);
+  }
+  return text.length + 1;
+}
+
+/** Index just past the backquote that closes the one at text[i] (a backslash escapes); text.length + 1 if none. */
+function backquoteEnd(text, i) {
+  for (let j = i + 1; j < text.length; j += 1) {
+    if (text[j] === '\\') j += 1;
+    else if (text[j] === '`') return j + 1;
+  }
+  return text.length + 1;
 }
 
 /** Where the command of a simple command sits, past VAR=value assignments and wrappers such as sudo or env. */
@@ -361,6 +459,8 @@ function isReadOnly(segment) {
  * are only text (data). A body fed to cat or tee is data written to a file or a message, unless a pipe hands it on
  * (`cat <<EOF | snowsql` runs it) or the command substitution around it feeds a command that runs text
  * (`bash -c "$(cat <<EOF ... )"`). In `git commit -m "$(cat <<'EOF' ... EOF)"` the body belongs to cat, not git.
+ * `bodies` has each body in order with what it is fed to: { text, runs, quoted, owner (the words of its command),
+ * plain (no pipe, no substitution around it, the only heredoc on its line), files (where cat or tee writes it) }.
  */
 function parseHeredocs(command) {
   const lines = command.split('\n');
@@ -368,10 +468,13 @@ function parseHeredocs(command) {
   const code = [];
   const data = [];
   const expanding = [];
+  const bodies = [];
+  const mask = quoteMasker();
   for (let i = 0; i < lines.length; i += 1) {
     shell.push(lines[i]);
     let j = i + 1; // the bodies of a line's heredocs follow it one after another: `cmd <<A <<B`
-    for (const op of heredocOperators(lines[i])) {
+    const ops = heredocOperators(lines[i], mask(lines[i]));
+    for (const op of ops) {
       const before = lines[i].slice(0, op.index);
       const sub = Math.max(before.lastIndexOf('$('), before.lastIndexOf('`'));
       const inner = sub === -1 ? before : before.slice(sub + (before.startsWith('$(', sub) ? 2 : 1));
@@ -385,10 +488,54 @@ function parseHeredocs(command) {
       (runs ? code : data).push(body.join('\n'));
       // An unquoted delimiter (<<EOF, not <<'EOF' or <<\EOF) makes bash expand $(...) in the body, even for cat.
       if (!op.quoted) expanding.push(body.join('\n'));
+      // The owner's simple command: its words before the operator and after it, up to the next separator.
+      const after = lines[i].slice(op.index + op.length);
+      const raw = `${splitSegments(inner).pop() || ''} ${/^\s*[|;&)]/.test(after) ? '' : splitSegments(after, null, 1)[0] || ''}`;
+      const words = tokenize(raw);
+      const plain = !piped && sub === -1 && ops.length === 1;
+      const files = !plain ? [] : owner === 'cat' ? stdoutFiles(raw)
+        : owner === 'tee' ? [...words.slice(commandIndex(words) + 1).filter((w) => !w.startsWith('-')), ...stdoutFiles(raw)] : [];
+      bodies.push({ text: body.join('\n'), runs, quoted: op.quoted, owner: words, raw, plain, files });
     }
     i = j - 1; // skip the bodies and their closing delimiters
   }
-  return { shell: shell.join('\n'), code, data, expanding };
+  return { shell: shell.join('\n'), code, data, expanding, bodies };
+}
+
+/** `s` with every character inside quotes (and after a backslash) replaced by _, so operators in quotes are not read. */
+function maskQuoted(s) {
+  let out = '';
+  let quote = null;
+  for (let i = 0; i < s.length; i += 1) {
+    const c = s[i];
+    if (quote) {
+      if (c === quote) quote = null;
+      else if (c === '\\' && quote === '"' && i + 1 < s.length) { out += '_'; i += 1; }
+      out += c === quote || quote === null ? c : '_';
+    } else if (c === "'" || c === '"') {
+      quote = c;
+      out += c;
+    } else if (c === '\\' && i + 1 < s.length) {
+      out += '__';
+      i += 1;
+    } else {
+      out += c;
+    }
+  }
+  return out;
+}
+
+const STDOUT_REDIRECT = /(?:^|[^\d&>])(?:1|&)?(?:>>|>\||>)(?!&)[ \t]*/g;
+const REDIRECT_WORD = /(?:[^\s'"\\;&|<>()]|\\.|'[^']*'|"(?:[^"\\]|\\.)*")+/y;
+/** Files a simple command's standard output goes to (> f, >> f, >| f, &> f, 1> f), quotes removed; not 2> or >&2. */
+function stdoutFiles(segment) {
+  const files = [];
+  for (const m of maskQuoted(segment).matchAll(STDOUT_REDIRECT)) {
+    REDIRECT_WORD.lastIndex = m.index + m[0].length;
+    const word = REDIRECT_WORD.exec(segment);
+    files.push(word ? tokenize(word[0])[0] || '' : '');
+  }
+  return files;
 }
 
 /**
@@ -421,13 +568,71 @@ function bindings(command) {
  */
 const HEREDOC = /(?<!<)<<(?!<)-?[ \t]*((?:'[^'\n]*'|"[^"\n]*"|\\.|[^\s;&|<>()'"\\])+)/g;
 
-/** A line's heredoc operators in order: { index, delim (quotes removed), quoted (any quote stops expansion) }. */
-function heredocOperators(line) {
+/**
+ * Reads the lines of a command line in order and returns each with its quoted text and comments masked (replaced by
+ * _, same length): there bash sees no operator. A quote may span lines; inside $(…) and `…` it is code again, also
+ * within double quotes. Heredoc bodies are not given to it. 2026-11-18: `cat "<<EOF" > f⏎rm -rf ~⏎EOF` read the rm
+ * as a heredoc body, and the code of `node -e '…"<<EOF\n…"…'` was cut at that line the same way.
+ */
+function quoteMasker() {
+  const stack = []; // frames: 'sq' | 'dq' | 'ansi' | 'bq' | { depth } for $(…)
+  return (line) => {
+    let out = '';
+    for (let i = 0; i < line.length; i += 1) {
+      const c = line[i];
+      const top = stack[stack.length - 1];
+      const sub = typeof top === 'object';
+      if (top === 'sq' || top === 'ansi' || top === 'dq') {
+        if (c === '\\' && top !== 'sq') {
+          out += i + 1 < line.length ? '__' : '_';
+          i += 1;
+        } else if (c === (top === 'dq' ? '"' : "'")) {
+          stack.pop();
+          out += c;
+        } else if (top === 'dq' && (c === '`' || (c === '$' && line[i + 1] === '('))) {
+          stack.push(c === '`' ? 'bq' : { depth: 0 });
+          out += c === '`' ? c : line.slice(i, (i += 1) + 1);
+        } else {
+          out += '_';
+        }
+      } else if (c === '\\') {
+        out += i + 1 < line.length ? '\\_' : '\\';
+        i += 1;
+      } else if (c === '#' && (out.length === 0 || /[\s;&|()<>]/.test(out[out.length - 1]))) {
+        // At the start of a word only: the masked text, not the raw one, says so (`a\ #b` is one word, review claim 6).
+        out += '_'.repeat(line.length - i);
+        break;
+      } else if (c === "'" || c === '"') {
+        stack.push(c === "'" ? 'sq' : 'dq');
+        out += c;
+      } else if (c === '$' && (line[i + 1] === "'" || line[i + 1] === '(')) {
+        stack.push(line[i + 1] === "'" ? 'ansi' : { depth: 0 });
+        out += line.slice(i, (i += 1) + 1);
+      } else if (c === '`') {
+        if (top === 'bq') stack.pop();
+        else stack.push('bq');
+        out += c;
+      } else {
+        if (sub && c === '(') top.depth += 1;
+        else if (sub && c === ')' && (top.depth -= 1) < 0) stack.pop();
+        out += c;
+      }
+    }
+    return out;
+  };
+}
+
+/**
+ * A line's heredoc operators in order: { index, length (of the operator and its delimiter word), delim (quotes
+ * removed), quoted (any quote stops expansion) }. With `masked` (the line from quoteMasker), a << in quoted text or a
+ * comment is not one.
+ */
+function heredocOperators(line, masked = line) {
   const ops = [];
   for (const m of line.matchAll(HEREDOC)) {
-    if (/^\d/.test(m[1])) continue;
+    if (/^\d/.test(m[1]) || masked.slice(m.index, m.index + 2) !== '<<') continue;
     const delim = m[1].replace(/'([^']*)'|"([^"]*)"|\\(.)/g, (all, single, double, escaped) => single ?? double ?? escaped);
-    ops.push({ index: m.index, delim, quoted: /['"\\]/.test(m[1]) });
+    ops.push({ index: m.index, length: m[0].length, delim, quoted: /['"\\]/.test(m[1]) });
   }
   return ops;
 }
@@ -438,9 +643,10 @@ function heredocBodies(command) {
   const lines = command.split('\n');
   const starts = [0]; // where each line starts; one past the end for the line after the last
   for (const line of lines) starts.push(starts[starts.length - 1] + line.length + 1);
+  const mask = quoteMasker();
   for (let k = 0; k < lines.length; k += 1) {
     let j = k + 1;
-    for (const op of heredocOperators(lines[k])) {
+    for (const op of heredocOperators(lines[k], mask(lines[k]))) {
       j = Math.min(j, lines.length);
       const first = j;
       while (j < lines.length && lines[j].replace(/^\t+/, '') !== op.delim) j += 1;
@@ -782,8 +988,54 @@ function isCacheDir(word, vars) {
   return CACHE_DIRS.has(last) || (last === '.cache' && parts[parts.length - 2] === 'node_modules');
 }
 
-/** One delete, from its targets: deny (catastrophic), ask (the user's files, or unknown), internal, or none. */
-function judgeTargets(targets, wide, vars, cwd) {
+/** A path as it is on this disk: toAbs writes /tmp as /private/tmp (macOS), which Linux does not have. */
+const onDisk = (p) => (p.startsWith('/private/tmp') && !fs.existsSync('/private/tmp') ? p.slice('/private'.length) : p);
+
+/** The real path of a folder, through every symlink; null when it cannot be resolved (missing, no permission). */
+function realFolder(p) {
+  try {
+    return fs.realpathSync.native(onDisk(p));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * A glob that names specific files in a project (_probe*.py, out_*.log, r26m_*; 2026-11-18 asks). The second review
+ * found the first rule (2 literal characters anywhere, any folder that is not a home or system one) let `*.py`, `*.db`,
+ * `.git/ind*`, `~/.aws/cred*` and globs through a symlink to the home folder pass. Now the wildcard is only in the
+ * last part, which starts with a literal stem of 2+ characters, and the folder, resolved through symlinks (a folder
+ * that cannot be resolved fails), is in a git work tree (a .git file or folder in it or above it), is not under a
+ * .git folder, and below the home folder has no dot folder at or above that work tree (~/.config, ~/.aws, or the home
+ * folder itself as a dotfiles work tree). The root, home and system folders never pass.
+ */
+function namesProjectFiles(word, vars, cwd) {
+  let p = targetPath(word, vars);
+  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
+  if (/[$`{}()!@+]/.test(p) || p.startsWith('~') || (cwd === null && !p.startsWith('/'))) return false;
+  const folder = p.slice(0, p.lastIndexOf('/') + 1);
+  if (/[*?[]/.test(folder) || p.slice(folder.length).search(/[*?[]/) < 2) return false;
+  // The raw path, not path.resolve: the kernel follows link/.. through the link, a lexical resolve does not.
+  const real = realFolder(p.startsWith('/') ? folder : `${cwd}/${folder || '.'}`);
+  if (real === null || real.split('/').includes('.git') || isCatastrophic(toAbs(real, '/')) || underSystemDir(real)) {
+    return false;
+  }
+  let root = real;
+  while (!fs.existsSync(path.join(root, '.git'))) {
+    if (root === '/') return false;
+    root = path.dirname(root);
+  }
+  const home = realFolder(HOME) || HOME;
+  if (root === '/' || root === home || home.startsWith(`${root}/`)) return false;
+  const belowHome = path.relative(home, root);
+  return belowHome.startsWith('..') || !belowHome.split('/').some((part) => part.startsWith('.'));
+}
+
+/**
+ * One delete, from its targets: deny (catastrophic), ask (the user's files, or unknown), internal, or none. With
+ * `namedOk` (a plain rm, not recursive), a glob that names project files (namesProjectFiles) is not a wide delete.
+ */
+function judgeTargets(targets, wide, vars, cwd, namedOk = false) {
   if (!targets.length) return wide ? { level: 'ask', what: 'targets read from a pipe or another command' } : null;
   let worst = { level: 'none', what: '' };
   for (const t of targets) {
@@ -793,7 +1045,7 @@ function judgeTargets(targets, wide, vars, cwd) {
     let level = 'none';
     if (kind === 'catastrophic' && (wide || glob)) level = 'deny';
     else if (kind === 'internal') level = 'internal';
-    else if (wide || glob) level = 'ask';
+    else if (wide || (glob && !(namedOk && namesProjectFiles(t, vars, cwd)))) level = 'ask';
     if (RANK[level] > RANK[worst.level]) worst = { level, what: t };
   }
   return worst;
@@ -960,8 +1212,11 @@ const worstVerdict = (verdicts) =>
 const worstOf = (found) =>
   found.filter(Boolean).reduce((a, b) => (RANK[b.level] > RANK[a.level] ? b : a), { level: 'none', what: '' });
 
-/** An rm, rmdir or unlink whose command word is words[start]. */
-function rmCall(words, start, vars, dir) {
+/**
+ * An rm, rmdir or unlink whose command word is words[start]. `named` (a plain rm typed on the command line, not one
+ * fed by xargs or find, nor one inside an interpreter's text) lets a glob that names project files pass.
+ */
+function rmCall(words, start, vars, dir, named = false) {
   const flags = [];
   const targets = [];
   let options = true;
@@ -971,7 +1226,7 @@ function rmCall(words, start, vars, dir) {
     else targets.push(w);
   }
   const wide = flags.some((f) => (/^-[a-zA-Z]*[rR]/.test(f) && !f.startsWith('--')) || f === '--recursive');
-  return judgeTargets(targets, wide, vars, dir);
+  return judgeTargets(targets, wide, vars, dir, named);
 }
 
 const FIND_EXEC = ['-exec', '-execdir', '-ok', '-okdir'];
@@ -1085,13 +1340,589 @@ function codeDeletes(code, vars, dir) {
   return found;
 }
 
+// --- Code that only mentions a delete in its text (2026-11-18: 13 asks in a day, none of them a delete) -------------
+// codeDeletes reads text, so a delete named in a string asked: test cases in node -e, a python script that edits a
+// source file by s.replace(), a heredoc written to a file. Only when that rule would ask, a second pass looks at the
+// code itself. Anything it cannot read for certain keeps the text rule. Only deletes are relaxed: SQL and the other
+// patterns in the same text are still scanned (scanPatterns), as the 2026-11-18 review asked.
+
+const PYTHON = /^python[\d.]*$/;
+const NODE_CODE_FLAGS = new Set(['-e', '--eval', '-p', '--print', '-pe', '-ep']);
+/** node options that take a value or load other code: what node then runs is not known, so no relaxation. */
+const NODE_UNKNOWN = /^(?:-r|--require|--import|--loader|--experimental-loader|-C|--conditions|--env-file|--input-type)(?:=|$)|^--(?:eval|print)=/;
+
+/**
+ * What a python or node command runs: { lang, code } (python -c, node -e/-p), { lang, stdin } (python -, node -, or
+ * no script), { lang, script } (a file), each with `at`, the index of that word. Null for anything else: another
+ * command, python -m or an unknown option, node -r, --import or --test with no file.
+ */
+function interpreterRun(words) {
+  let i = commandIndex(words);
+  if (words[i] === 'timeout') {
+    for (i += 1; i < words.length && words[i].startsWith('-'); i += 1) if (words[i] === '-s' || words[i] === '-k') i += 1;
+    i += 1; // the duration
+    i += commandIndex(words.slice(i));
+  }
+  const cmd = path.basename(words[i] || '');
+  const lang = PYTHON.test(cmd) ? 'python' : cmd === 'node' ? 'node' : null;
+  if (!lang) return null;
+  let testRunner = false;
+  for (let k = i + 1; k < words.length; k += 1) {
+    const w = words[k];
+    if (lang === 'python') {
+      if (w === '-') return { lang, stdin: true, at: k };
+      if (/^-[BIOSEsuqbdvR]*c$/.test(w)) return k + 1 < words.length ? { lang, code: words[k + 1], at: k + 1 } : null;
+      if (/^-[BIOSEsuqbdvR]+$/.test(w)) continue;
+      if (w === '-W' || w === '-X') { k += 1; continue; }
+      if (w.startsWith('-')) return null;
+    } else {
+      if (NODE_CODE_FLAGS.has(w)) return k + 1 < words.length ? { lang, code: words[k + 1], at: k + 1 } : null;
+      if (w === '-') return { lang, stdin: true, at: k };
+      if (NODE_UNKNOWN.test(w)) return null;
+      if (w === '--test') testRunner = true;
+      if (w.startsWith('-')) continue;
+    }
+    return { lang, script: w, at: k };
+  }
+  return testRunner ? null : { lang, stdin: true, at: words.length };
+}
+
+/** Whether bash expands something in a raw word ($X, $(…), `…`, $'…'), outside single quotes and escapes. */
+function shellExpands(raw) {
+  let quote = null;
+  for (let i = 0; i < raw.length; i += 1) {
+    const c = raw[i];
+    if (quote === "'") {
+      if (c === "'") quote = null;
+    } else if (c === '\\') {
+      i += 1;
+    } else if (c === '"') {
+      quote = quote ? null : '"';
+    } else if (c === "'" && !quote) {
+      quote = "'";
+    } else if (c === '$' || c === '`') {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** The raw text (quotes kept) of the word after `flag` whose value is `value`, in a simple command; null if not found. */
+function rawWordAfter(segment, flag, value) {
+  const raw = segment.match(RAW_WORD) || [];
+  for (let k = 0; k + 1 < raw.length; k += 1) {
+    if (tokenize(raw[k])[0] === flag && tokenize(raw[k + 1])[0] === value) return raw[k + 1];
+  }
+  return null;
+}
+
+/**
+ * Python code, read with Python's own parser (ast) and never run. Prints {"parsed": false} when it does not parse,
+ * is not UTF-8, or has a coding cookie other than utf-8 or ascii (python3 decodes a utf-7 file or stdin by its cookie,
+ * ast.parse of a str does not: second review, 2026-11-18). Else the names that can delete, run text as code or a
+ * command, reach a module or method by a computed name (operator.methodcaller, yaml.load), or run SQL ("danger"),
+ * and whether it writes a file ("writes").
+ */
+const PY_CHECKER = String.raw`
+import ast, json, re, sys
+STRONG = {"exec", "eval", "compile", "__import__", "importlib", "import_module", "globals", "vars", "locals",
+  "builtins", "__builtins__", "__dict__", "__globals__", "__subclasses__", "__getattribute__", "__code__", "__class__",
+  "__bases__", "__base__", "__mro__", "__loader__", "__spec__", "__reduce__", "__reduce_ex__", "modules", "subprocess",
+  "pty", "ctypes", "cffi", "system", "popen", "Popen", "posix_spawn", "posix_spawnp", "startfile", "execute",
+  "executemany", "executescript", "exec_driver_sql", "create_subprocess_exec", "create_subprocess_shell",
+  "send2trash", "run_code", "load_module", "exec_module", "FunctionType", "CodeType", "commands", "methodcaller",
+  "attrgetter", "unsafe_load", "unsafe_load_all", "full_load", "full_load_all", "UnsafeLoader", "FullLoader",
+  "runpy", "run_module", "run_path"}
+YAML_LOADS = {"load", "load_all", "Loader"}
+NAME_ONLY = {"exec", "eval", "compile"}
+MODULES = {"code", "codeop", "timeit", "cProfile", "profile", "pdb", "trace", "sh", "plumbum", "pexpect", "paramiko",
+  "fabric", "invoke", "pickle", "cPickle", "_pickle", "marshal", "shelve", "dill", "cloudpickle", "os"}
+DELETE = re.compile(r"(?:^|_)(?:rm|rmtree|remove|removedirs|unlink|rmdir|delete|drop|truncate|purge|destroy|wipe|"
+  r"kill|killpg|terminate|erase|spawn[lv]p?e?|exec[lv]p?e?)(?:_|$)", re.I)
+WRITES = {"write", "writelines", "write_text", "write_bytes", "dump", "copy", "copy2", "copyfile", "copytree",
+  "copyfileobj", "move", "rename", "renames", "symlink", "symlink_to", "hardlink_to", "link", "link_to", "mkfifo",
+  "chmod", "fdopen"}
+COOKIE = re.compile(r"^[ \t\f]*#.*?coding[:=][ \t]*([-\w.]+)")
+try:
+    source = sys.stdin.buffer.read().decode("utf-8")
+    for line in source.split("\n")[:2]:
+        cookie = COOKIE.match(line)
+        if cookie and cookie.group(1).lower().replace("_", "-") not in ("utf-8", "utf8", "ascii", "us-ascii"):
+            raise ValueError("coding cookie")
+    tree = ast.parse(source)
+except Exception:
+    print(json.dumps({"parsed": False}))
+    sys.exit(0)
+danger, writes, seen, imported = set(), False, set(), set()
+def check(name, attribute=False):
+    seen.add(name)
+    if (name in STRONG and not (attribute and name in NAME_ONLY)) or DELETE.search(name):
+        danger.add(name)
+def mode_writes(m):
+    return not (isinstance(m, ast.Constant) and isinstance(m.value, str)) or bool(re.search("[wax+]", m.value))
+for n in ast.walk(tree):
+    if isinstance(n, ast.Name):
+        check(n.id)
+    elif isinstance(n, ast.Attribute):
+        check(n.attr, True)
+        writes = writes or n.attr in WRITES or (n.attr == "replace" and isinstance(n.value, ast.Name) and n.value.id == "os")
+    elif isinstance(n, (ast.Import, ast.ImportFrom)):
+        parts = (n.module or "").split(".") if isinstance(n, ast.ImportFrom) else []
+        for a in n.names:
+            parts += a.name.split(".")
+        for p in parts:
+            check(p)
+            imported.add(p)
+            if p in MODULES - {"os"}:
+                danger.add(p)
+    elif isinstance(n, ast.Call):
+        f = n.func
+        name = f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else None
+        if name is None:
+            danger.add("a call of a computed function")
+        elif name == "getattr" and not (len(n.args) > 1 and isinstance(n.args[1], ast.Constant)
+                                        and isinstance(n.args[1].value, str) and not DELETE.search(n.args[1].value)
+                                        and n.args[1].value not in STRONG):
+            danger.add("getattr")
+        elif name == "open":
+            modes = [k.value for k in n.keywords if k.arg in ("mode", "flags")]
+            if isinstance(f, ast.Attribute):
+                os_open = isinstance(f.value, ast.Name) and f.value.id == "os"
+                writes = writes or os_open or any(mode_writes(m) for m in n.args[1:] + modes) or any(
+                    isinstance(m, ast.Constant) and isinstance(m.value, str) and re.search("[wax+]", m.value)
+                    for m in n.args[:1])
+            else:
+                writes = writes or any(mode_writes(m) for m in n.args[1:2] + modes)
+# yaml.load builds any Python object a tag names (!!python/object/apply:os.system): with yaml imported, load is a call.
+if "yaml" in imported and seen & YAML_LOADS:
+    danger.add("yaml.load")
+print(json.dumps({"parsed": True, "danger": sorted(danger), "writes": writes}))
+`;
+
+/**
+ * Above this many characters the code is not parsed and the text rule applies: the review measured a 1000-line body
+ * at twice the old time, and a hook that times out must not decide.
+ */
+const PY_MAX_CODE = 64 * 1024;
+
+/** python3 from PATH: only ast.parse runs, in an isolated interpreter (-I), with a time limit. */
+function pythonFacts(code) {
+  if (code.length > PY_MAX_CODE) return { ok: false };
+  try {
+    const r = require('node:child_process').spawnSync('python3', ['-I', '-B', '-c', PY_CHECKER], {
+      input: code, encoding: 'utf8', timeout: 3000, cwd: os.tmpdir(), maxBuffer: 1024 * 1024 });
+    if (r.error || r.status !== 0) return { ok: false };
+    const facts = JSON.parse(r.stdout);
+    return { ok: facts.parsed === true, danger: facts.danger.length > 0, writes: facts.writes === true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/** Keywords after which a / starts a regular expression, not a division. */
+const JS_REGEX_AFTER = new Set(['return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete', 'void', 'throw',
+  'case', 'do', 'else', 'yield', 'await']);
+/**
+ * Names that delete, run a command or text as code, or reach a function by a computed name. `exec` is also a RegExp
+ * method: code that calls it keeps the text rule.
+ */
+const JS_DANGER = new Set(['child_process', 'exec', 'execSync', 'execFile', 'execFileSync', 'spawn', 'spawnSync',
+  'fork', 'rm', 'rmSync', 'rmdir', 'rmdirSync', 'unlink', 'unlinkSync', 'remove', 'removeSync', 'emptyDir',
+  'emptyDirSync', 'rimraf', 'del', 'deleteSync', 'deleteAsync', 'truncate', 'truncateSync', 'ftruncate',
+  'ftruncateSync', 'eval', 'Function', 'constructor', 'import', 'binding', '_linkedBinding', 'dlopen', '_load', 'vm',
+  'runInNewContext', 'runInThisContext', 'runInContext', 'compileFunction', 'Script', 'Worker', 'worker_threads',
+  'globalThis', 'global', 'mainModule', '__proto__', 'getBuiltinModule', 'Reflect', 'Proxy', '$', 'shell', 'execa',
+  'execaSync']);
+/** A string naming one of those APIs and nothing else: never a plain word such as 'eval', 'exec' or 'rm'. */
+const JS_API_NAME = /^(?:\w+Sync|child_process|node:child_process|worker_threads|node:worker_threads|rimraf|runInNewContext|runInThisContext|runInContext|compileFunction|_linkedBinding|getBuiltinModule|mainModule|dlopen|_load|execFile|execa)$/;
+const JS_DANGER_MODULE = /^(?:node:)?(?:child_process|vm|worker_threads|cluster|repl|inspector|module|v8|wasi|process)$|^(?:shelljs|execa|cross-spawn|zx|rimraf|del|fs-extra|trash|graceful-fs)$/;
+const JS_WRITES = new Set(['writeFileSync', 'writeFile', 'appendFileSync', 'appendFile', 'createWriteStream',
+  'copyFileSync', 'copyFile', 'cpSync', 'cp', 'renameSync', 'rename', 'symlinkSync', 'symlink', 'linkSync', 'link',
+  'openSync', 'open', 'outputFile', 'outputFileSync', 'writeJson', 'writeJsonSync', 'move', 'moveSync', 'copy',
+  'copySync', 'chmodSync', 'chmod']);
+
+/**
+ * Tokens of JavaScript source: identifiers, string values, template and regex markers, punctuators. Comments are
+ * dropped; the text of strings, templates and regexes is kept out of the code, the ${…} parts of a template are code.
+ * Also returns a skeleton (the source with that text emptied), which must compile like the source: a misread quote
+ * or regex would not. Throws on anything it cannot read (an escape in a name, an open string or comment).
+ */
+function lexJs(src) {
+  const tokens = [];
+  let skeleton = '';
+  let i = 0;
+  const fail = () => {
+    throw new Error('unreadable JavaScript');
+  };
+  const regexStarts = () => {
+    const p = tokens[tokens.length - 1];
+    if (!p) return true;
+    if (p.t === 'id') return JS_REGEX_AFTER.has(p.v);
+    // After ) or } a / is a regex (`if (x) /re/`, a block) or a division (`(a) / b`, an object), and after ++ or --
+    // either: V8 knows which, this lexer does not (second review: `if (1) /\`/` hid the next lines). It gives up.
+    const q = tokens[tokens.length - 2];
+    if (p.v === ')' || p.v === '}' || ((p.v === '+' || p.v === '-') && q && q.v === p.v)) fail();
+    return p.t === 'p' && p.v !== ']';
+  };
+  const quoted = (q) => {
+    let v = '';
+    for (i += 1; i < src.length; i += 1) {
+      const c = src[i];
+      if (c === q) {
+        i += 1;
+        return v;
+      }
+      if (c === '\n') fail();
+      if (c === '\\') v += c + (src[(i += 1)] || '');
+      else v += c;
+    }
+    return fail();
+  };
+  const regex = () => {
+    let cls = false;
+    for (i += 1; i < src.length && (cls || src[i] !== '/'); i += 1) {
+      if (src[i] === '\n') fail();
+      if (src[i] === '\\') i += 1;
+      else if (src[i] === '[') cls = true;
+      else if (src[i] === ']') cls = false;
+    }
+    if (i >= src.length) fail();
+    for (i += 1; /[a-z]/i.test(src[i] || ''); i += 1);
+    tokens.push({ t: 're' });
+    skeleton += '/x/';
+  };
+  const NAME = /[\p{ID_Start}$_][\p{ID_Continue}$‌‍]*/uy;
+  const NUMBER = /[0-9.][0-9A-Za-z_.]*/y;
+  let template;
+  const code = (inExpression) => {
+    let depth = 0;
+    while (i < src.length) {
+      const c = src[i];
+      const next = src[i + 1];
+      if (c === '}' && inExpression && depth === 0) return;
+      NAME.lastIndex = i;
+      NUMBER.lastIndex = i;
+      const name = NAME.exec(src);
+      if (/\s/.test(c)) {
+        skeleton += c;
+        i += 1;
+      } else if (c === '/' && next === '/') {
+        while (i < src.length && src[i] !== '\n') i += 1;
+      } else if (c === '/' && next === '*') {
+        const end = src.indexOf('*/', i + 2);
+        if (end === -1) fail();
+        i = end + 2;
+        skeleton += ' ';
+      } else if (c === '"' || c === "'") {
+        tokens.push({ t: 'str', v: quoted(c) });
+        skeleton += '""';
+      } else if (c === '`') {
+        template();
+      } else if (c === '/' && regexStarts()) {
+        regex();
+      } else if (c === '\\') {
+        fail(); // eval is eval
+      } else if (name) {
+        tokens.push({ t: 'id', v: name[0] });
+        skeleton += name[0];
+        i += name[0].length;
+      } else if (/[0-9]/.test(c) || (c === '.' && /[0-9]/.test(next || ''))) {
+        const number = NUMBER.exec(src)[0];
+        tokens.push({ t: 'num' });
+        skeleton += number;
+        i += number.length;
+      } else {
+        if (c === '{') depth += 1;
+        else if (c === '}') depth -= 1;
+        tokens.push({ t: 'p', v: c });
+        skeleton += c;
+        i += 1;
+      }
+    }
+    if (inExpression) fail();
+  };
+  template = () => {
+    skeleton += '`';
+    for (i += 1; i < src.length;) {
+      if (src[i] === '`') {
+        i += 1;
+        skeleton += '`';
+        tokens.push({ t: 'tpl' });
+        return;
+      }
+      if (src[i] === '\\') {
+        i += 2;
+      } else if (src[i] === '$' && src[i + 1] === '{') {
+        i += 2;
+        skeleton += '${';
+        code(true);
+        i += 1;
+        skeleton += '}';
+      } else {
+        i += 1;
+      }
+    }
+    fail();
+  };
+  code(false);
+  return { tokens, skeleton };
+}
+
+/**
+ * Node code, read by lexJs and compiled (never run) by V8: { ok, danger, writes }, like pythonFacts. Code with a line
+ * end lexJs does not know (U+2028, U+2029, a lone CR) or an HTML-like comment (<!--, -->) is not read: V8 ends or
+ * starts a comment there and lexJs does not (second review, 2026-11-18).
+ */
+function jsFacts(code) {
+  const src = code.replace(/^#![^\n]*/, '');
+  if (/[\u2028\u2029]|\r(?!\n)|<!--|-->/.test(src)) return { ok: false };
+  let lexed;
+  try {
+    lexed = lexJs(src);
+    const vm = require('node:vm');
+    vm.compileFunction(src);
+    vm.compileFunction(lexed.skeleton);
+  } catch {
+    return { ok: false };
+  }
+  const t = lexed.tokens;
+  // A string that is an API name can reach it (fs[name]); a label such as 'eval' or 'rm' in a test table is text.
+  let danger = t.some((x) => (x.t === 'id' && JS_DANGER.has(x.v)) || (x.t === 'str' && JS_API_NAME.test(x.v)));
+  for (let k = 0; k < t.length && !danger; k += 1) {
+    const prev = t[k - 1];
+    if (t[k].t === 'id' && t[k].v === 'require' && t[k + 1] && t[k + 1].v === '(') {
+      // require of a literal name only: require(S + '/x.js') could name any module.
+      const name = t[k + 2];
+      danger = !name || name.t !== 'str' || name.v.includes('\\') || JS_DANGER_MODULE.test(name.v) || !t[k + 3] ||
+        t[k + 3].v !== ')';
+    } else if (t[k].v === '[' && prev && (prev.t === 'str' || prev.t === 'tpl' || prev.v === ')' || prev.v === ']' ||
+               (prev.t === 'id' && !JS_REGEX_AFTER.has(prev.v)))) {
+      // A computed member: x["a" + "b"] or x[`…`] can name any method.
+      const inner = [];
+      for (let depth = 0, j = k + 1; j < t.length; j += 1) {
+        if (t[j].v === '[') depth += 1;
+        else if (t[j].v === ']' && (depth -= 1) < 0) break;
+        inner.push(t[j]);
+      }
+      danger = inner.some((x) => x.t === 'tpl') || (inner.some((x) => x.t === 'str') && inner.length > 1) ||
+        (inner.length === 1 && inner[0].t === 'str' && JS_DANGER.has(inner[0].v));
+    }
+  }
+  return { ok: true, danger, writes: t.some((x) => x.t === 'id' && JS_WRITES.has(x.v)) };
+}
+
+/**
+ * Read-only commands that can neither run a file another command on the line wrote nor copy it somewhere that runs.
+ * Interpreter code and heredoc data are relaxed only when every other command on the line is one of these: the
+ * second review (2026-11-18) showed that "nothing on the line names the file" misses a script that imports, sources
+ * or finds it. cat may not take a heredoc; sed, mkdir, node and python3 only in the forms readOnlyAllowed accepts.
+ */
+const READERS = new Set(['ls', 'cat', 'head', 'tail', 'wc', 'grep', 'echo', 'printf', 'stat', 'diff', 'cmp', 'cd',
+  'true', 'test', '[']);
+/** A sed -n script that only prints: addresses (a number, $ or /regex/) and p. GNU sed's e and w run or write. */
+const SED_PRINT = /^(?:(?:\d+|\$|\/[^/\\\n]*\/)(?:,(?:\d+|\$|\/[^/\\\n]*\/))?)?p(?:;(?:(?:\d+|\$|\/[^/\\\n]*\/)(?:,(?:\d+|\$|\/[^/\\\n]*\/))?)?p)*$/;
+
+/**
+ * Whether one simple command is an allowlisted reader: no assignment or wrapper in front (PYTHONPATH=. changes what
+ * runs), the command named without a folder (./ls is not ls), and only sed -n …p, mkdir -p, node --check and
+ * python3 -B -m py_compile of those that can do more. Literal assignments alone (W=/x) and a bare comment pass.
+ */
+function readOnlyAllowed(segment, words) {
+  if (words.every((w) => /^[A-Za-z_]\w*=/.test(w))) return true;
+  const [cmd, ...args] = words;
+  const options = args.filter((w) => w.startsWith('-'));
+  if (cmd === 'cat') return heredocOperators(segment, quoteMasker()(segment)).length === 0;
+  if (READERS.has(cmd)) return true;
+  if (cmd === 'sed') return args[0] === '-n' && SED_PRINT.test(args[1] || '') && args.slice(2).every((w) => !w.startsWith('-'));
+  if (cmd === 'mkdir') return options.some((o) => o.includes('p')) && options.every((o) => /^-[pv]+$/.test(o));
+  if (cmd === 'node') {
+    return (args[0] === '--check' || args[0] === '-c') && args.length > 1 && args.slice(1).every((w) => !w.startsWith('-'));
+  }
+  if (/^python3(?:\.\d+)?$/.test(cmd)) {
+    return args[0] === '-B' && args[1] === '-m' && args[2] === 'py_compile' && args.length > 3 &&
+      args.slice(3).every((w) => w === '-q' || !w.startsWith('-'));
+  }
+  return false;
+}
+
+/** Files that run when a shell, a desktop session, git, a build or test tool, Python or a container starts. */
+const AUTORUN_NAME = /^(?:\.(?:bashrc|bash_profile|bash_login|bash_logout|bash_aliases|profile|zshrc|zprofile|zshenv|zlogin|zlogout|kshrc|cshrc|tcshrc|xprofile|xsession|xinitrc|inputrc|envrc|env|npmrc|yarnrc|gitconfig|gitattributes|pre-commit-config\.ya?ml)|crontab|[Mm]akefile|GNUmakefile|[Jj]ustfile|package\.json|pyproject\.toml|setup\.py|setup\.cfg|tox\.ini|noxfile\.py|tasks\.py|conftest\.py|sitecustomize\.py|usercustomize\.py|Dockerfile|Containerfile|(?:docker-)?compose\.ya?ml|Taskfile\.ya?ml|[^/]*\.(?:pth|service|timer|socket|desktop))$/;
+/** Folders whose files git, an editor, CI, Claude Code or the system runs, a virtualenv's activate, system folders. */
+const AUTORUN_DIR = /(?:^|\/)(?:\.git|\.husky|\.githooks|\.github|\.gitlab|\.vscode|\.idea|\.devcontainer|\.claude|\.direnv)(?:\/|$)|\/bin\/activate[^/]*$|^\/(?:etc|usr|var|bin|sbin|lib|lib32|lib64|opt|boot|dev|proc|sys|run|root|srv|Library|System|private\/etc|private\/var)(?:\/|$)/;
+
+/** A path in a dot folder or a dotfile of the home folder (~/.bashrc, ~/.config/…, ~/.local/bin/…, ~/.claude/…). */
+function inHomeDot(p) {
+  return [HOME, realFolder(HOME)].some((home) => {
+    const rel = home ? path.relative(home, p) : '..';
+    return rel !== '' && !rel.startsWith('..') && !path.isAbsolute(rel) && rel.split('/')[0].startsWith('.');
+  });
+}
+
+/** The path and each path its symlinks lead to, a dangling one too: a write through a link lands at its target. */
+function diskPaths(abs) {
+  const out = [abs];
+  let p = onDisk(abs);
+  for (let hop = 0; hop < 40; hop += 1) {
+    const folder = realFolder(path.dirname(p));
+    if (folder === null) break;
+    const real = path.join(folder, path.basename(p));
+    out.push(real);
+    let link;
+    try {
+      link = fs.readlinkSync(real);
+    } catch {
+      break; // not a symlink, or not there yet
+    }
+    p = path.resolve(folder, link);
+    out.push(p);
+  }
+  return out;
+}
+
+/**
+ * Whether a write to `file` (a heredoc's target, a redirection) may run later with nothing else on the line: a
+ * startup, hook, build, test or autorun file, anything in a home dot folder or a system folder, also through a
+ * symlink, or a path the guard cannot resolve (a variable, a glob, ~user, a relative path after an unknown cd).
+ * `dir` is where the command runs. /dev/null is not one.
+ */
+function autorunPath(file, vars, dir) {
+  let p = expandVars(file, vars);
+  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
+  if (!p || /[$`*?[{~]/.test(p) || (!p.startsWith('/') && dir === null)) return true;
+  const abs = path.resolve(p.startsWith('/') ? '/' : dir, p);
+  if (abs === '/dev/null') return false;
+  return diskPaths(abs).some((q) => AUTORUN_NAME.test(path.basename(q)) || AUTORUN_DIR.test(q) || inHomeDot(q));
+}
+
+const ANY_REDIRECT = /(?:^|[^<>&])(?:\d+|&)?(?:>>|>\||<>|>&(?=[^\d\s-])|>(?![&(]))[ \t]*/g;
+/** Every file a simple command writes by a redirection (> f, 2>> f, &> f, 3<> f, >& f), quotes removed. */
+function redirectTargets(segment) {
+  const files = [];
+  for (const m of maskQuoted(segment).matchAll(ANY_REDIRECT)) {
+    REDIRECT_WORD.lastIndex = m.index + m[0].length;
+    const word = REDIRECT_WORD.exec(segment);
+    files.push(word ? tokenize(word[0])[0] || '' : '');
+  }
+  return files;
+}
+
+/** Settings that make python or node load other code first: on such a line the code is not judged alone. */
+const LOADS_CODE_ENV = /(?:^|[^\w$])(?:PYTHONPATH|PYTHONSTARTUP|PYTHONHOME|PYTHONINSPECT|PYTHONUSERBASE|NODE_OPTIONS|NODE_PATH|LD_PRELOAD|LD_LIBRARY_PATH|DYLD_\w+)=/;
+
+let stdlibNames;
+/** The names of Python's standard modules (sys.stdlib_module_names, 3.10+), or null when python3 cannot say. */
+function pythonStdlib() {
+  if (stdlibNames === undefined) {
+    try {
+      const r = require('node:child_process').spawnSync('python3', ['-I', '-c',
+        'import sys; print("\\n".join(sys.stdlib_module_names))'], { encoding: 'utf8', timeout: 3000, cwd: os.tmpdir() });
+      stdlibNames = r.error || r.status !== 0 ? null : new Set(r.stdout.split('\n').filter(Boolean));
+    } catch {
+      stdlibNames = null;
+    }
+  }
+  return stdlibNames;
+}
+
+/**
+ * Whether a written file could be imported in place of a standard module: python3 -m puts its folder first on the
+ * path, so `argparse.py` or `traceback/__init__.py` would run when py_compile imports that module.
+ */
+function shadowsStdlib(file) {
+  const names = pythonStdlib();
+  const base = path.basename(file);
+  return !names || names.has(base === '__init__.py' ? path.basename(path.dirname(file)) : base.split('.')[0]);
+}
+
+/**
+ * The relaxed pass of deleteVerdict for one command line (`shell`, as deleteVerdict reads it): which interpreter code
+ * and which heredoc bodies only mention a delete. `bodies` are the executed bodies in deleteVerdict's order, `subs`
+ * the command substitutions, `vars` and `cwd` what decideShell knows, `rawCommand` the line as given.
+ */
+function textOnlyDeletes(shell, parsed, subs, bodies, vars, cwd, rawCommand) {
+  if (LOADS_CODE_ENV.test(rawCommand)) return { segment: () => false, body: () => false };
+  const ops = [];
+  const segments = splitSegments(shell, ops);
+  const words = segments.map(tokenize);
+  const fromSubst = [];
+  segments.forEach((s, n) => fromSubst.push(n > 0 && (fromSubst[n - 1] || s === `cd "$${SUBST_DIR}"`)));
+  // Where each simple command runs: a cd moves it, and after one to an unknown folder it is null.
+  const dirs = [];
+  segments.reduce((dir, s, n) => {
+    dirs.push(dir);
+    const i = commandIndex(words[n]);
+    return words[n][i] === 'cd' || words[n][i] === 'pushd' ? nextDir(words[n][i + 1], vars, dir) : dir;
+  }, cwd);
+  /** The output of segment n is piped to a command that does more than read it. */
+  const pipesOn = (n) => {
+    for (let k = n; ops[k] === '|'; k += 1) if (!segments[k + 1] || !isReadOnly(segments[k + 1])) return true;
+    return false;
+  };
+  const writesOk = (n) => redirectTargets(segments[n]).every((f) => !autorunPath(f, vars, dirs[n]));
+  /** Every command on the line but segment n is an allowlisted reader, and none redirects into an autorun file. */
+  const othersRead = (n) => segments.every((s, k) => writesOk(k) && (k === n || readOnlyAllowed(s, words[k])));
+  const compiles = words.some((w) => PYTHON.test(w[0] || '') && w.includes('py_compile'));
+  /** Code that deletes nothing, runs no text, writes no file, and that nothing else on the line can reach. */
+  const clean = (lang, code, n) => {
+    if (pipesOn(n) || !othersRead(n)) return false;
+    const facts = lang === 'python' ? pythonFacts(code) : jsFacts(code);
+    return facts.ok && !facts.danger && !facts.writes;
+  };
+  // The owner of each heredoc body: the k-th segment with a heredoc operator, when its words are the owner's words.
+  const withHeredoc = [];
+  segments.forEach((s, n) => {
+    const mask = quoteMasker();
+    const count = s.split('\n').reduce((sum, line) => sum + heredocOperators(line, mask(line)).length, 0);
+    for (let c = fromSubst[n] ? 0 : count; c > 0; c -= 1) withHeredoc.push(n);
+  });
+  const ownerOf = (body) => {
+    const n = withHeredoc[parsed.bodies.indexOf(body)];
+    return n !== undefined && words[n].join(' ') === body.owner.join(' ') ? n : -1;
+  };
+
+  return {
+    /** Segment n is python -c or node -e/-p whose code only mentions deletes, and bash expands nothing in it. */
+    segment(n, segment) {
+      const run = interpreterRun(words[n]);
+      if (fromSubst[n] || !run || run.code === undefined) return false;
+      const raw = rawWordAfter(segment, words[n][run.at - 1], run.code);
+      return raw !== null && !shellExpands(raw) && clean(run.lang, run.code, n);
+    },
+    /**
+     * Executed body k: data cat or tee writes to a file, as the Write tool would (not a startup or autorun file, not
+     * a module py_compile could import, only allowlisted readers on the line), or code python or node reads on stdin
+     * that only mentions deletes.
+     */
+    body(k) {
+      const body = bodies[k];
+      const n = ownerOf(body);
+      if (!body.plain || n === -1) return false;
+      if (!body.runs) {
+        return body.files.length > 0 && body.files.every((f) => !autorunPath(f, vars, dirs[n])) &&
+          !(compiles && body.files.some(shadowsStdlib)) && othersRead(n);
+      }
+      // bash expands an unquoted body ($X, `…`, \): the text the guard reads is not the text that runs.
+      const literal = body.quoted || !/[$`\\]/.test(body.text);
+      const run = interpreterRun(body.owner);
+      return literal && !!run && run.stdin === true && clean(run.lang, body.text, n);
+    },
+  };
+}
+
 /**
  * Deletes, judged by target. Only where something runs them: an rm, rmdir or unlink command, xargs rm, find -delete
  * or -exec rm, code given to an interpreter, or a heredoc that is run. An rm inside echo text, a grep pattern or a
  * commit message is not a delete. `vars` are known in this shell; code run by another program gets `codeVars`.
+ * With `relax` (textOnlyDeletes), code whose text would ask is dropped when the code itself deletes nothing. `memo`
+ * keeps codeDeletes results between the two passes, so a long body is not read twice (second review: 2x the time).
  */
-function deleteVerdict(shell, code, vars, cwd, codeVars = vars) {
+function deleteVerdict(shell, code, vars, cwd, codeVars = vars, relax = null, memo = new Map()) {
   const found = [];
+  const deletesIn = (text, where) => {
+    const key = `${where}\0${text}`;
+    if (!memo.has(key)) memo.set(key, codeDeletes(text, codeVars, where));
+    return memo.get(key);
+  };
   let dir = cwd;
   const ops = [];
   const segments = splitSegments(shell, ops);
@@ -1103,7 +1934,7 @@ function deleteVerdict(shell, code, vars, cwd, codeVars = vars) {
     if (cmd === 'cd' || cmd === 'pushd') {
       dir = nextDir(words[i + 1], vars, dir);
     } else if (RM_COMMANDS.has(cmd)) {
-      found.push(rmCall(words, i, vars, dir));
+      found.push(rmCall(words, i, vars, dir, cmd === 'rm'));
     } else if (cmd === 'xargs') {
       const r = words.findIndex((w, k) => k > i && RM_COMMANDS.has(path.basename(w)));
       // `find … -name __pycache__ -print0 | xargs -0 rm -rf`: the only targets are the paths a cache-only find
@@ -1118,11 +1949,15 @@ function deleteVerdict(shell, code, vars, cwd, codeVars = vars) {
     } else if (cmd === 'find') {
       found.push(findDeletes(words, i, vars, dir));
     } else if (EXECUTORS.test(cmd)) {
-      found.push(...codeDeletes(segment, codeVars, dir));
+      const deletes = deletesIn(segment, dir);
+      if (!(relax && worstOf(deletes).level === 'ask' && relax.segment(n, segment))) found.push(...deletes);
     }
     prev = { words, i, cmd };
   });
-  for (const body of code) found.push(...codeDeletes(body, codeVars, dir));
+  code.forEach((body, k) => {
+    const deletes = deletesIn(body, dir);
+    if (!(relax && worstOf(deletes).level === 'ask' && relax.body(k))) found.push(...deletes);
+  });
   return worstOf(found);
 }
 
@@ -1133,8 +1968,26 @@ function deleteVerdict(shell, code, vars, cwd, codeVars = vars) {
  * database client, or a heredoc fed to one), any quoted text or heredoc on the line may reach it, so the whole line
  * is scanned as code and no safe signal excuses any part of it. Otherwise each simple command is scanned on its own:
  * a commit message or an echoed line is only text, and a dry run excuses only its own command.
+ *
+ * A line with `case` and a substitution ($(…) or `…`) asks unless it is denied: the ) after a case pattern does not
+ * end the substitution, no scanner here follows that, and a quote after it hid the next lines (second review,
+ * 2026-11-18: x="$(case a in a) echo "'";; esac)"⏎rm -rf ~ was allowed).
  */
 function decideShell(rawCommand, cwd) {
+  const verdict = judgeShell(rawCommand, cwd);
+  if (!/\bcase\b/.test(rawCommand) || !/\$\(|`/.test(rawCommand) || (verdict && verdict.decision !== 'allow')) {
+    return verdict;
+  }
+  return {
+    decision: 'ask',
+    reason: 'Destructive operation check: a case statement inside a command substitution, which the guard cannot ' +
+      'read reliably (the text after a case pattern can hide the next lines). Confirm what the whole command runs, ' +
+      'or move the case out of the substitution. See ~/.claude/skills/destructive-ops-guard/SKILL.md',
+  };
+}
+
+/** decideShell without the case check. */
+function judgeShell(rawCommand, cwd) {
   if (!rawCommand.trim()) return null;
   const bound = bindings(withoutHeredocBodies(rawCommand));
   let hidden = hidesAssignments(rawCommand);
@@ -1171,7 +2024,8 @@ function decideShell(rawCommand, cwd) {
   if (!executed.length && segments.length && segments.every(isReadOnly) && !SYSTEM_OVERWRITE.test(shell)) {
     return null;
   }
-  const deletion = deleteVerdict(shell, executed, shellVars, cwd, vars);
+  const memo = new Map();
+  const deletion = deleteVerdict(shell, executed, shellVars, cwd, vars, null, memo);
   if (deletion.level === 'deny') {
     return {
       decision: 'deny',
@@ -1190,11 +2044,16 @@ function decideShell(rawCommand, cwd) {
     ? scanPatterns(text, { strict: true, ...where })
     : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s, where)))]);
   if (scanned) return scanned;
-  if (deletion.level === 'ask') {
+  if (deletion.level !== 'ask') return null;
+  // Only a delete would ask: look again at the code itself, whose text may only mention one (textOnlyDeletes).
+  const bodies = runsText ? [...parsed.bodies.filter((b) => b.runs), ...parsed.bodies.filter((b) => !b.runs)] : [];
+  const relax = textOnlyDeletes(shell, parsed, subs, bodies, shellVars, cwd, rawCommand);
+  const relaxed = deleteVerdict(shell, executed, shellVars, cwd, vars, relax, memo);
+  if (RANK[relaxed.level] >= RANK.ask) {
     return {
       decision: 'ask',
       reason:
-        `Destructive operation detected: recursive or wildcard delete of ${deletion.what}, which is outside ` +
+        `Destructive operation detected: recursive or wildcard delete of ${relaxed.what}, which is outside ` +
         `Claude's own session and task folders (the user's repository or folders, or a path the guard cannot ` +
         `resolve).\nBefore confirming, state what exactly is deleted (counted, not guessed), how it is recovered, ` +
         `and whether a non-destructive alternative exists. See ~/.claude/skills/destructive-ops-guard/SKILL.md`,
