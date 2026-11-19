@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-spend/source-document/v1",
+  "title": "ai-spend source document",
+  "description": "What every ai-spend fetcher writes and report.py reads. A new source (for example the Langfuse adapter seam in SKILL.md) is added by writing this shape; report.py needs no change. Money is a decimal string, never a JSON number.",
+  "type": "object",
+  "required": ["schema_version", "source", "window", "fetched_at", "status", "notes", "meta", "rows"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "source": {
+      "type": "string",
+      "description": "anthropic_api | aws_bedrock | snowflake_cortex | claude_code_local; langfuse is reserved for the adapter seam",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "window": {
+      "type": "object",
+      "required": ["since", "until", "kind"],
+      "properties": {
+        "since": {"type": "string", "format": "date-time", "description": "inclusive, UTC midnight"},
+        "until": {"type": "string", "format": "date-time", "description": "exclusive, UTC midnight"},
+        "kind": {"const": "half-open [since, until), UTC days"}
+      }
+    },
+    "fetched_at": {"type": "string", "format": "date-time"},
+    "status": {
+      "enum": ["ok", "partial", "unknown", "error"],
+      "description": "unknown: the source has no data yet for the window (shown as UNKNOWN, never 0); error: the fetch failed; partial: some of the window or some attribution is missing"
+    },
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "meta": {"type": "object"},
+    "rows": {"type": "array", "items": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "decimal": {"type": ["string", "null"], "pattern": "^-?[0-9]+(\\.[0-9]+)?$"},
+    "row": {
+      "type": "object",
+      "required": ["source", "usd", "usd_basis", "counts_toward_total"],
+      "properties": {
+        "source": {"type": "string"},
+        "feature": {"type": ["string", "null"]},
+        "day": {"type": ["string", "null"], "format": "date", "description": "UTC day the usage falls on"},
+        "model": {"type": ["string", "null"]},
+        "user": {"type": ["string", "null"], "description": "who the usage is attributed to; null when the source attributes it to nobody"},
+        "workspace": {"type": ["string", "null"]},
+        "project": {"type": ["string", "null"]},
+        "api_key_id": {"type": ["string", "null"]},
+        "service": {"type": ["string", "null"]},
+        "usage_type": {"type": ["string", "null"]},
+        "tokens": {
+          "type": ["object", "null"],
+          "properties": {
+            "input": {"type": "integer"}, "output": {"type": "integer"}, "cache_read": {"type": "integer"},
+            "cache_write_5m": {"type": "integer"}, "cache_write_1h": {"type": "integer"}
+          }
+        },
+        "requests": {"type": ["integer", "null"]},
+        "credits": {"$ref": "#/$defs/decimal"},
+        "usd": {"$ref": "#/$defs/decimal", "description": "null means unpriced (unknown), never 0"},
+        "list_usd": {"$ref": "#/$defs/decimal"},
+        "usd_basis": {
+          "enum": ["billed", "list", "estimated_api_equivalent"],
+          "description": "billed: from invoice-grade billing data; list: a quantity times a public list rate; estimated_api_equivalent: tokens times API list prices, not money spent. Never added across bases."
+        },
+        "counts_toward_total": {"type": "boolean", "description": "false for attribution-only rows whose cost is already in another row"},
+        "excluded_reason": {"type": ["string", "null"], "description": "set when a row is kept out of every sum, e.g. a known double count"},
+        "note": {"type": ["string", "null"]}
+      }
+    }
+  }
+}
