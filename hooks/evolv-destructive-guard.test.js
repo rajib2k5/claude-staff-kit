@@ -954,12 +954,13 @@ const stringsOnly = [
   [`node -p '"rm -rf ${D}/x".length'`, 'node -p'],
   [`node -e 'const s = \`rm -rf ${D}/\${process.argv[1]}\`; console.log(s) // rm -rf ~' x`, 'a template literal and a comment'],
 ];
-// Second review (2026-11-18): code that writes a file, or a line with any command beyond the read-only list, keeps the
-// text rule, because another command can import, source or find what the code wrote. These first-version cases ask
-// again: the first two lines also run node --test, cp, sed s/…/ and a node script; the last three write a file.
+// Second review (2026-11-18): a line with any command beyond the read-only list keeps the text rule, because another
+// command can import, source or find what the code wrote. These first-version cases ask again: the first two lines
+// also run node --test, cp, sed s/…/ and a node script; the third writes a file and then requires it.
+// The two python3 - cases write a plain named file that nothing on the line runs, and with only grep beside them they
+// are allowed again (coordinator, third round, 2026-11-19: a write of data counts as `cat > file`).
 const nowAsk = new Set(['node -e with test cases among other commands', 'node -e with $(...) escaped',
-  'node -e in double quotes, with \\$ escaped', 'python3 - editing a file by s.replace',
-  'python3 - writing text that contains rmtree']);
+  'node -e in double quotes, with \\$ escaped']);
 for (const [command, why] of stringsOnly) {
   const expected = nowAsk.has(why) ? 'ask' : 'allow';
   test(`interpreter code that only mentions a delete in strings is not a delete (${why}): ${expected}s`, () => {
@@ -1065,8 +1066,7 @@ const namedFileGlobs = [
   [`rm ${GIT}/logs/out_*.log`, 'out_*.log'],
   [`rm -f ${GIT}/r26m_*`, 'r26m_*'],
   [`rm -f ${GIT}/data/part-[0-9].csv`, 'a character class after the stem'],
-  [`rm -f ${GIT}/a_*.tmp ${GIT}/b_*.tmp`, 'two targets'],
-  [`rm -f ${GIT}/.github/ci_*.yml`, 'a dot folder inside the work tree'],
+  [`rm -f ${GIT}/aa_*.tmp ${GIT}/bb_*.tmp`, 'two targets'],
   [`cd ${GIT} && rm -f r26m_*`, 'a relative glob after cd'],
   [`rm -f ${GIT}/logs/out_*.log  # it's the old run`, 'a comment with an apostrophe after the glob'],
 ];
@@ -1345,3 +1345,246 @@ test('python code over the size cap keeps the text rule', () => {
   assert.equal(verdict(bash(small)), 'allow');
   assert.equal(verdict(bash(big)), 'ask');
 });
+
+// --- Third review round (2026-11-19): continuations, the working folder, stems, readers that run code ------------
+// 1. bash removes a backslash-newline outside single quotes, before it reads words: `ls \⏎# x` makes `#` start a word
+// (a comment), `a\⏎#b` is the word a#b. A backquoted string ends at the first backquote not escaped, whatever quotes
+// are in it. A heredoc delimiter $'EOF' or $"EOF" is EOF.
+const continuations = [
+  ["ls -la \\\n# don't list hidden\nrm -rf ~", 'deny', 'a comment after a continuation'],
+  [`ls -la \\\n# don't list hidden\nrm -rf ${D}/proj/data\necho 'done'`, 'ask', 'the same, a later quote'],
+  ["echo a \\\n#b 'x\nrm -rf ~\n#'", 'deny', 'a space, then a continuation, then #'],
+  ["echo a\\\n#b; cat <<'EOF'\ncat > f <<'Z'\nEOF\nrm -rf ~\nZ", 'deny', 'a#b is one word, so the heredoc is real'],
+  [`echo a\\\n#b; cat <<'EOF'\ncat > f <<'Z'\nEOF\nrm -rf ${D}/proj/data\nZ`, 'ask', 'the same, ask level'],
+  ['r\\\nm -rf ~', 'deny', 'a command word split by a continuation'],
+  ['rm -rf \\\n  ~', 'deny', 'a target on the next line'],
+  ["cat <<'EOF' > f \\\n; rm -rf ~\nx\nEOF", 'deny', 'a heredoc line continued: the body starts after it'],
+  ['cat > f <<EOF\nEO\\\nF\nrm -rf ~\nEOF', 'deny', 'an unquoted body: EO\\⏎F is the delimiter'],
+  ["bash -c 'rm -rf \\\n~'", 'deny', 'a continuation in code bash runs'],
+  ['echo `#\'`\nrm -rf ~\necho "\'"', 'deny', 'a quote in a comment in backquotes'],
+  ['x=`#\'`; rm -rf ~; echo "\'"', 'deny', 'the same, on one line'],
+  [`x=\`echo "'"\`; rm -rf ${D}/proj/data`, 'ask', 'a quote in backquotes'],
+  ["cat <<$'EOF'\nx\nEOF\nrm -rf ~\n$EOF", 'deny', "a $'EOF' delimiter"],
+  ['cat <<$"EOF"\nx\nEOF\nrm -rf ~\n$EOF', 'deny', 'a $"EOF" delimiter'],
+  ['echo a\r# ; rm -rf ~', 'deny', 'a CR is a word character: no comment'],
+  ['echo a\v# ; rm -rf ~', 'deny', 'a vertical tab is a word character'],
+  ['echo a # ; rm -rf ~', 'deny', 'a no-break space is a word character'],
+];
+for (const [command, expected, why] of continuations) {
+  test(`bash's backslash-newline, backquotes and delimiters (${why}): ${expected}`, () => {
+    assert.equal(verdict(bash(command)), expected, command);
+  });
+}
+test('a quote in a comment in backquotes hides no heredoc after it', () => {
+  // bash: x is empty, the heredoc is real, and its body is only written to notes.md.
+  assert.equal(verdict(bash("x=`#'`; cat > notes.md <<'EOF'\nrm -rf ~\nEOF")), 'allow');
+});
+test('a CR before # inside one simple command: the words after it are still targets', () => {
+  assert.equal(verdict(bash(`rm -rf ${D}/proj/x \r# ~`)), 'deny');
+});
+test("a $'…' delimiter with an escape cannot be read for certain: asks", () => {
+  assert.equal(verdict(bash("cat > f <<$'E\\x4fF'\nx\nEOF\necho hi\nE\\x4fF")), 'ask');
+});
+const stillAllowed = [
+  'python3 train.py \\\n  --epochs 3 \\\n  --lr 0.1',
+  'cat > run.sh <<EOF\npython3 x.py \\\n  --a 1\nEOF\nls',
+  `rm -f ${GIT}/logs/out_*.log \\\n  ${GIT}/logs/err_*.log`,
+  'git commit -m "x \\\ny"',
+];
+for (const command of stillAllowed) {
+  test(`a continuation alone changes nothing: ${JSON.stringify(command).slice(0, 60)}`, () => {
+    assert.equal(verdict(bash(command)), 'allow', command);
+  });
+}
+
+// 2. Rule A resolves a relative glob only where the folder is certain: no cd on the line, or one leading
+// `cd <literal path> &&`. A subshell, pushd, popd, a cd after another command, $(cd …), eval, env -C or --chdir, or
+// a computed cd leaves the folder unknown (the second review ran these from a home folder and deleted ~/.ba*).
+const unsureFolder = [
+  `(cd ${GIT} && make); rm -f out_*.log`,
+  `pushd ${GIT} && make; popd; rm -f out_*.log`,
+  `false && cd ${GIT}; rm -f out_*.log`,
+  `cd ${GIT} & rm -f out_*.log`,
+  `cd ${GIT} | true; rm -f out_*.log`,
+  `x=$(cd ${GIT}); rm -f out_*.log`,
+  `cd ${GIT} && ls; rm -f out_*.log`,
+  `cd ${GIT} || exit; rm -f out_*.log`,
+  `ls && cd ${GIT} && rm -f out_*.log`,
+  `cd ${GIT} && cd logs && rm -f out_*.log`,
+  `D=${GIT}; cd $D && rm -f out_*.log`,
+  `c\\d ${GIT} && cd logs && rm -f out_*.log`,
+];
+for (const command of unsureFolder) {
+  test(`a relative glob where the folder is not certain asks: ${command.replace(FIX, '<fx>')}`, () => {
+    assert.equal(verdict(bash(command, PLAIN)), 'ask', command);
+  });
+}
+const unsureFromRepo = [`eval cd ${PLAIN}; rm -f out_*.log`, `env --chdir=${PLAIN} rm -f out_*.log`,
+  `sudo --chdir=${PLAIN} rm -f out_*.log`, `cd ${GIT} && source x.sh && rm -f out_*.log`];
+for (const command of unsureFromRepo) {
+  test(`a folder change the guard cannot follow keeps the old verdict: ${command.replace(FIX, '<fx>')}`, () => {
+    assert.equal(verdict(bash(command, GIT)), 'ask', command);
+  });
+}
+test('one leading cd to a literal path, then only &&: the glob is resolved there', () => {
+  assert.equal(verdict(bash(`cd ${GIT} && rm -f out_*.log`, PLAIN)), 'allow');
+  assert.equal(verdict(bash(`cd ${GIT} && ls && rm -f logs/out_*.log`, PLAIN)), 'allow');
+  assert.equal(verdict(bash(`cd ${GIT} && ls; rm -f logs/out_*.log`, GIT)), 'allow');
+  assert.equal(verdict(bash(`(cd ${PLAIN} && make); rm -f ${GIT}/out_*.log`, PLAIN)), 'allow');
+});
+
+// 3. The stem: 3+ literal characters, not starting with a dot, with _ - or a digit, or 4+ characters. No dot folder
+// anywhere below the home folder or the work tree root, no bare repo inside the work tree, and not the guard's files.
+mk('repo', '.private');
+mk('repo', 'remote.git', 'objects', 'pack');
+mk('repo', 'remote.git', 'refs', 'heads');
+fs.writeFileSync(path.join(GIT, 'remote.git', 'HEAD'), 'ref: refs/heads/main\n');
+fs.symlinkSync(path.join(GIT, '.private'), path.join(GIT, 'pv'));
+const stems = [
+  ['pv/ke_*', 'ask'],
+  ['te*', 'ask'], ['ma*', 'ask'], ['data/20*', 'ask'], ['tmp*', 'ask'], ['out*', 'ask'], ['.env*', 'ask'],
+  ['.e*', 'ask'], ['.gi*', 'ask'], ['.git*', 'ask'], ['.private/ke_*', 'ask'], ['.github/ci_*.yml', 'ask'],
+  ['remote.git/objects/pack/pack-*', 'ask'], ['remote.git/HEAD*', 'ask'], ['remote.git/refs/heads/main*', 'ask'],
+  ['main*', 'allow'], ['ab1*', 'allow'], ['a-b*', 'allow'], ['r26m_*', 'allow'], ['_probe*.py', 'allow'],
+  ['out_*', 'allow'], ['data/2026-*', 'allow'], ['test_*', 'allow'],
+];
+for (const [glob, expected] of stems) {
+  test(`the stem rule: rm -f ${glob} in a work tree: ${expected}`, () => {
+    assert.equal(verdict(bash(`rm -f ${glob}`, GIT)), expected);
+  });
+}
+test("a glob that would match the guard's own files asks; another glob beside them does not", () => {
+  mk('repo', 'hooks');
+  const copy = path.join(GIT, 'hooks', 'evolv-destructive-guard.js');
+  fs.copyFileSync(path.join(__dirname, 'evolv-destructive-guard.js'), copy);
+  const guard = require(copy);
+  const run = (command) => verdict(guard.decide('Bash', { command }, GIT));
+  assert.equal(run('rm -f hooks/evolv-de*'), 'ask');
+  assert.equal(run('rm -f hooks/evol*'), 'ask');
+  assert.equal(run(`rm -f ${GIT}/hooks/evolv-*.js`), 'ask');
+  assert.equal(run('rm -f hooks/out_*'), 'allow');
+});
+test('a glob that would match a copy of the guard files in another work tree asks', () => {
+  mk('repo', 'kit', 'hooks');
+  fs.writeFileSync(path.join(GIT, 'kit', 'hooks', 'evolv-destructive-guard.js'), '');
+  assert.equal(verdict(bash('rm -f kit/hooks/evolv-de*', GIT)), 'ask');
+  assert.equal(verdict(bash('rm -f kit/hooks/out_*', GIT)), 'allow');
+});
+
+// 4. Readers that run code, a shadowing file written by any redirect, more autorun names.
+const readersThatRun = [
+  [toFile(`${GIT}/x.sh`, `\n[ -v 'a[$(bash x.sh)]' ]${N}`), 'test -v'],
+  [toFile(`${GIT}/x.sh`, `\ntest -v 'a[$(bash x.sh)]'${N}`), 'test -v, spelled out'],
+  [toFile(`${GIT}/x.sh`, `\nprintf -v 'a[$(bash x.sh)]' y${N}`), 'printf -v'],
+  [`cd ${GIT} && ${toFile('notes.md', `\nprintf 'import os' > argparse.py; python3 -B -m py_compile y.py`)}`,
+   'a printf redirect that shadows a standard module'],
+  [`cd ${GIT} && ${toFile('notes.md', '\necho x > json.py && python3 -B -m py_compile y.py')}`, 'echo into json.py'],
+  ...['.mcp.json', '.yarnrc.yml', '.justfile', 'justfile', 'lefthook.yml', '.gitlab-ci.yml']
+    .map((name) => [toFile(`${GIT}/${name}`, N), `a write to ${name}`]),
+];
+for (const [command, why] of readersThatRun) {
+  test(`a heredoc written to a file keeps the text rule when ${why}: asks`, () => {
+    assert.equal(verdict(bash(command)), 'ask', command);
+  });
+}
+test('an installed module name is shadowed too', () => {
+  const r = spawnSync('python3', ['-I', '-c', 'import pkgutil, site, sys; print(next(m.name for m in pkgutil.' +
+    'iter_modules(site.getsitepackages() + [site.getusersitepackages()]) if m.name.isidentifier() and ' +
+    'm.name not in sys.stdlib_module_names))'], { encoding: 'utf8' });
+  const name = r.stdout.trim();
+  assert.ok(name, 'python3 lists at least one installed module');
+  assert.equal(verdict(bash(`cd ${GIT} && ${toFile(`${name}.py`, '\npython3 -B -m py_compile y.py')}`)), 'ask', name);
+});
+test('python -c or python on stdin after a redirect that writes a module it imports keeps the text rule', () => {
+  assert.equal(verdict(bash(`cd ${GIT} && printf 'import os' > json.py; python3 -c 'import json  # ${R}'`)), 'ask');
+  assert.equal(verdict(bash(`cd ${GIT} && echo x > json.py\n${stdin(`import json  # ${R}`)}`)), 'ask');
+  assert.equal(verdict(bash(`cd ${GIT} && echo x > notes.txt; python3 -c 'import json  # ${R}'`)), 'allow');
+});
+test('interpreter code after a redirect that writes a file it could load keeps the text rule', () => {
+  assert.equal(verdict(bash(`cd ${GIT} && printf 'import os' > helper.py; python3 -c 'import helper  # ${R}'`)), 'ask');
+  assert.equal(verdict(bash(`cd ${GIT} && printf x > lib.js; node -e 'require("./lib") // ${R}'`)), 'ask');
+  assert.equal(verdict(bash(`cd ${GIT} && printf x > notes.txt; node -e 'require("./notes.txt") // ${R}'`)), 'ask');
+  assert.equal(verdict(bash(`cd ${GIT} && node -e 'console.log(1) // ${R}' > out.txt`)), 'allow');
+});
+test('a reader with -v elsewhere, or printf without -v, is still a reader', () => {
+  assert.equal(verdict(bash(toFile(`${GIT}/x.md`, `\nprintf '%s\\n' done; [ -s ${GIT}/x.md ]${N}`))), 'allow');
+  assert.equal(verdict(bash(toFile(`${GIT}/x.md`, `\npython3 -B -m py_compile ${GIT}/y.py > ${GIT}/out.txt`))), 'allow');
+});
+
+// 5. Code with real effects keeps the old verdict.
+const realEffects = [
+  [stdin(`import git\ngit.Repo('.').git.clean('-fdx')  # then ${R}`), 'GitPython clean'],
+  [stdin(`import git\ngit.Repo('.').git.reset('--hard')  # ${R}`), 'GitPython reset'],
+  [stdin(`from git import Repo\nRepo('.').head.reset(index=True, working_tree=True)  # ${R}`), 'Repo().head.reset'],
+  [stdin(`r = repo_of('.')\nr.git.checkout('--', '.')  # ${R}`), 'a .git attribute'],
+  [stdin(`import sys, tarfile\ntarfile.open(sys.argv[1]).extractall(sys.argv[2])  # ${R}`), 'extractall'],
+  [stdin(`import shutil\nshutil.unpack_archive('a.zip', 'data')  # ${R}`), 'unpack_archive'],
+  [`python3 -c 'import os; os.kill(-1, 15)  # ${R}'`, 'os.kill'],
+  [`node -e 'process.kill(-1) // ${R}'`, 'process.kill(-1)'],
+  [`node -e 'process.kill(-123, "SIGTERM") // ${R}'`, 'process.kill of a group'],
+  [`node -e 'process["kill"](-1) // ${R}'`, 'process["kill"]'],
+  [`python3 -c 'import functools, shutil; g = functools.reduce(getattr, ["rmtre" "e"], shutil); g("${T}")  # ${R}'`,
+   'functools.reduce with getattr'],
+  [`python3 -c 'import inspect, shutil; g = [f for n, f in inspect.getmembers(shutil) if n == "r" "mtree"][0]; ` +
+   `g("${T}")  # ${R}'`, 'inspect.getmembers'],
+  [`python3 -c 'g = getattr; import shutil; f = g(shutil, "rmtre" "e"); f("${T}")  # ${R}'`, 'getattr bound to a name'],
+];
+for (const [command, why] of realEffects) {
+  test(`code with a real effect keeps the old verdict (${why}): asks`, () => {
+    assert.equal(verdict(bash(command)), 'ask', command);
+  });
+}
+test('getattr called with a constant name, and plain code, are still relaxed', () => {
+  assert.equal(verdict(bash(`python3 -c 'import sys; print(getattr(sys, "version"))  # ${R}'`)), 'allow');
+  assert.equal(verdict(bash(stdin(`import pandas as pd\nprint(pd.DataFrame().reset_index())  # ${R}`))), 'allow');
+});
+
+// Surviving mutants of the second review. B6: cat with a heredoc is not a reader. C2: a comment is not targets.
+test('a second cat that takes a heredoc keeps the first body under the text rule', () => {
+  const command = `cat > ${GIT}/a.md <<'EOF'\n${P}\nEOF\ncat <<'Z'\nhello\nZ${N}`;
+  assert.equal(verdict(bash(command)), 'ask', command);
+});
+test('a glob in a comment after an rm is not a target', () => {
+  assert.equal(verdict(bash(`rm -f ${GIT}/logs/out_*.log  # not *.py`)), 'allow');
+  assert.equal(verdict(bash('rm -f out_*.log # keep ?x*', GIT)), 'allow');
+});
+
+// 6. Delete words only as data in Python or Node code (coordinator, 2026-11-19): a string that goes to str.replace, a
+// list or a write of a plain named file runs nothing, as with `cat > file`. The same string given to a run sink asks.
+const dataOnly = [
+  [stdin('s=open("t.js").read()\ns=s.replace("rm -f a_*.tmp","rm -f aa_*.tmp")\nopen("t.js","w").write(s)'),
+   'str.replace, then a write back to the same file'],
+  [stdin(`p = "cases.txt"\nopen(p, "w").write("${R}\\n")`), 'a write to a name bound once to a string'],
+  [stdin(`from pathlib import Path\nPath("cases.txt").write_text("import shutil; shutil.rmtree('${T}')")`),
+   'Path.write_text'],
+  [stdin(`cases = ["${R}", "rm -f a_*"]\nprint(len(cases))`), 'a list'],
+  [`node -e 'require("fs").writeFileSync("cases.txt", "${R}")'`, 'node writeFileSync of a plain name'],
+];
+for (const [command, why] of dataOnly) {
+  test(`delete words only as data in interpreter code (${why}): allows`, () => {
+    assert.equal(verdict(bash(command, GIT)), 'allow', command);
+  });
+}
+const dataReachesASink = [
+  [stdin(`import subprocess\nsubprocess.run("${R}", shell=True)`), 'subprocess.run'],
+  [stdin(`import os\nos.system("${R}")`), 'os.system'],
+  [stdin(`exec("import shutil; shutil.rmtree('${T}')")`), 'exec'],
+  [`bash -c '${R}'`, 'bash -c'],
+  [`${stdin(`open("x.sh", "w").write("${R}")`)}\nbash x.sh`, 'a write of the file that the line then runs'],
+  [stdin(`open(".bashrc", "w").write("${R}")`), 'a write to a startup file'],
+  [stdin(`open(".git/hooks/pre-commit", "w").write("${R}")`), 'a write to a git hook'],
+  [stdin(`p = input()\nopen(p, "w").write("${R}")`), 'a write to a computed name'],
+  [stdin(`p = "a.txt"\np = "b.txt"\nopen(p, "w").write("${R}")`), 'a write to a name bound twice'],
+  [stdin(`open("helper.py", "w").write("import shutil; shutil.rmtree('${T}')")\nimport helper`),
+   'a write of a module the code then imports'],
+  [stdin(`open("json.py", "w").write("x")\nprint("${R}")`), 'a write of a standard module name'],
+  [`node -e 'const fs = require("fs"); fs.writeFileSync("h.js", "x"); require("./h") // ${R}'`,
+   'node: a write beside a require of a path'],
+  [`node -e 'require("fs").writeFileSync(process.argv[1], "${R}")' x`, 'node: a write to a computed name'],
+  [stdin(`import shutil\nshutil.copy("a.txt", "b.txt")  # ${R}`), 'a copy'],
+];
+for (const [command, why] of dataReachesASink) {
+  test(`delete words that can reach a run sink keep the text rule (${why}): asks`, () => {
+    assert.equal(verdict(bash(command, GIT)), 'ask', command);
+  });
+}

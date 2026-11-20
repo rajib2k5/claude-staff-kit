@@ -46,50 +46,91 @@ Three more cases need no approval. They do not change a deny, and they do not ch
 one condition is not true, the old text rule applies and the guard asks.
 
 **The read-only list.** The first two cases need every other command on the line to be one of these: `ls`, `cat`
-without a heredoc, `head`, `tail`, `wc`, `grep`, `sed -n` with only print commands, `echo`, `printf`, `stat`,
-`diff`, `cmp`, `cd`, `mkdir -p`, `true`, `test`, `[`, `node --check`, `python3 -B -m py_compile`, or a plain
-variable assignment. The command name has no folder, and no assignment or wrapper is in front of it. No redirect on
-the line writes to a startup or autorun file (see below).
+without a heredoc, `head`, `tail`, `wc`, `grep`, `sed -n` with only print commands, `echo`, `printf` without
+`-v`, `stat`, `diff`, `cmp`, `cd`, `mkdir -p`, `true`, `test` or `[` without `-v` or `-R`, `node --check`,
+`python3 -B -m py_compile`, or a plain variable assignment. `[[` is not on the list. `test -v`, `[ -v` and
+`printf -v` can run a substitution in an array index, so they are not readers. The command name has no folder, and
+no assignment or wrapper is in front of it. No redirect on the line writes to a startup or autorun file (see below).
+When Python runs anywhere on the line (`py_compile`, `-c` or stdin), no redirect on the line writes a file named
+like a module that Python could import from its folder: a standard module, or one installed on its path or in the
+user site.
 
 - **A heredoc that `cat` or `tee` writes to a file is data** when all of these are true: it is the only heredoc on
-  its line, with no pipe or substitution around it; every other command on the line is on the read-only list; the
-  target is not a startup or autorun file; and with `py_compile` on the line, the file name is not a standard
-  Python module name. Startup and autorun files are: shell startup files (`.bashrc`, `.profile`, `.bash_profile`,
-  `.bash_aliases`, `.zshrc` and the other shells), `.envrc`, `.env`, `.npmrc`, `.yarnrc`, `.gitconfig`,
-  `.gitattributes`, `.pre-commit-config.yaml`, crontab, anything in `.git/`, `.husky/`, `.githooks/`, `.github/`,
-  `.gitlab/`, `.vscode/`, `.idea/`, `.devcontainer/`, `.direnv/` or `.claude/`, any dot folder or dotfile in the
-  home folder (the fish config, `~/.config/autostart`, systemd user units), `Makefile`, `GNUmakefile`, `justfile`,
-  a Taskfile, `package.json`, `pyproject.toml`, `setup.py`, `setup.cfg`, `tox.ini`, `noxfile.py`, `tasks.py`,
-  `conftest.py`, `sitecustomize.py`, `usercustomize.py`, `*.pth`, `*.service`, `*.timer`, `*.socket`, `*.desktop`,
-  a Dockerfile, Containerfile or compose file, a virtualenv `bin/activate`, and a system folder. A symlink to one
-  of these counts, and so does a target the guard cannot resolve (a variable, a glob, a relative path after an
-  unknown `cd`).
+  its line, with no pipe or substitution around it; every other command on the line is on the read-only list; and
+  the target is not a startup or autorun file. Startup and autorun files are: shell startup files (`.bashrc`,
+  `.profile`, `.bash_profile`, `.bash_aliases`, `.zshrc` and the other shells), `.envrc`, `.env`, `.npmrc`,
+  `.yarnrc`, `.yarnrc.yml`, `.mcp.json`, `.gitconfig`, `.gitattributes`, `.pre-commit-config.yaml`,
+  `.gitlab-ci.yml`, `lefthook.yml`, `.lefthook.yml`, `lefthook-local.yml`, crontab, anything in `.git/`, `.husky/`,
+  `.githooks/`, `.github/`, `.gitlab/`, `.vscode/`, `.idea/`, `.devcontainer/`, `.direnv/` or `.claude/`, any dot
+  folder or dotfile in the home folder (the fish config, `~/.config/autostart`, systemd user units), `Makefile`,
+  `GNUmakefile`, `justfile`, `.justfile`, a Taskfile, `package.json`, `pyproject.toml`, `setup.py`, `setup.cfg`,
+  `tox.ini`, `noxfile.py`, `tasks.py`, `conftest.py`, `sitecustomize.py`, `usercustomize.py`, `*.pth`,
+  `*.service`, `*.timer`, `*.socket`, `*.desktop`, a Dockerfile, Containerfile or compose file, a virtualenv
+  `bin/activate`, and a system folder. A symlink to one of these counts, and so does a target the guard cannot
+  resolve (a variable, a glob, a relative path after an unknown `cd`).
 - **Python code given with `-c` or on stdin, and Node code given with `-e`, `--eval` or `-p`, that only mentions a
   delete.** Python is read with its own parser. Node is read with its strings and comments removed and is compiled
   to check the read. A delete word in a string, a comment or a print is text. All of these must be true:
-  - The code calls no delete. It writes no file, and it calls nothing that can run other code: `exec`, `eval`,
+  - The code calls no delete, and it calls nothing that can run other code: `exec`, `eval`,
     `__import__`, `importlib`, `subprocess`, `os.system`, `pickle`, `ctypes`, `runpy`, `yaml.load`,
     `yaml.unsafe_load`, `yaml.full_load`, `operator.methodcaller` or `operator.attrgetter`. In Node, the same
     applies to `child_process`, `eval` and `Function`.
+  - The code has no other real effect. In Python: `os.kill`, `killpg` or any kill call; `extractall` or
+    `shutil.unpack_archive`; `inspect.getmembers`; `getattr` used as a value and not called
+    (`functools.reduce(getattr, …)`, `f = getattr`); and any `.git`, `.clean` or `.reset` attribute, so GitPython's
+    `Repo(...).git.*`, `git.clean` and `git.reset` keep the old verdict. In Node: `process.kill`, in any spelling.
+  - The code writes a file only by a plain name, and the file is data, as with `cat > file`: a string constant,
+    or a name bound once at the top level to one, given to `open(…, "w")`, `Path(…).write_text`, the `open` of
+    `io`, `gzip`, `bz2`, `lzma`, `codecs` or `tarfile`, or, in Node, `writeFileSync`, `appendFileSync`,
+    `createWriteStream` and their kin. The file is not a startup or autorun file, not named like a module Python could import, and not a
+    module the code itself imports. Node code that writes a file has no `require` of a path. A copy, a move, a
+    rename, a link, a chmod or a write to a computed name keeps the text rule. So `s.replace("rm -f a_*", …)` and
+    then `open("t.js", "w").write(s)` runs nothing, but `subprocess.run`, `os.system`, `exec` or `bash -c` with
+    the same string asks.
   - Bash expands nothing in the code: it is in single quotes, or the heredoc delimiter is quoted.
   - Every other command on the line is on the read-only list. Output goes into no pipe, except to a reader.
+  - No other command on the line writes a file the code could load. For Python, that is a `.py`, `.pyc`, `.pyd`,
+    `.pyw`, `.so` or `.pth` file. For Node, that is any file except `/dev/null`, because `require` runs a file of
+    any name as JavaScript.
   - Nothing on the line sets `PYTHONPATH`, `PYTHONSTARTUP`, `PYTHONHOME`, `PYTHONINSPECT`, `PYTHONUSERBASE`,
     `NODE_OPTIONS`, `NODE_PATH`, `LD_PRELOAD`, `LD_LIBRARY_PATH` or `DYLD_*`.
   - For Python, the code is UTF-8 and at most 64 KB. A coding cookie, if there is one, names utf-8 or ascii.
   - For Node, the code has no U+2028, no U+2029, no bare CR, no `<!--` and no `-->`.
 - **A plain `rm` or `rm -f` (not recursive) of a glob that names files.** All of these must be true:
-  - The wildcard is in the last part of the path only. That part has a literal stem of 2 or more characters
-    before the first wildcard. `_probe*.py`, `out_*.log` and `r26m_*` pass. `*.py`, `*.db`, `?x*`, `*` and `.*`
-    do not.
-  - The path has no variable, `~user`, brace, extglob or substitution.
+  - The wildcard is in the last part of the path only. That part starts with a literal stem before the first
+    wildcard. The stem has 3 or more characters, does not start with a dot, and has a `_`, a `-` or a digit in it,
+    or has 4 or more characters. `_probe*.py`, `out_*.log`, `r26m_*`, `tmp_*`, `test_*` and `data/2026-*` pass.
+    `te*`, `ma*`, `tmp*`, `data/20*`, `.env*`, `*.py`, `*.db`, `?x*`, `*` and `.*` do not.
+  - The path has no variable, `~user`, brace, extglob or substitution. No folder in the path as written starts
+    with a dot, other than `.` and `..`.
   - The folder, resolved through symlinks, is in a git work tree and not under a `.git` folder. If the folder
-    cannot be resolved, the rm asks.
-  - The work tree root is not `/`, the home folder or a folder above it. Below the home folder, no folder on the
-    way to that root starts with a dot. `~/.config/x/repo` and `~/.aws` do not pass.
+    cannot be resolved or read, the rm asks.
+  - The work tree root is not `/`, the home folder or a folder above it. After symlinks are resolved, no folder
+    below the home folder and no folder below the work tree root starts with a dot. `~/.config/x/repo`, `~/.aws`,
+    `.private/ke_*` and a link that points into `.private` do not pass.
+  - No folder from the glob's folder up to the work tree root is a bare repository (a folder with `HEAD`,
+    `objects` and `refs`), such as a test remote `e2e_remote.git` inside a work tree.
+  - No guard file (`evolv-*`) in the folder starts with the stem, so `rm -f hooks/evolv-de*` asks wherever the
+    hooks are, including the work tree that the live hook links into.
+  - The folder the rm runs in is certain. A relative path is resolved against it; an absolute path does not need
+    it. The folder is certain when the line has no `cd`, or exactly one `cd` that is its first command, with a
+    literal path (no variable, substitution, glob or option) and `&&` after it. If a command after the cd is
+    reached by something other than `&&`, the glob must pass in both folders. The guard does not allow the glob
+    after a subshell `( … )`, `pushd`, `popd`, `eval`, `source`, `.`, `exec`, `env` or `sudo` with `-C`, `-D` or
+    `--chdir`, a `cd` in `$( … )`, a second `cd`, or any `CDPATH` on the line; a relative `cd` also asks when
+    `CDPATH` is set in the hook's environment.
 
-Two parsing rules support these cases:
+The parsing rules that support these cases follow bash:
+- A backslash before a newline is removed, outside single quotes, `$'…'` and comments, and the word goes on as if
+  the newline was not there. `ls -la \⏎# x⏎rm -rf ~` is read as `ls -la # x`, then `rm -rf ~`. In an unquoted
+  heredoc body the lines are joined the same way before the delimiter is matched.
+- A word starts only after a space, a tab, a newline or one of `;&|()<>`. A carriage return, a vertical tab or a
+  no-break space is part of a word, so a `#` after one starts no comment.
 - `#` starts a comment only at the start of a word and outside quotes, so `a\ #b` is not a comment. A quote in a
-  comment (`# it's done`) does not hide the next lines.
+  comment (`# it's done`) does not hide the next lines. A backquoted string ends at its first unescaped backquote,
+  and a `#` at a word start in it starts a comment.
+- A `$'EOF'` or `$"EOF"` heredoc delimiter is read as bash decodes it. If it has an escape or a `$` that the
+  guard cannot decode for certain, the line asks.
 - A line that has `case` and also a `$(...)` or backtick substitution asks, unless it is denied. The guard cannot
   read a `case` pattern's `)` inside a substitution reliably.
 
