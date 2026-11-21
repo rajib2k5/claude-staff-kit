@@ -39,6 +39,22 @@
  *    script that imports or sources a file. A plain rm of a glob is allowed only when its last part starts with a
  *    literal stem (`_probe*.py`, not `*.py`) and its real folder is in a git work tree (namesProjectFiles). A comment
  *    ends at its newline, and a quote in a substitution inside double quotes is the substitution's own.
+ *  - Third round, after the second review (2026-11-19). The three parsers read a backslash-newline as bash does
+ *    (removed, the word start kept; joinContinuations), a backquoted string to its first unescaped backquote, and a
+ *    `$'EOF'` delimiter decoded; a delimiter that cannot be read for certain asks. Only space, tab, newline and
+ *    ;&|()<> start a word, so a CR before `#` starts no comment. The glob allowance needs a certain folder (globFolder:
+ *    no cd, or one leading `cd <literal> &&`; a subshell, pushd, popd, eval, source, exec, env/sudo -C/--chdir or a
+ *    second cd asks), a stem that names files (stemNamesFiles), no dot folder below the home folder or the work tree
+ *    root, no bare repository, and no guard file (evolv-*) that the stem matches. `test -v`, `[ -v` and `printf -v`
+ *    are not readers; a file written by any redirect that shadows an installed Python module, and more autorun names,
+ *    keep the text rule. Python code with git clean/reset, extractall, getmembers or getattr used as a value, and
+ *    node code with process.kill, keep the old verdict. Code that writes a file by a plain name (not an autorun
+ *    file, not a module it or Python on the line could import) is data, as `cat > file` is; a write to a computed
+ *    name, a copy or a move, and a file another command on the line could load keep the text rule.
+ *  - Fourth round (owner, 2026-11-20): emptying an existing, non-empty file asks (emptyingVerdict): `: > f`, a bare
+ *    `> f`, `truncate -s 0`, `cp /dev/null`, and Python or Node code that opens a file for writing and closes it
+ *    empty, truncates it to 0 or writes an empty string. /dev/null, Claude's own files, a new or empty file, a write
+ *    with content and a file rebuilt later on the line do not ask.
  *
  * Pairs with ~/.claude/skills/destructive-ops-guard/SKILL.md. Tests: evolv-destructive-guard.test.js
  * (node --test ~/.claude/hooks/evolv-destructive-guard.test.js).
@@ -220,6 +236,26 @@ const WRAPPERS = new Set(['sudo', 'command', 'builtin', 'exec', 'nohup', 'time',
  */
 const ANSI = 'A';
 
+/**
+ * bash's metacharacters: a word ends at one, and a # right after one (or at the start) begins a comment. A CR, a
+ * vertical tab or a no-break space is a word character to bash: `a\r# ; rm -rf ~` has no comment (third review round).
+ */
+const META = new Set([' ', '\t', '\n', ';', '&', '|', '(', ')', '<', '>']);
+/**
+ * Runs of characters that tokenize and splitSegments only copy: they are read a run at a time, not one by one (a
+ * long quoted text after each rm in codeDeletes made both parsers the hot path, third review round). Outside quotes
+ * a run has no metacharacter; in quotes it stops at whatever can end the quote or start a substitution.
+ */
+const SPLIT_RUN = /[^`#$'"\\&|;\n()<> \t]+/y;
+const WORD_RUN = /[^\s\\#`$'"<>&]+/y;
+const QUOTED_RUN = { "'": /[^']+/y, '"': /[^"\\`$]+/y, [ANSI]: /[^'\\]+/y };
+/** The run of `re` (one of the above) that starts at text[i], or ''. */
+function runAt(re, text, i) {
+  re.lastIndex = i;
+  const m = re.exec(text);
+  return m ? m[0] : '';
+}
+
 /** An unquoted redirection operator: >, >>, >|, <, <>, <<, <<-, <<<, &>, &>>, >&, <& (an fd number before it is cut). */
 const REDIRECT = /(?:&>>?|<<<|<<-?|<>|>>|>\||>&|<&|>|<)/y;
 /** What may follow >& or <& to duplicate or close a descriptor (>&2, <&0, >&-) instead of naming a file. */
@@ -229,7 +265,8 @@ const FD_DUP = /(?:\d+-?|-)(?=$|[\s<>])/y;
  * Shell words of one simple command, quotes removed. An unmatched quote ends the word. Redirections are not words:
  * `rm -rf x 2>/dev/null` deletes x only, and `>/dev/null rm -rf ~` still runs rm (2026-11-18: `2>` and `2>/dev/null`
  * were read as a delete target and as a push refspec). A # at the start of a word, outside quotes, starts a comment
- * that ends at the newline (a quote in it opens nothing). In double quotes, $(…) and `…` are read whole (substitutionEnd).
+ * that ends at the newline (a quote in it opens nothing). In double quotes, $(…) and `…` are read whole (substitutionEnd),
+ * and so is `…` outside quotes. A backslash-newline outside single quotes is removed, as bash does (third review round).
  */
 function tokenize(s) {
   const words = [];
@@ -238,6 +275,7 @@ function tokenize(s) {
   let plain = true; // the word so far has no quote or escape (so `2` before `>` is an fd number)
   let dropNext = false; // the next word is a redirection's file or heredoc delimiter
   let quote = null;
+  let afterMeta = true; // the last character was a metacharacter (or there was none): a # here begins a comment
   const end = () => {
     if (started && !dropNext) words.push(cur);
     else if (started) dropNext = false;
@@ -247,6 +285,20 @@ function tokenize(s) {
   };
   for (let i = 0; i < s.length; i += 1) {
     const c = s[i];
+    if (c === '\\' && s[i + 1] === '\n' && quote !== "'" && quote !== ANSI) {
+      i += 1; // a continuation: the word, and whether a # may start a comment, go on as before it
+      continue;
+    }
+    const run = runAt(quote ? QUOTED_RUN[quote] : WORD_RUN, s, i);
+    if (run) {
+      cur += run;
+      i += run.length - 1;
+      if (!quote) started = true;
+      afterMeta = false;
+      continue;
+    }
+    const commentMayStart = afterMeta && !started;
+    afterMeta = !quote && META.has(c);
     if (quote === ANSI) {
       if (c === "'") quote = null;
       else if (c === '\\' && i + 1 < s.length) cur += s[(i += 1)];
@@ -259,10 +311,16 @@ function tokenize(s) {
         cur += s.slice(i, end);
         i = end - 1;
       } else cur += c;
-    } else if (c === '#' && !started) {
+    } else if (c === '#' && commentMayStart) {
       const newline = s.indexOf('\n', i);
       if (newline === -1) break;
       i = newline - 1;
+    } else if (c === '`') {
+      const close = backquoteEnd(s, i);
+      cur += s.slice(i, close);
+      i = close - 1;
+      started = true;
+      plain = false;
     } else if (c === '$' && s[i + 1] === "'") {
       quote = ANSI;
       started = true;
@@ -306,7 +364,10 @@ function tokenize(s) {
  * double bar). With `max`, stops after that many segments (the first command of a long text, read in linear time).
  * A comment (a # that starts a word, outside quotes) stays in its segment but ends at the newline: before 2026-11-18,
  * the apostrophe in `# it's⏎rm -rf ~` opened a quote that hid the rm (second adversarial review). In double quotes,
- * $(…) and `…` are read whole, so the quote in x="$(echo "'")" is the substitution's own.
+ * $(…) and `…` are read whole, so the quote in x="$(echo "'")" is the substitution's own; `…` outside quotes too, as
+ * bash ends it at the first unescaped backquote (`#'` in it is a comment). A backslash-newline outside single quotes
+ * is removed and leaves the word-start state as it was: `ls \⏎# x` is a comment, `a\⏎#b` is a word (third round).
+ * The separator && is pushed to `ops` as '&&', a single & as '&'.
  */
 function splitSegments(text, ops = null, max = Infinity) {
   const out = [];
@@ -320,7 +381,22 @@ function splitSegments(text, ops = null, max = Infinity) {
   };
   for (let i = 0; i < text.length && out.length < max; i += 1) {
     const c = text[i];
-    if (quote === '"' && (c === '`' || (c === '$' && text[i + 1] === '('))) {
+    if (c === '\\' && text[i + 1] === '\n' && quote !== "'" && quote !== ANSI) {
+      i += 1;
+      continue;
+    }
+    const run = runAt(quote ? QUOTED_RUN[quote] : SPLIT_RUN, text, i);
+    if (run) {
+      cur += run;
+      i += run.length - 1;
+      wordStart = false;
+      continue;
+    }
+    if (!quote && c === '`') {
+      const end = backquoteEnd(text, i);
+      cur += text.slice(i, end);
+      i = end - 1;
+    } else if (quote === '"' && (c === '`' || (c === '$' && text[i + 1] === '('))) {
       const end = c === '`' ? backquoteEnd(text, i) : substitutionEnd(text, i);
       cur += text.slice(i, end);
       i = end - 1;
@@ -346,12 +422,12 @@ function splitSegments(text, ops = null, max = Infinity) {
                (c === '|' && text[i - 1] === '>' && text[i - 2] !== '\\')) {
       cur += c;
     } else if (';&|\n()'.includes(c)) {
-      push(c === '|' && text[i + 1] === '|' ? '||' : c);
+      push(c === '|' && text[i + 1] === '|' ? '||' : c === '&' && text[i + 1] === '&' ? '&&' : c);
       cur = '';
     } else {
       cur += c;
     }
-    wordStart = !quote && /[\s;&|()<>]/.test(c);
+    wordStart = !quote && META.has(c);
   }
   if (out.length < max) push('');
   return out;
@@ -387,6 +463,10 @@ function substitutionEnd(text, i) {
       }
       continue;
     }
+    if (c === '\\' && text[j + 1] === '\n') {
+      j += 1; // a continuation: removed, the word-start state stays
+      continue;
+    }
     if (c === '#' && wordStart) {
       const newline = text.indexOf('\n', j);
       if (newline === -1) return text.length + 1;
@@ -407,7 +487,7 @@ function substitutionEnd(text, i) {
       stack.pop();
       if (!stack.length) return j + 1;
     }
-    wordStart = /[\s;&|()<>]/.test(c);
+    wordStart = META.has(c);
   }
   return text.length + 1;
 }
@@ -575,30 +655,57 @@ const HEREDOC = /(?<!<)<<(?!<)-?[ \t]*((?:'[^'\n]*'|"[^"\n]*"|\\.|[^\s;&|<>()'"\
  * as a heredoc body, and the code of `node -e '…"<<EOF\n…"…'` was cut at that line the same way.
  */
 function quoteMasker() {
-  const stack = []; // frames: 'sq' | 'dq' | 'ansi' | 'bq' | { depth } for $(…)
-  return (line) => {
+  // frames: 'sq' | 'dq' | 'ansi' | { depth } for $(…) | { inner } for `…`, whose text a masker of its own reads
+  const stack = [];
+  let carry = null; // the word-start state before a backslash-newline that ended the last line
+  /**
+   * After each call, mask.continues says whether the line ended with a backslash-newline that bash removes: outside
+   * quotes, in $(…) or `…`, or in "…" (not in '…', $'…' or a comment). The next line then goes on the same word.
+   */
+  const mask = (line) => {
     let out = '';
+    const lineStart = carry === null ? true : carry;
+    carry = null;
+    mask.continues = false;
+    const wordStart = () => (out.length === 0 ? lineStart : META.has(out[out.length - 1]));
     for (let i = 0; i < line.length; i += 1) {
       const c = line[i];
       const top = stack[stack.length - 1];
-      const sub = typeof top === 'object';
-      if (top === 'sq' || top === 'ansi' || top === 'dq') {
+      if (top && top.inner) {
+        // `…` ends at the first backquote that no backslash escapes, whatever quotes are in it (bash, POSIX); the
+        // text before it is a script of its own. Third review round: `#'` in it is a comment, not an open quote.
+        let j = i;
+        while (j < line.length && line[j] !== '`') j += line[j] === '\\' ? 2 : 1;
+        out += top.inner(line.slice(i, Math.min(j, line.length)));
+        if (j >= line.length) {
+          mask.continues = top.inner.continues;
+          break;
+        }
+        stack.pop();
+        out += '`';
+        i = j;
+      } else if (top === 'sq' || top === 'ansi' || top === 'dq') {
         if (c === '\\' && top !== 'sq') {
+          if (i + 1 >= line.length && top === 'dq') mask.continues = true;
           out += i + 1 < line.length ? '__' : '_';
           i += 1;
         } else if (c === (top === 'dq' ? '"' : "'")) {
           stack.pop();
           out += c;
         } else if (top === 'dq' && (c === '`' || (c === '$' && line[i + 1] === '('))) {
-          stack.push(c === '`' ? 'bq' : { depth: 0 });
+          stack.push(c === '`' ? { inner: quoteMasker() } : { depth: 0 });
           out += c === '`' ? c : line.slice(i, (i += 1) + 1);
         } else {
           out += '_';
         }
       } else if (c === '\\') {
+        if (i + 1 >= line.length) {
+          carry = wordStart();
+          mask.continues = true;
+        }
         out += i + 1 < line.length ? '\\_' : '\\';
         i += 1;
-      } else if (c === '#' && (out.length === 0 || /[\s;&|()<>]/.test(out[out.length - 1]))) {
+      } else if (c === '#' && wordStart()) {
         // At the start of a word only: the masked text, not the raw one, says so (`a\ #b` is one word, review claim 6).
         out += '_'.repeat(line.length - i);
         break;
@@ -609,32 +716,81 @@ function quoteMasker() {
         stack.push(line[i + 1] === "'" ? 'ansi' : { depth: 0 });
         out += line.slice(i, (i += 1) + 1);
       } else if (c === '`') {
-        if (top === 'bq') stack.pop();
-        else stack.push('bq');
+        stack.push({ inner: quoteMasker() });
         out += c;
       } else {
-        if (sub && c === '(') top.depth += 1;
-        else if (sub && c === ')' && (top.depth -= 1) < 0) stack.pop();
+        if (top && c === '(') top.depth += 1;
+        else if (top && c === ')' && (top.depth -= 1) < 0) stack.pop();
         out += c;
       }
     }
     return out;
   };
+  return mask;
 }
 
 /**
  * A line's heredoc operators in order: { index, length (of the operator and its delimiter word), delim (quotes
- * removed), quoted (any quote stops expansion) }. With `masked` (the line from quoteMasker), a << in quoted text or a
- * comment is not one.
+ * removed), quoted (any quote stops expansion), uncertain }. With `masked` (the line from quoteMasker), a << in quoted
+ * text or a comment is not one. bash ends <<$'EOF' and <<$"EOF" at EOF (third review round: the guard waited for
+ * $EOF); a $'…' or $"…" delimiter with an escape or expansion in it is `uncertain`.
  */
 function heredocOperators(line, masked = line) {
   const ops = [];
   for (const m of line.matchAll(HEREDOC)) {
     if (/^\d/.test(m[1]) || masked.slice(m.index, m.index + 2) !== '<<') continue;
-    const delim = m[1].replace(/'([^']*)'|"([^"]*)"|\\(.)/g, (all, single, double, escaped) => single ?? double ?? escaped);
-    ops.push({ index: m.index, length: m[0].length, delim, quoted: /['"\\]/.test(m[1]) });
+    const delim = m[1].replace(/\$'([^']*)'|\$"([^"]*)"|'([^']*)'|"([^"]*)"|\\(.)/g,
+      (all, ansi, locale, single, double, escaped) => ansi ?? locale ?? single ?? double ?? escaped);
+    const uncertain = /\$'[^']*\\|\$"[^"]*[\\$`]/.test(m[1]);
+    ops.push({ index: m.index, length: m[0].length, delim, quoted: /['"\\]/.test(m[1]), uncertain });
   }
   return ops;
+}
+
+/** A body line of an unquoted heredoc that bash joins to the next: it ends with an odd number of backslashes. */
+const JOINS_NEXT = /(?:^|[^\\])(?:\\\\)*\\$/;
+
+/**
+ * The command line with every backslash-newline that bash removes taken out: outside single quotes, ANSI-C quotes
+ * and comments (also inside "…", $(…) and `…`), and in the body of a heredoc whose delimiter is unquoted, where bash
+ * also compares the joined line with the delimiter (bash 5.2: `EO\⏎F` ends <<EOF). A quoted body is kept as it is.
+ * The heredoc operators of a continued line are read on the whole line, and its bodies follow that line (bash:
+ * `cat <<EOF \⏎> f` writes f). Null when a delimiter cannot be read for certain (heredocOperators). Third review
+ * round, 2026-11-19: `ls -la \⏎# don't⏎rm -rf ~` ran the rm and was allowed.
+ */
+function joinContinuations(command) {
+  if (!command.includes('\\\n') && !command.includes("$'") && !command.includes('$"')) return command;
+  const lines = command.split('\n');
+  const out = [];
+  const mask = quoteMasker();
+  for (let i = 0; i < lines.length; i += 1) {
+    let raw = '';
+    let masked = '';
+    for (;;) {
+      const m = mask(lines[i]);
+      if (!mask.continues || i + 1 >= lines.length) {
+        raw += lines[i];
+        masked += m;
+        break;
+      }
+      raw += lines[i].slice(0, -1);
+      masked += m.slice(0, -1);
+      i += 1;
+    }
+    out.push(raw);
+    const ops = heredocOperators(raw, masked);
+    if (ops.some((op) => op.uncertain)) return null;
+    for (const op of ops) {
+      // The body: as parseHeredocs reads it, up to a line that is the delimiter once leading tabs are cut.
+      for (i += 1; i < lines.length; i += 1) {
+        let line = lines[i];
+        while (!op.quoted && JOINS_NEXT.test(line) && i + 1 < lines.length) line = line.slice(0, -1) + lines[(i += 1)];
+        out.push(line);
+        if (line.replace(/^\t+/, '') === op.delim) break;
+      }
+    }
+  }
+  return out.join('\n');
 }
 
 /** Heredoc bodies by the index where each starts: { end, next, expands, at }, found the way parseHeredocs finds them. */
@@ -1001,41 +1157,84 @@ function realFolder(p) {
 }
 
 /**
- * A glob that names specific files in a project (_probe*.py, out_*.log, r26m_*; 2026-11-18 asks). The second review
- * found the first rule (2 literal characters anywhere, any folder that is not a home or system one) let `*.py`, `*.db`,
- * `.git/ind*`, `~/.aws/cred*` and globs through a symlink to the home folder pass. Now the wildcard is only in the
- * last part, which starts with a literal stem of 2+ characters, and the folder, resolved through symlinks (a folder
- * that cannot be resolved fails), is in a git work tree (a .git file or folder in it or above it), is not under a
- * .git folder, and below the home folder has no dot folder at or above that work tree (~/.config, ~/.aws, or the home
- * folder itself as a dotfiles work tree). The root, home and system folders never pass.
+ * A literal stem that names files rather than a kind of file (third review round, 2026-11-19): 3 or more characters,
+ * not starting with a dot, with `_`, `-` or a digit in it or 4 or more characters. `_probe`, `out_`, `r26m_` and
+ * `main` pass; `te`, `ma`, `20`, `tmp`, `.env` and `.gi` do not.
  */
-function namesProjectFiles(word, vars, cwd) {
-  let p = targetPath(word, vars);
-  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
-  if (/[$`{}()!@+]/.test(p) || p.startsWith('~') || (cwd === null && !p.startsWith('/'))) return false;
-  const folder = p.slice(0, p.lastIndexOf('/') + 1);
-  if (/[*?[]/.test(folder) || p.slice(folder.length).search(/[*?[]/) < 2) return false;
+const stemNamesFiles = (stem) => stem.length >= 3 && !stem.startsWith('.') && (/[-_\d]/.test(stem) || stem.length >= 4);
+
+/** A bare git repository: a folder with HEAD, objects and refs in it (e2e_remote.git inside a work tree). */
+const isBareRepo = (dir) => ['HEAD', 'objects', 'refs'].every((name) => fs.existsSync(path.join(dir, name)));
+
+/**
+ * Whether the stem matches a guard file (evolv-*) in the folder: this hook's own folder, or any copy of the hooks (the
+ * live hook is a symlink into a work tree). A folder that cannot be read counts as one that has them.
+ */
+function matchesGuardFiles(real, stem) {
+  try {
+    return fs.readdirSync(real).some((name) => name.startsWith('evolv-') && name.startsWith(stem));
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Whether the files a glob stem matches in `folder` are project files: the folder, resolved through symlinks (a
+ * folder that cannot be resolved fails), is in a git work tree (a .git file or folder in it or above it) whose root is
+ * not /, the home folder or above it; it is not under a .git folder or a bare repository below that root; no folder
+ * below the home folder or below the work tree root starts with a dot (~/.config, .private, .github); and no guard
+ * file (evolv-*) in the folder starts with the stem.
+ */
+function inProjectWorkTree(folder, stem) {
   // The raw path, not path.resolve: the kernel follows link/.. through the link, a lexical resolve does not.
-  const real = realFolder(p.startsWith('/') ? folder : `${cwd}/${folder || '.'}`);
+  const real = realFolder(folder);
   if (real === null || real.split('/').includes('.git') || isCatastrophic(toAbs(real, '/')) || underSystemDir(real)) {
     return false;
   }
   let root = real;
   while (!fs.existsSync(path.join(root, '.git'))) {
-    if (root === '/') return false;
+    if (root === '/' || isBareRepo(root)) return false;
     root = path.dirname(root);
   }
+  if (isBareRepo(root)) return false;
   const home = realFolder(HOME) || HOME;
   if (root === '/' || root === home || home.startsWith(`${root}/`)) return false;
-  const belowHome = path.relative(home, root);
-  return belowHome.startsWith('..') || !belowHome.split('/').some((part) => part.startsWith('.'));
+  const below = (base) => {
+    const rel = path.relative(base, real);
+    return rel && !rel.startsWith('..') && !path.isAbsolute(rel) ? rel.split('/') : [];
+  };
+  if ([...below(home), ...below(root)].some((part) => part.startsWith('.'))) return false;
+  return !matchesGuardFiles(real, stem);
+}
+
+/**
+ * A glob that names specific files in a project (_probe*.py, out_*.log, r26m_*; 2026-11-18 asks). The second review
+ * found the first rule (2 literal characters anywhere, any folder that is not a home or system one) let `*.py`, `*.db`,
+ * `.git/ind*`, `~/.aws/cred*` and globs through a symlink to the home folder pass, and the third round `te*`,
+ * `.env*`, `.private/ke*` and globs in a nested bare repo. Now the wildcard is only in the last part, which starts
+ * with a stem that names files (stemNamesFiles), no part of the path as written starts with a dot, and the folder is
+ * in a project work tree (inProjectWorkTree). A relative path is resolved against each folder in `dirs` (where the rm
+ * may run, from globFolder), and fails without one.
+ */
+function namesProjectFiles(word, vars, dirs) {
+  let p = targetPath(word, vars);
+  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
+  if (/[$`{}()!@+]/.test(p) || p.startsWith('~')) return false;
+  const folder = p.slice(0, p.lastIndexOf('/') + 1);
+  const name = p.slice(folder.length);
+  const stem = name.slice(0, Math.max(0, name.search(/[*?[]/)));
+  if (/[*?[]/.test(folder) || !stemNamesFiles(stem)) return false;
+  if (folder.split('/').some((part) => part.startsWith('.') && part !== '.' && part !== '..')) return false;
+  const folders = p.startsWith('/') ? [folder] : (dirs || []).map((d) => (d === null ? null : `${d}/${folder || '.'}`));
+  return folders.length > 0 && folders.every((f) => f !== null && inProjectWorkTree(f, stem));
 }
 
 /**
  * One delete, from its targets: deny (catastrophic), ask (the user's files, or unknown), internal, or none. With
- * `namedOk` (a plain rm, not recursive), a glob that names project files (namesProjectFiles) is not a wide delete.
+ * `named` ({ dirs }, a plain rm, not recursive), a glob that names project files (namesProjectFiles) is not a wide
+ * delete; `dirs` are the folders a relative one is resolved against.
  */
-function judgeTargets(targets, wide, vars, cwd, namedOk = false) {
+function judgeTargets(targets, wide, vars, cwd, named = null) {
   if (!targets.length) return wide ? { level: 'ask', what: 'targets read from a pipe or another command' } : null;
   let worst = { level: 'none', what: '' };
   for (const t of targets) {
@@ -1045,7 +1244,7 @@ function judgeTargets(targets, wide, vars, cwd, namedOk = false) {
     let level = 'none';
     if (kind === 'catastrophic' && (wide || glob)) level = 'deny';
     else if (kind === 'internal') level = 'internal';
-    else if (wide || (glob && !(namedOk && namesProjectFiles(t, vars, cwd)))) level = 'ask';
+    else if (wide || (glob && !(named && namesProjectFiles(t, vars, named.dirs)))) level = 'ask';
     if (RANK[level] > RANK[worst.level]) worst = { level, what: t };
   }
   return worst;
@@ -1213,10 +1412,10 @@ const worstOf = (found) =>
   found.filter(Boolean).reduce((a, b) => (RANK[b.level] > RANK[a.level] ? b : a), { level: 'none', what: '' });
 
 /**
- * An rm, rmdir or unlink whose command word is words[start]. `named` (a plain rm typed on the command line, not one
- * fed by xargs or find, nor one inside an interpreter's text) lets a glob that names project files pass.
+ * An rm, rmdir or unlink whose command word is words[start]. `named` ({ dirs }: a plain rm typed on the command line,
+ * not one fed by xargs or find, nor one inside an interpreter's text) lets a glob that names project files pass.
  */
-function rmCall(words, start, vars, dir, named = false) {
+function rmCall(words, start, vars, dir, named = null) {
   const flags = [];
   const targets = [];
   let options = true;
@@ -1420,8 +1619,10 @@ function rawWordAfter(segment, flag, value) {
  * Python code, read with Python's own parser (ast) and never run. Prints {"parsed": false} when it does not parse,
  * is not UTF-8, or has a coding cookie other than utf-8 or ascii (python3 decodes a utf-7 file or stdin by its cookie,
  * ast.parse of a str does not: second review, 2026-11-18). Else the names that can delete, run text as code or a
- * command, reach a module or method by a computed name (operator.methodcaller, yaml.load), or run SQL ("danger"),
- * and whether it writes a file ("writes").
+ * command, reach a module or method by a computed name (operator.methodcaller, yaml.load, getattr passed as a value,
+ * inspect.getmembers), run SQL, run git (GitPython: import git, any .git, .clean or .reset attribute), unpack an
+ * archive or kill a process ("danger"), and whether it writes a file ("writes"). Third review round, 2026-11-19:
+ * `git.Repo('.').git.clean('-fdx')  # rm -rf build` and `functools.reduce(getattr, …)` were relaxed.
  */
 const PY_CHECKER = String.raw`
 import ast, json, re, sys
@@ -1432,16 +1633,21 @@ STRONG = {"exec", "eval", "compile", "__import__", "importlib", "import_module",
   "executemany", "executescript", "exec_driver_sql", "create_subprocess_exec", "create_subprocess_shell",
   "send2trash", "run_code", "load_module", "exec_module", "FunctionType", "CodeType", "commands", "methodcaller",
   "attrgetter", "unsafe_load", "unsafe_load_all", "full_load", "full_load_all", "UnsafeLoader", "FullLoader",
-  "runpy", "run_module", "run_path"}
+  "runpy", "run_module", "run_path", "extractall", "unpack_archive", "getmembers", "getmembers_static"}
+ATTRIBUTES = {"git", "clean", "reset"}
 YAML_LOADS = {"load", "load_all", "Loader"}
 NAME_ONLY = {"exec", "eval", "compile"}
 MODULES = {"code", "codeop", "timeit", "cProfile", "profile", "pdb", "trace", "sh", "plumbum", "pexpect", "paramiko",
-  "fabric", "invoke", "pickle", "cPickle", "_pickle", "marshal", "shelve", "dill", "cloudpickle", "os"}
+  "fabric", "invoke", "pickle", "cPickle", "_pickle", "marshal", "shelve", "dill", "cloudpickle", "git", "os"}
 DELETE = re.compile(r"(?:^|_)(?:rm|rmtree|remove|removedirs|unlink|rmdir|delete|drop|truncate|purge|destroy|wipe|"
   r"kill|killpg|terminate|erase|spawn[lv]p?e?|exec[lv]p?e?)(?:_|$)", re.I)
 WRITES = {"write", "writelines", "write_text", "write_bytes", "dump", "copy", "copy2", "copyfile", "copytree",
   "copyfileobj", "move", "rename", "renames", "symlink", "symlink_to", "hardlink_to", "link", "link_to", "mkfifo",
   "chmod", "fdopen"}
+# Writes to a file object: where it goes is its open() call, which is judged there.
+FILE_OBJECT_WRITES = {"write", "writelines", "dump"}
+PATHS = {"Path", "PurePath", "PosixPath"}
+OPENERS = {"io", "gzip", "bz2", "lzma", "codecs", "tarfile"}
 COOKIE = re.compile(r"^[ \t\f]*#.*?coding[:=][ \t]*([-\w.]+)")
 try:
     source = sys.stdin.buffer.read().decode("utf-8")
@@ -1453,7 +1659,41 @@ try:
 except Exception:
     print(json.dumps({"parsed": False}))
     sys.exit(0)
-danger, writes, seen, imported = set(), False, set(), set()
+danger, writes, seen, imported, targets = set(), False, set(), set(), []
+called = {id(c.func) for c in ast.walk(tree) if isinstance(c, ast.Call)}
+# A name bound once, at the top level, to a string constant: open(p, "w") then names that file.
+stores, literal = {}, {}
+for n in ast.walk(tree):
+    bound = [n.id] if isinstance(n, ast.Name) and not isinstance(n.ctx, ast.Load) else \
+        [n.name] if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) else \
+        [n.arg] if isinstance(n, ast.arg) else list(n.names) * 2 if isinstance(n, (ast.Global, ast.Nonlocal)) else \
+        [(a.asname or a.name).split(".")[0] for a in n.names] if isinstance(n, (ast.Import, ast.ImportFrom)) else []
+    for name in bound:
+        stores[name] = stores.get(name, 0) + 1
+for n in tree.body:
+    if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name) and \
+            isinstance(n.value, ast.Constant) and isinstance(n.value.value, str):
+        literal[n.targets[0].id] = n.value.value
+def lit(e):
+    if isinstance(e, ast.Constant) and isinstance(e.value, str):
+        return e.value
+    if isinstance(e, ast.Name) and stores.get(e.id) == 1:
+        return literal.get(e.id)
+    return None
+def path_of(e):
+    """The literal file of Path("x"), or None."""
+    if isinstance(e, ast.Call) and len(e.args) == 1 and not e.keywords and \
+            ((isinstance(e.func, ast.Name) and e.func.id in PATHS) or
+             (isinstance(e.func, ast.Attribute) and e.func.attr in PATHS)):
+        return lit(e.args[0])
+    return None
+def target(name):
+    """A file the code writes: a literal name is listed and judged by the hook, any other write blocks."""
+    global writes
+    if name is None:
+        writes = True
+    else:
+        targets.append(name)
 def check(name, attribute=False):
     seen.add(name)
     if (name in STRONG and not (attribute and name in NAME_ONLY)) or DELETE.search(name):
@@ -1463,9 +1703,17 @@ def mode_writes(m):
 for n in ast.walk(tree):
     if isinstance(n, ast.Name):
         check(n.id)
+        if n.id == "getattr" and id(n) not in called:
+            danger.add("getattr as a value")
     elif isinstance(n, ast.Attribute):
         check(n.attr, True)
-        writes = writes or n.attr in WRITES or (n.attr == "replace" and isinstance(n.value, ast.Name) and n.value.id == "os")
+        if n.attr in ATTRIBUTES:
+            danger.add(n.attr)
+        if n.attr in ("write_text", "write_bytes"):
+            target(path_of(n.value))
+        elif n.attr in WRITES - FILE_OBJECT_WRITES or (n.attr == "replace" and isinstance(n.value, ast.Name)
+                                                       and n.value.id == "os"):
+            writes = True
     elif isinstance(n, (ast.Import, ast.ImportFrom)):
         parts = (n.module or "").split(".") if isinstance(n, ast.ImportFrom) else []
         for a in n.names:
@@ -1486,17 +1734,107 @@ for n in ast.walk(tree):
             danger.add("getattr")
         elif name == "open":
             modes = [k.value for k in n.keywords if k.arg in ("mode", "flags")]
-            if isinstance(f, ast.Attribute):
+            files = [k.value for k in n.keywords if k.arg in ("file", "name")]
+            if isinstance(f, ast.Attribute) and path_of(f.value) is not None:
+                if any(mode_writes(m) for m in n.args[:1] + modes):
+                    target(path_of(f.value))
+            elif isinstance(f, ast.Attribute) and not (isinstance(f.value, ast.Name) and f.value.id in OPENERS):
                 os_open = isinstance(f.value, ast.Name) and f.value.id == "os"
-                writes = writes or os_open or any(mode_writes(m) for m in n.args[1:] + modes) or any(
-                    isinstance(m, ast.Constant) and isinstance(m.value, str) and re.search("[wax+]", m.value)
-                    for m in n.args[:1])
-            else:
-                writes = writes or any(mode_writes(m) for m in n.args[1:2] + modes)
+                if os_open or any(mode_writes(m) for m in n.args[1:] + modes) or any(
+                        isinstance(m, ast.Constant) and isinstance(m.value, str) and re.search("[wax+]", m.value)
+                        for m in n.args[:1]):
+                    writes = True
+            elif any(mode_writes(m) for m in n.args[1:2] + modes):
+                target(lit((n.args[:1] + files or [None])[0]))
+# Fourth round (owner, 2026-11-20): what the code leaves empty. An open that truncates and is closed with nothing
+# written, os.truncate(p, 0), f.truncate(0), Path(p).write_text("") or write_bytes(b""), a copy of /dev/null. Each
+# entry is the file's literal name, or None when the name is computed.
+empties = []
+parents = {id(c): p for p in ast.walk(tree) for c in ast.iter_child_nodes(p)}
+def is_path_call(e):
+    return isinstance(e, ast.Call) and ((isinstance(e.func, ast.Name) and e.func.id in PATHS) or
+                                        (isinstance(e.func, ast.Attribute) and e.func.attr in PATHS))
+def truncates(m):
+    return not (isinstance(m, ast.Constant) and isinstance(m.value, str)) or "w" in m.value
+def truncating_open(c):
+    """[the file name or None] when the call is an open that empties its file, else None."""
+    f, modes = c.func, [k.value for k in c.keywords if k.arg in ("mode", "flags")]
+    files = [k.value for k in c.keywords if k.arg == "file"]
+    if isinstance(f, ast.Attribute) and f.attr == "open" and is_path_call(f.value):
+        mode = c.args[:1] + modes
+        return [path_of(f.value)] if mode and truncates(mode[0]) else None
+    opener = isinstance(f, ast.Attribute) and f.attr == "open" and isinstance(f.value, ast.Name) and \
+        f.value.id in ("io", "codecs")
+    if (isinstance(f, ast.Name) and f.id == "open") or opener:
+        mode, name = c.args[1:2] + modes, (c.args[:1] + files or [None])[0]
+        return [lit(name)] if mode and truncates(mode[0]) else None
+    if isinstance(f, ast.Attribute) and f.attr == "open" and isinstance(f.value, ast.Name) and f.value.id == "os":
+        flags = c.args[1:2] + modes
+        if any(isinstance(x, ast.Attribute) and x.attr == "O_TRUNC" for m in flags for x in ast.walk(m)):
+            return [lit(c.args[0]) if c.args else None]
+    return None
+def loads(name):
+    return [n for n in ast.walk(tree) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load) and n.id == name]
+def only_closed(name):
+    """Every use of the name closes it: f.close() or os.close(f)."""
+    for n in loads(name):
+        up = parents.get(id(n))
+        if isinstance(up, ast.Attribute) and up.attr == "close":
+            continue
+        if isinstance(up, ast.Call) and isinstance(up.func, ast.Attribute) and up.func.attr == "close":
+            continue
+        return False
+    return True
+opened = {}
+for n in ast.walk(tree):
+    pairs = [(n.targets[0], n.value)] if isinstance(n, ast.Assign) and len(n.targets) == 1 else \
+        [(n.optional_vars, n.context_expr)] if isinstance(n, ast.withitem) else []
+    for var, value in pairs:
+        if isinstance(var, ast.Name) and stores.get(var.id) == 1 and isinstance(value, ast.Call) and \
+                isinstance(value.func, (ast.Name, ast.Attribute)) and \
+                (value.func.id if isinstance(value.func, ast.Name) else value.func.attr) == "open":
+            opened[var.id] = lit((value.args[:1] or [None])[0]) if isinstance(value.func, ast.Name) else \
+                path_of(value.func.value) if is_path_call(value.func.value) else lit((value.args[:1] or [None])[0])
+for c in ast.walk(tree):
+    if not isinstance(c, ast.Call):
+        continue
+    f = c.func
+    name = truncating_open(c)
+    if name is not None:
+        up = parents.get(id(c))
+        emptied = isinstance(up, ast.Expr)
+        if isinstance(up, ast.Attribute) and up.attr == "close":
+            emptied = True
+        if isinstance(up, ast.Call) and isinstance(up.func, ast.Attribute) and up.func.attr == "close":
+            emptied = True
+        if isinstance(up, ast.withitem):
+            var = up.optional_vars
+            body = parents.get(id(up)).body
+            emptied = not isinstance(var, ast.Name) or not any(
+                isinstance(x, ast.Name) and x.id == var.id for s in body for x in ast.walk(s))
+            emptied = emptied or (isinstance(var, ast.Name) and only_closed(var.id) and stores.get(var.id) == 1)
+        if isinstance(up, ast.Assign) and len(up.targets) == 1 and isinstance(up.targets[0], ast.Name):
+            emptied = stores.get(up.targets[0].id) == 1 and only_closed(up.targets[0].id)
+        if emptied:
+            empties.append(name[0])
+    if not isinstance(f, ast.Attribute):
+        continue
+    zero = lambda e: isinstance(e, ast.Constant) and e.value == 0 and not isinstance(e.value, bool)
+    if f.attr in ("truncate", "ftruncate") and isinstance(f.value, ast.Name) and f.value.id == "os":
+        if len(c.args) < 2 or zero(c.args[1]) or not isinstance(c.args[1], ast.Constant):
+            empties.append(lit(c.args[0]) if f.attr == "truncate" and c.args else None)
+    elif f.attr == "truncate" and len(c.args) == 1 and zero(c.args[0]):
+        empties.append(opened.get(f.value.id) if isinstance(f.value, ast.Name) else None)
+    elif f.attr in ("write_text", "write_bytes") and c.args and isinstance(c.args[0], ast.Constant) and \
+            c.args[0].value in ("", b""):
+        empties.append(path_of(f.value))
+    elif f.attr in ("copy", "copy2", "copyfile") and len(c.args) > 1 and lit(c.args[0]) == "/dev/null":
+        empties.append(lit(c.args[1]))
 # yaml.load builds any Python object a tag names (!!python/object/apply:os.system): with yaml imported, load is a call.
 if "yaml" in imported and seen & YAML_LOADS:
     danger.add("yaml.load")
-print(json.dumps({"parsed": True, "danger": sorted(danger), "writes": writes}))
+print(json.dumps({"parsed": True, "danger": sorted(danger), "writes": writes, "targets": targets,
+                  "imports": sorted(imported), "empties": empties}))
 `;
 
 /**
@@ -1506,14 +1844,24 @@ print(json.dumps({"parsed": True, "danger": sorted(danger), "writes": writes}))
 const PY_MAX_CODE = 64 * 1024;
 
 /** python3 from PATH: only ast.parse runs, in an isolated interpreter (-I), with a time limit. */
+const pythonFactsSeen = new Map();
 function pythonFacts(code) {
   if (code.length > PY_MAX_CODE) return { ok: false };
+  // The emptying pass and the relaxed pass may read the same code: parse it once per hook run.
+  if (pythonFactsSeen.has(code)) return pythonFactsSeen.get(code);
+  const facts = pythonFactsOnce(code);
+  if (pythonFactsSeen.size > 16) pythonFactsSeen.clear();
+  pythonFactsSeen.set(code, facts);
+  return facts;
+}
+function pythonFactsOnce(code) {
   try {
     const r = require('node:child_process').spawnSync('python3', ['-I', '-B', '-c', PY_CHECKER], {
       input: code, encoding: 'utf8', timeout: 3000, cwd: os.tmpdir(), maxBuffer: 1024 * 1024 });
     if (r.error || r.status !== 0) return { ok: false };
     const facts = JSON.parse(r.stdout);
-    return { ok: facts.parsed === true, danger: facts.danger.length > 0, writes: facts.writes === true };
+    return { ok: facts.parsed === true, danger: facts.danger.length > 0, writes: facts.writes === true,
+      targets: facts.targets || [], imports: facts.imports || [], empties: facts.empties || [] };
   } catch {
     return { ok: false };
   }
@@ -1523,8 +1871,9 @@ function pythonFacts(code) {
 const JS_REGEX_AFTER = new Set(['return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete', 'void', 'throw',
   'case', 'do', 'else', 'yield', 'await']);
 /**
- * Names that delete, run a command or text as code, or reach a function by a computed name. `exec` is also a RegExp
- * method: code that calls it keeps the text rule.
+ * Names that delete, run a command or text as code, reach a function by a computed name, or signal processes
+ * (process.kill(-1) signals every process of the user). `exec` is also a RegExp method: code that calls it keeps the
+ * text rule.
  */
 const JS_DANGER = new Set(['child_process', 'exec', 'execSync', 'execFile', 'execFileSync', 'spawn', 'spawnSync',
   'fork', 'rm', 'rmSync', 'rmdir', 'rmdirSync', 'unlink', 'unlinkSync', 'remove', 'removeSync', 'emptyDir',
@@ -1532,7 +1881,7 @@ const JS_DANGER = new Set(['child_process', 'exec', 'execSync', 'execFile', 'exe
   'ftruncateSync', 'eval', 'Function', 'constructor', 'import', 'binding', '_linkedBinding', 'dlopen', '_load', 'vm',
   'runInNewContext', 'runInThisContext', 'runInContext', 'compileFunction', 'Script', 'Worker', 'worker_threads',
   'globalThis', 'global', 'mainModule', '__proto__', 'getBuiltinModule', 'Reflect', 'Proxy', '$', 'shell', 'execa',
-  'execaSync']);
+  'execaSync', 'kill']);
 /** A string naming one of those APIs and nothing else: never a plain word such as 'eval', 'exec' or 'rm'. */
 const JS_API_NAME = /^(?:\w+Sync|child_process|node:child_process|worker_threads|node:worker_threads|rimraf|runInNewContext|runInThisContext|runInContext|compileFunction|_linkedBinding|getBuiltinModule|mainModule|dlopen|_load|execFile|execa)$/;
 const JS_DANGER_MODULE = /^(?:node:)?(?:child_process|vm|worker_threads|cluster|repl|inspector|module|v8|wasi|process)$|^(?:shelljs|execa|cross-spawn|zx|rimraf|del|fs-extra|trash|graceful-fs)$/;
@@ -1540,6 +1889,9 @@ const JS_WRITES = new Set(['writeFileSync', 'writeFile', 'appendFileSync', 'appe
   'copyFileSync', 'copyFile', 'cpSync', 'cp', 'renameSync', 'rename', 'symlinkSync', 'symlink', 'linkSync', 'link',
   'openSync', 'open', 'outputFile', 'outputFileSync', 'writeJson', 'writeJsonSync', 'move', 'moveSync', 'copy',
   'copySync', 'chmodSync', 'chmod']);
+/** Writes whose first argument names the file: with a plain string there, the hook judges that file. */
+const JS_NAMED_WRITES = new Set(['writeFileSync', 'writeFile', 'appendFileSync', 'appendFile', 'createWriteStream',
+  'outputFile', 'outputFileSync', 'writeJson', 'writeJsonSync']);
 
 /**
  * Tokens of JavaScript source: identifiers, string values, template and regex markers, punctuators. Comments are
@@ -1628,7 +1980,7 @@ function lexJs(src) {
         i += name[0].length;
       } else if (/[0-9]/.test(c) || (c === '.' && /[0-9]/.test(next || ''))) {
         const number = NUMBER.exec(src)[0];
-        tokens.push({ t: 'num' });
+        tokens.push({ t: 'num', v: number });
         skeleton += number;
         i += number.length;
       } else {
@@ -1666,6 +2018,53 @@ function lexJs(src) {
   };
   code(false);
   return { tokens, skeleton };
+}
+
+/** Node calls that write a file whose content is an empty string. */
+const JS_EMPTY_WRITES = new Set(['writeFileSync', 'writeFile', 'outputFile', 'outputFileSync']);
+/** fs calls that cut a file to a length; with no length, or 0, they empty it. */
+const JS_TRUNCATES = new Set(['truncateSync', 'truncate', 'ftruncateSync', 'ftruncate']);
+
+/**
+ * What Node code leaves empty (fourth round, 2026-11-20): writeFileSync(p, '') and its kin, and fs truncate calls with
+ * no length or 0. Each entry is the file's plain string name, or null when it is computed or a descriptor.
+ */
+function jsEmpties(t) {
+  const argsAt = (k) => {
+    const args = [[]];
+    for (let j = k + 1, depth = 0; j < t.length; j += 1) {
+      const v = t[j].v;
+      if (v === '(' || v === '[' || v === '{') depth += 1;
+      else if (v === ')' || v === ']' || v === '}') {
+        if (depth === 0) return args;
+        depth -= 1;
+      } else if (v === ',' && depth === 0) {
+        args.push([]);
+        continue;
+      }
+      args[args.length - 1].push(t[j]);
+    }
+    return null;
+  };
+  const named = (arg) => (arg && arg.length === 1 && arg[0].t === 'str' && !arg[0].v.includes('\\') ? arg[0].v : null);
+  const out = [];
+  t.forEach((x, k) => {
+    if (x.t !== 'id' || !t[k + 1] || t[k + 1].v !== '(') return;
+    const args = argsAt(k + 1);
+    if (!args) return;
+    if (JS_EMPTY_WRITES.has(x.v)) {
+      const data = args[1];
+      if (data && data.length === 1 && data[0].t === 'str' && data[0].v === '') out.push(named(args[0]));
+    } else if (JS_TRUNCATES.has(x.v)) {
+      // A bare truncate( may be a string helper (lodash); fs.truncate, fsp.truncate or require(...).truncate is fs.
+      const onFs = x.v.endsWith('Sync') || (t[k - 1] && t[k - 1].v === '.' && t[k - 2] &&
+        (['fs', 'fsp', 'promises', 'fse'].includes(t[k - 2].v) || t[k - 2].v === ')'));
+      const length = args[1];
+      if (onFs && (!length || length.length === 0 || (length.length === 1 && length[0].t === 'num' &&
+          Number(length[0].v) === 0))) out.push(x.v.startsWith('f') ? null : named(args[0]));
+    }
+  });
+  return out;
 }
 
 /**
@@ -1708,7 +2107,21 @@ function jsFacts(code) {
         (inner.length === 1 && inner[0].t === 'str' && JS_DANGER.has(inner[0].v));
     }
   }
-  return { ok: true, danger, writes: t.some((x) => x.t === 'id' && JS_WRITES.has(x.v)) };
+  // A write of a plain string file name lists it; any other write, or one beside a require of a relative or
+  // absolute path (the code could require the file it wrote), blocks.
+  const targets = [];
+  let writes = false;
+  t.forEach((x, k) => {
+    if (x.t !== 'id' || !JS_WRITES.has(x.v)) return;
+    const [open, name, after] = [t[k + 1], t[k + 2], t[k + 3]];
+    if (JS_NAMED_WRITES.has(x.v) && open && open.v === '(' && name && name.t === 'str' && !name.v.includes('\\') &&
+        after && (after.v === ',' || after.v === ')')) targets.push(name.v);
+    else writes = true;
+  });
+  const requiresPath = t.some((x, k) => x.t === 'id' && x.v === 'require' && t[k + 2] && t[k + 2].t === 'str' &&
+    /^[./]/.test(t[k + 2].v));
+  return { ok: true, danger, writes: writes || (targets.length > 0 && requiresPath), targets, imports: [],
+    empties: jsEmpties(t) };
 }
 
 /**
@@ -1726,12 +2139,15 @@ const SED_PRINT = /^(?:(?:\d+|\$|\/[^/\\\n]*\/)(?:,(?:\d+|\$|\/[^/\\\n]*\/))?)?p
  * Whether one simple command is an allowlisted reader: no assignment or wrapper in front (PYTHONPATH=. changes what
  * runs), the command named without a folder (./ls is not ls), and only sed -n …p, mkdir -p, node --check and
  * python3 -B -m py_compile of those that can do more. Literal assignments alone (W=/x) and a bare comment pass.
+ * `test -v`, `[ -v ]`, `[ -R ]` and `printf -v` evaluate an array subscript, and $(…) in it runs (third review round).
  */
 function readOnlyAllowed(segment, words) {
   if (words.every((w) => /^[A-Za-z_]\w*=/.test(w))) return true;
   const [cmd, ...args] = words;
   const options = args.filter((w) => w.startsWith('-'));
   if (cmd === 'cat') return heredocOperators(segment, quoteMasker()(segment)).length === 0;
+  if ((cmd === 'test' || cmd === '[') && args.some((w) => w === '-v' || w === '-R')) return false;
+  if (cmd === 'printf' && args.some((w) => w.startsWith('-v'))) return false;
   if (READERS.has(cmd)) return true;
   if (cmd === 'sed') return args[0] === '-n' && SED_PRINT.test(args[1] || '') && args.slice(2).every((w) => !w.startsWith('-'));
   if (cmd === 'mkdir') return options.some((o) => o.includes('p')) && options.every((o) => /^-[pv]+$/.test(o));
@@ -1745,8 +2161,11 @@ function readOnlyAllowed(segment, words) {
   return false;
 }
 
-/** Files that run when a shell, a desktop session, git, a build or test tool, Python or a container starts. */
-const AUTORUN_NAME = /^(?:\.(?:bashrc|bash_profile|bash_login|bash_logout|bash_aliases|profile|zshrc|zprofile|zshenv|zlogin|zlogout|kshrc|cshrc|tcshrc|xprofile|xsession|xinitrc|inputrc|envrc|env|npmrc|yarnrc|gitconfig|gitattributes|pre-commit-config\.ya?ml)|crontab|[Mm]akefile|GNUmakefile|[Jj]ustfile|package\.json|pyproject\.toml|setup\.py|setup\.cfg|tox\.ini|noxfile\.py|tasks\.py|conftest\.py|sitecustomize\.py|usercustomize\.py|Dockerfile|Containerfile|(?:docker-)?compose\.ya?ml|Taskfile\.ya?ml|[^/]*\.(?:pth|service|timer|socket|desktop))$/;
+/**
+ * Files that run when a shell, a desktop session, git, a build or test tool, Python, a container, an MCP client
+ * (.mcp.json), yarn (yarnPath in .yarnrc.yml), lefthook or GitLab CI starts.
+ */
+const AUTORUN_NAME = /^(?:\.(?:bashrc|bash_profile|bash_login|bash_logout|bash_aliases|profile|zshrc|zprofile|zshenv|zlogin|zlogout|kshrc|cshrc|tcshrc|xprofile|xsession|xinitrc|inputrc|envrc|env|npmrc|yarnrc|yarnrc\.ya?ml|mcp\.json|justfile|gitlab-ci\.ya?ml|gitconfig|gitattributes|pre-commit-config\.ya?ml)|\.?lefthook(?:-local)?\.ya?ml|crontab|[Mm]akefile|GNUmakefile|[Jj]ustfile|package\.json|pyproject\.toml|setup\.py|setup\.cfg|tox\.ini|noxfile\.py|tasks\.py|conftest\.py|sitecustomize\.py|usercustomize\.py|Dockerfile|Containerfile|(?:docker-)?compose\.ya?ml|Taskfile\.ya?ml|[^/]*\.(?:pth|service|timer|socket|desktop))$/;
 /** Folders whose files git, an editor, CI, Claude Code or the system runs, a virtualenv's activate, system folders. */
 const AUTORUN_DIR = /(?:^|\/)(?:\.git|\.husky|\.githooks|\.github|\.gitlab|\.vscode|\.idea|\.devcontainer|\.claude|\.direnv)(?:\/|$)|\/bin\/activate[^/]*$|^\/(?:etc|usr|var|bin|sbin|lib|lib32|lib64|opt|boot|dev|proc|sys|run|root|srv|Library|System|private\/etc|private\/var)(?:\/|$)/;
 
@@ -1809,27 +2228,36 @@ function redirectTargets(segment) {
 /** Settings that make python or node load other code first: on such a line the code is not judged alone. */
 const LOADS_CODE_ENV = /(?:^|[^\w$])(?:PYTHONPATH|PYTHONSTARTUP|PYTHONHOME|PYTHONINSPECT|PYTHONUSERBASE|NODE_OPTIONS|NODE_PATH|LD_PRELOAD|LD_LIBRARY_PATH|DYLD_\w+)=/;
 
-let stdlibNames;
-/** The names of Python's standard modules (sys.stdlib_module_names, 3.10+), or null when python3 cannot say. */
-function pythonStdlib() {
-  if (stdlibNames === undefined) {
+/** Prints the names of Python's standard modules (3.10+) and of the modules installed on its path and user site. */
+const PY_MODULE_NAMES = String.raw`
+import os, pkgutil, site, sys
+paths = [p for p in sys.path if p] + [site.getusersitepackages()] + os.environ.get("PYTHONPATH", "").split(os.pathsep)
+names = set(sys.stdlib_module_names) | set(sys.builtin_module_names)
+names |= {m.name for m in pkgutil.iter_modules([p for p in paths if p and os.path.isdir(p)])}
+print("\n".join(sorted(names)))
+`;
+
+let moduleNames;
+/** The module names python3 can import from outside the working folder, or null when python3 cannot say. */
+function pythonModules() {
+  if (moduleNames === undefined) {
     try {
-      const r = require('node:child_process').spawnSync('python3', ['-I', '-c',
-        'import sys; print("\\n".join(sys.stdlib_module_names))'], { encoding: 'utf8', timeout: 3000, cwd: os.tmpdir() });
-      stdlibNames = r.error || r.status !== 0 ? null : new Set(r.stdout.split('\n').filter(Boolean));
+      const r = require('node:child_process').spawnSync('python3', ['-I', '-c', PY_MODULE_NAMES], {
+        encoding: 'utf8', timeout: 3000, cwd: os.tmpdir(), maxBuffer: 4 * 1024 * 1024 });
+      moduleNames = r.error || r.status !== 0 ? null : new Set(r.stdout.split('\n').filter(Boolean));
     } catch {
-      stdlibNames = null;
+      moduleNames = null;
     }
   }
-  return stdlibNames;
+  return moduleNames;
 }
 
 /**
- * Whether a written file could be imported in place of a standard module: python3 -m puts its folder first on the
- * path, so `argparse.py` or `traceback/__init__.py` would run when py_compile imports that module.
+ * Whether a written file could be imported in place of a standard or installed module: python3 -m puts its folder
+ * first on the path, so `argparse.py` or `traceback/__init__.py` would run when py_compile imports that module.
  */
-function shadowsStdlib(file) {
-  const names = pythonStdlib();
+function shadowsModule(file) {
+  const names = pythonModules();
   const base = path.basename(file);
   return !names || names.has(base === '__init__.py' ? path.basename(path.dirname(file)) : base.split('.')[0]);
 }
@@ -1859,14 +2287,39 @@ function textOnlyDeletes(shell, parsed, subs, bodies, vars, cwd, rawCommand) {
     return false;
   };
   const writesOk = (n) => redirectTargets(segments[n]).every((f) => !autorunPath(f, vars, dirs[n]));
+  // Python anywhere on the line (py_compile, -c, stdin) imports from its folder first, so no redirect may write a
+  // module it could import instead (`> argparse.py`, `> json.py`).
+  const runsPython = words.some((w) => w.some((x) => PYTHON.test(path.basename(x))));
+  const shadows = runsPython && segments.some((s) => redirectTargets(s).some(shadowsModule));
   /** Every command on the line but segment n is an allowlisted reader, and none redirects into an autorun file. */
-  const othersRead = (n) => segments.every((s, k) => writesOk(k) && (k === n || readOnlyAllowed(s, words[k])));
-  const compiles = words.some((w) => PYTHON.test(w[0] || '') && w.includes('py_compile'));
-  /** Code that deletes nothing, runs no text, writes no file, and that nothing else on the line can reach. */
+  const othersRead = (n) => !shadows && segments.every((s, k) => writesOk(k) && (k === n || readOnlyAllowed(s, words[k])));
+  /**
+   * Another command on the line writes a file the code could load: Python imports a .py, .pyc, .so or .pth from its
+   * folder (`> helper.py`, `> json/__init__.py`), and node's require runs a file of any name as JavaScript.
+   */
+  const writesLoadable = (lang, n) => segments.some((s, k) => k !== n && redirectTargets(s).some((f) =>
+    f !== '/dev/null' && (lang === 'node' || /\.(?:py[cdw]?|so|pth)$/.test(f))));
+  /**
+   * A file the code writes by a plain name is data, as with `cat > file` (coordinator, 2026-11-19: `s.replace("rm -f
+   * a_*", …)` then `open("t.js", "w").write(s)`): not a startup or autorun file where the code runs, not a module
+   * Python on the line could import, and for Python not a module the code itself imports.
+   */
+  const writtenOk = (lang, file, n, imports) => {
+    if (autorunPath(file, vars, dirs[n]) || (runsPython && shadowsModule(file))) return false;
+    if (lang !== 'python' || !/\.(?:py[cdw]?|so)$/.test(file)) return true;
+    const base = path.basename(file);
+    const module = base.startsWith('__init__.') ? path.basename(path.dirname(file)) : base.split('.')[0];
+    return !imports.includes(module);
+  };
+  /**
+   * Code that deletes nothing, runs no text, writes no file but plain named data files, and that nothing else on the
+   * line can reach. The other commands are readers only, so nothing on the line runs a file the code writes.
+   */
   const clean = (lang, code, n) => {
-    if (pipesOn(n) || !othersRead(n)) return false;
+    if (pipesOn(n) || !othersRead(n) || writesLoadable(lang, n)) return false;
     const facts = lang === 'python' ? pythonFacts(code) : jsFacts(code);
-    return facts.ok && !facts.danger && !facts.writes;
+    return facts.ok && !facts.danger && !facts.writes &&
+      facts.targets.every((file) => writtenOk(lang, file, n, facts.imports));
   };
   // The owner of each heredoc body: the k-th segment with a heredoc operator, when its words are the owner's words.
   const withHeredoc = [];
@@ -1890,8 +2343,8 @@ function textOnlyDeletes(shell, parsed, subs, bodies, vars, cwd, rawCommand) {
     },
     /**
      * Executed body k: data cat or tee writes to a file, as the Write tool would (not a startup or autorun file, not
-     * a module py_compile could import, only allowlisted readers on the line), or code python or node reads on stdin
-     * that only mentions deletes.
+     * a module Python on the line could import, only allowlisted readers on the line), or code python or node reads
+     * on stdin that only mentions deletes.
      */
     body(k) {
       const body = bodies[k];
@@ -1899,7 +2352,7 @@ function textOnlyDeletes(shell, parsed, subs, bodies, vars, cwd, rawCommand) {
       if (!body.plain || n === -1) return false;
       if (!body.runs) {
         return body.files.length > 0 && body.files.every((f) => !autorunPath(f, vars, dirs[n])) &&
-          !(compiles && body.files.some(shadowsStdlib)) && othersRead(n);
+          !(runsPython && body.files.some(shadowsModule)) && othersRead(n);
       }
       // bash expands an unquoted body ($X, `…`, \): the text the guard reads is not the text that runs.
       const literal = body.quoted || !/[$`\\]/.test(body.text);
@@ -1909,14 +2362,59 @@ function textOnlyDeletes(shell, parsed, subs, bodies, vars, cwd, rawCommand) {
   };
 }
 
+/** Words that change the folder in a way the guard does not follow, or run text that can (eval, source, exec). */
+const FOLDER_CHANGERS = new Set(['pushd', 'popd', 'eval', 'source', 'exec']);
+/** A cd argument that is a literal path: no expansion, glob, brace, escape or option. */
+const LITERAL_DIR = /^(?:[^\s$`'"\\;&|()<>*?[\]{}!#]|'[^'\n]*'|"[^"\n$`\\!]*")+$/;
+
+/**
+ * Where a plain rm on this line runs, for rule A's relative globs (third review round, 2026-11-19: with a session at
+ * home, `(cd dev/proj && make); rm -f .ba*`, `false && cd dev/proj; rm -f .ba*` and `eval cd ~; rm -f .ba*` were
+ * allowed). { dir: null } when nothing on the line changes folder; { dir } when the line starts with one plain
+ * `cd <literal path> &&` and has no other cd; null when the folder is not certain: any other cd (a cd after another
+ * command, behind || or in $(…)), pushd, popd, eval, source, `.`, exec, env -C or --chdir, sudo -D, CDPATH, or a
+ * subshell. Words are read with quotes and escapes removed, so c\d and 'c'd count as cd.
+ */
+function globFolder(command, cwd, vars) {
+  const text = withoutHeredocBodies(command);
+  if (/\bCDPATH\b/.test(text)) return null;
+  const mask = quoteMasker();
+  // A subshell: a ( that is not $( <( >( =( or (( — none of those changes the folder unless a cd is in it.
+  if (/(?:^|[^$<>=(\\])\((?!\()/m.test(text.split('\n').map((line) => mask(line)).join('\n'))) return null;
+  let cds = 0;
+  for (const segment of splitSegments([text, ...substitutions(text)].join('\n'))) {
+    const words = tokenize(segment);
+    if (commandWord(words) === '.') return null;
+    for (const w of words) {
+      if (w === 'cd') cds += 1;
+      else if (FOLDER_CHANGERS.has(w) || /^--chdir(?:=|$)/.test(w)) return null;
+    }
+    if (['env', 'sudo'].some((wrapper) => words.includes(wrapper)) && words.some((w) => /^-[A-Za-z]*[CD]/.test(w))) {
+      return null;
+    }
+  }
+  if (cds === 0) return { dir: null };
+  if (cds > 1) return null;
+  const ops = [];
+  const first = splitSegments(text, ops, 1)[0] || '';
+  const raw = first.match(RAW_WORD) || [];
+  if (ops[0] !== '&&' || raw.length !== 2 || raw[0] !== 'cd' || !LITERAL_DIR.test(raw[1])) return null;
+  const arg = tokenize(raw[1])[0] || '';
+  // A relative path is looked up in CDPATH first when that is set; the guard does not read the shell's CDPATH.
+  if (arg.startsWith('-') || (process.env.CDPATH && !/^(?:\/|~|\.\.?(?:\/|$))/.test(arg))) return null;
+  const dir = nextDir(arg, vars, cwd);
+  return dir === null ? null : { dir };
+}
+
 /**
  * Deletes, judged by target. Only where something runs them: an rm, rmdir or unlink command, xargs rm, find -delete
  * or -exec rm, code given to an interpreter, or a heredoc that is run. An rm inside echo text, a grep pattern or a
  * commit message is not a delete. `vars` are known in this shell; code run by another program gets `codeVars`.
  * With `relax` (textOnlyDeletes), code whose text would ask is dropped when the code itself deletes nothing. `memo`
  * keeps codeDeletes results between the two passes, so a long body is not read twice (second review: 2x the time).
+ * `folder` (globFolder) is where a plain rm's relative glob may run; null when that is not certain.
  */
-function deleteVerdict(shell, code, vars, cwd, codeVars = vars, relax = null, memo = new Map()) {
+function deleteVerdict(shell, code, vars, cwd, codeVars = vars, relax = null, memo = new Map(), folder = null) {
   const found = [];
   const deletesIn = (text, where) => {
     const key = `${where}\0${text}`;
@@ -1927,14 +2425,20 @@ function deleteVerdict(shell, code, vars, cwd, codeVars = vars, relax = null, me
   const ops = [];
   const segments = splitSegments(shell, ops);
   let prev = { words: [], i: 0, cmd: '' };
+  // Rule A: a relative glob is resolved where the rm runs: the session folder, or the folder of the line's leading
+  // cd while only && joins them; after any other separator the cd may have failed, so both must pass.
+  let fromCd = true;
+  const named = (here) => ({ dirs: here === null || !folder ? null
+    : folder.dir === null ? [cwd] : fromCd ? [folder.dir] : [folder.dir, cwd] });
   segments.forEach((segment, n) => {
     const words = tokenize(segment);
     const i = commandIndex(words);
     const cmd = i < words.length ? path.basename(words[i]) : '';
+    if (n > 0 && ops[n - 1] !== '&&') fromCd = false;
     if (cmd === 'cd' || cmd === 'pushd') {
       dir = nextDir(words[i + 1], vars, dir);
     } else if (RM_COMMANDS.has(cmd)) {
-      found.push(rmCall(words, i, vars, dir, cmd === 'rm'));
+      found.push(rmCall(words, i, vars, dir, cmd === 'rm' ? named(dir) : null));
     } else if (cmd === 'xargs') {
       const r = words.findIndex((w, k) => k > i && RM_COMMANDS.has(path.basename(w)));
       // `find … -name __pycache__ -print0 | xargs -0 rm -rf`: the only targets are the paths a cache-only find
@@ -1972,10 +2476,23 @@ function deleteVerdict(shell, code, vars, cwd, codeVars = vars, relax = null, me
  * A line with `case` and a substitution ($(…) or `…`) asks unless it is denied: the ) after a case pattern does not
  * end the substitution, no scanner here follows that, and a quote after it hid the next lines (second review,
  * 2026-11-18: x="$(case a in a) echo "'";; esac)"⏎rm -rf ~ was allowed).
+ *
+ * The line is judged as bash reads it, with its backslash-newlines removed (joinContinuations). A heredoc delimiter
+ * the guard cannot read for certain makes an allowed line ask.
  */
 function decideShell(rawCommand, cwd) {
-  const verdict = judgeShell(rawCommand, cwd);
-  if (!/\bcase\b/.test(rawCommand) || !/\$\(|`/.test(rawCommand) || (verdict && verdict.decision !== 'allow')) {
+  const joined = joinContinuations(rawCommand);
+  const command = joined === null ? rawCommand : joined;
+  const verdict = judgeShell(command, cwd);
+  if (joined === null && (!verdict || verdict.decision === 'allow')) {
+    return {
+      decision: 'ask',
+      reason: "Destructive operation check: a heredoc delimiter written as $'…' or $\"…\" with an escape or expansion " +
+        'in it, which the guard cannot read for certain, so it cannot tell where the heredoc ends. Confirm what the ' +
+        "whole command runs, or use a plain quoted delimiter such as <<'EOF'. See ~/.claude/skills/destructive-ops-guard/SKILL.md",
+    };
+  }
+  if (!/\bcase\b/.test(command) || !/\$\(|`/.test(command) || (verdict && verdict.decision !== 'allow')) {
     return verdict;
   }
   return {
@@ -1987,6 +2504,233 @@ function decideShell(rawCommand, cwd) {
 }
 
 /** decideShell without the case check. */
+/** A redirection that empties its file first: >, >|, N>, &> and >&file, but not >> or a >&N duplicate. */
+const TRUNCATING_REDIRECT = /(?:^|[^<>&])(?:\d+|&)?(?:>\||>&(?=[^\d\s-])|>(?![>&(]))[ \t]*/g;
+/** Code that might empty a file: only such code is parsed for it. */
+const PY_MAY_EMPTY = /\bopen\s*\(|truncate|write_(?:text|bytes)|copy/;
+const JS_MAY_EMPTY = /writeFile|outputFile|truncate/;
+
+/**
+ * The segment with its quoted text, comments (quoteMasker) and substitutions masked, same length: a `>` left in it is
+ * the simple command's own redirection. `# a -> b` is a comment and `x=$(echo a > f)` writes f with content.
+ */
+function ownRedirectText(segment) {
+  const mask = quoteMasker();
+  const masked = segment.split('\n').map((line) => mask(line)).join('\n');
+  let out = '';
+  for (let i = 0; i < masked.length; i += 1) {
+    const c = masked[i];
+    if ((c === '$' || c === '<' || c === '>') && masked[i + 1] === '(') {
+      let depth = 0;
+      let j = i + 1;
+      for (; j < masked.length; j += 1) {
+        if (masked[j] === '(') depth += 1;
+        else if (masked[j] === ')' && (depth -= 1) === 0) break;
+      }
+      out += '_'.repeat(Math.min(j, masked.length - 1) - i + 1);
+      i = j;
+    } else if (c === '`') {
+      const j = masked.indexOf('`', i + 1);
+      const end = j === -1 ? masked.length - 1 : j;
+      out += '_'.repeat(end - i + 1);
+      i = end;
+    } else {
+      out += c;
+    }
+  }
+  return out;
+}
+
+/** Files a simple command's truncating redirections name, quotes removed. */
+function truncatedTargets(segment) {
+  const files = [];
+  for (const m of ownRedirectText(segment).matchAll(TRUNCATING_REDIRECT)) {
+    REDIRECT_WORD.lastIndex = m.index + m[0].length;
+    const word = REDIRECT_WORD.exec(segment);
+    files.push(word ? tokenize(word[0])[0] || '' : '');
+  }
+  return files;
+}
+
+/**
+ * The files one simple command leaves empty (fourth round, 2026-11-20): a redirection with no command or with one
+ * that writes nothing (`: > f`, `> f`, `true > f`, `cat /dev/null > f`, `echo -n > f`, `printf '' > f`, `cat > f`
+ * with no input), `truncate -s 0`, `cp /dev/null f` and `dd if=/dev/null of=f`. `pipedIn` is true when a pipe feeds it,
+ * `afterGroup` when it follows the `)` of a subshell.
+ */
+function shellEmpties(segment, words, pipedIn, afterGroup) {
+  const i = commandIndex(words);
+  // `( … ) > f`: a redirection right after the subshell takes its output, not an empty command's. (`{ …; } > f` reads
+  // as the command `}`.) splitSegments drops the `;` of `( … ); : > f`, where `:` is a command of its own.
+  const cmd = i < words.length ? path.basename(words[i]) : afterGroup ? ')' : '';
+  const args = words.slice(i + 1);
+  const files = args.filter((w) => !w.startsWith('-'));
+  const silent = cmd === '' || cmd === ':' || cmd === 'true' || cmd === 'false' ||
+    (cmd === 'cat' && files.length > 0 && files.every((w) => w === '/dev/null')) ||
+    (cmd === 'cat' && args.length === 0 && !pipedIn && !/<</.test(segment) &&
+     !/(?:^|[^<])<(?![<(&])/.test(maskQuoted(segment))) ||
+    (cmd === 'echo' && args.length > 0 && args.every((w) => /^-[eE]*n[neE]*$/.test(w))) ||
+    (cmd === 'printf' && args.length === 1 && args[0] === '');
+  const out = silent ? truncatedTargets(segment) : [];
+  if (cmd === 'truncate') {
+    const sizes = [];
+    const named = [];
+    for (let k = 0; k < args.length; k += 1) {
+      const w = args[k];
+      if (w === '-s' || w === '--size' || w === '-r' || w === '--reference') sizes.push(`${w}=${args[(k += 1)] || ''}`);
+      else if (/^(?:-s|--size=|-r|--reference=)/.test(w)) sizes.push(w);
+      else if (!w.startsWith('-')) named.push(w);
+    }
+    const zero = sizes.length > 0 && sizes.every((w) => /^(?:-s|--size)=?0+$/.test(w) ||
+      /^(?:-r|--reference)=?\/dev\/null$/.test(w));
+    if (zero) out.push(...named);
+  } else if (cmd === 'cp' && files.length > 1 && files.slice(0, -1).every((w) => w === '/dev/null')) {
+    out.push(files[files.length - 1]);
+  } else if (cmd === 'dd' && args.includes('if=/dev/null') && !args.some((w) => /^conv=.*notrunc/.test(w))) {
+    out.push(...args.filter((w) => w.startsWith('of=')).map((w) => w.slice(3)));
+  }
+  return out;
+}
+
+/**
+ * Whether emptying `file` from `dir` loses data: it names an existing, non-empty regular file that is not Claude's own
+ * (each path to it, through symlinks, is a session or task file). A computed name, a variable or glob the guard cannot
+ * resolve, a relative name with no known folder, or a file it cannot stat counts as one that loses data.
+ */
+function losesContent(file, dir, vars) {
+  if (file === null) return true;
+  let p = expandVars(file, vars);
+  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
+  if (!p || /[$`*?[{~]/.test(p) || (!p.startsWith('/') && dir === null)) return true;
+  const abs = toAbs(p, p.startsWith('/') ? '/' : dir);
+  if (diskPaths(abs).every((q) => isInternal(toAbs(q, '/')))) return false;
+  try {
+    const stat = fs.statSync(onDisk(abs));
+    return stat.isFile() && stat.size > 0;
+  } catch (error) {
+    return error.code !== 'ENOENT' && error.code !== 'ENOTDIR';
+  }
+}
+
+/** Unparsed code that still looks like it empties a file: a truncate call, an empty write_text, an open("w") closed. */
+const PY_LOOKS_EMPTYING = /\btruncate\s*\(|write_(?:text|bytes)\s*\(\s*b?(?:''|"")\s*\)|\bopen\s*\([^()\n]*['"][wW]b?\+?['"]\s*\)\s*(?:\.\s*close\b|:|$)/m;
+const JS_LOOKS_EMPTYING = /truncate(?:Sync)?\s*\(|(?:writeFile|outputFile)(?:Sync)?\s*\([^()\n]*,\s*(?:''|""|``)\s*[,)]/;
+
+/**
+ * The folder each simple command runs in, for its relative file names: the session folder on a line with no cd, else
+ * the folders each `cd <literal>` may lead to, tracked in order. On a line where the folder cannot
+ * be followed (a subshell, a cd in a substitution, pushd, popd, eval, source, exec, env/sudo -C or --chdir, CDPATH) it
+ * is unknown after the first change, and so is it after a cd inside a block (if, for, while, case, { }). A command of a
+ * substitution (from `count` on) runs in an unknown folder.
+ */
+const BLOCK_OPEN = new Set(['if', 'for', 'while', 'until', 'case', 'select', '{']);
+const BLOCK_CLOSE = new Set(['fi', 'done', 'esac', '}']);
+const BLOCK_MID = new Set(['then', 'else', 'elif', 'do', '!', 'time']);
+function emptyingFolders(command, segments, words, ops, count, vars, cwd) {
+  const text = withoutHeredocBodies(command);
+  const changers = words.slice(0, count).some((w) => w.some((x) => x === 'cd' || FOLDER_CHANGERS.has(x) ||
+    /^--chdir(?:=|$)/.test(x))) || substitutions(text).some((s) => /\b(?:cd|pushd|popd)\b/.test(s));
+  if (!changers && !/\bCDPATH\b/.test(text)) return segments.map((s, n) => (n < count ? [cwd] : [null]));
+  const mask = quoteMasker();
+  const masked = text.split('\n').map((line) => mask(line)).join('\n');
+  const followable = !/\bCDPATH\b/.test(text) && !/(?:^|[^$<>=(\\])\((?!\()/m.test(masked) &&
+    !substitutions(text).some((s) => /\b(?:cd|pushd|popd)\b/.test(s)) &&
+    !words.slice(0, count).some((w) => w.some((x) => FOLDER_CHANGERS.has(x) || /^--chdir(?:=|$)/.test(x)) ||
+      (['env', 'sudo'].some((wrapper) => w.includes(wrapper)) && w.some((x) => /^-[A-Za-z]*[CD]/.test(x))));
+  // The folders a command may run in. A cd to a folder that is not there yet (made earlier on the line, or failing)
+  // leaves both: the commands it chains with && run only if it worked, a later one after ; runs in either.
+  let dirs = [cwd];
+  let pending = null;
+  let depth = 0;
+  return segments.map((s, n) => {
+    if (n >= count) return [null];
+    if (pending && ops[n - 1] !== '&&') {
+      dirs = [...new Set([...pending.next, ...pending.before])];
+      pending = null;
+    }
+    const here = pending ? pending.next : dirs;
+    // Skip the keywords in front of the command; a cd inside if, for, while, case or { } may or may not run.
+    let k = 0;
+    for (const w = words[n]; k < w.length && (BLOCK_OPEN.has(w[k]) || BLOCK_CLOSE.has(w[k]) || BLOCK_MID.has(w[k]));
+      k += 1) depth += BLOCK_OPEN.has(w[k]) ? 1 : BLOCK_CLOSE.has(w[k]) ? -1 : 0;
+    const rest = words[n].slice(k);
+    const i = commandIndex(rest);
+    if (rest[i] === 'cd') {
+      const next = here.map((dir) => (followable && depth === 0 ? nextDir(rest[i + 1], vars, dir) : null));
+      const there = next.every((dir) => {
+        try {
+          return dir !== null && fs.statSync(onDisk(dir)).isDirectory();
+        } catch {
+          return false;
+        }
+      });
+      if (next.includes(null)) {
+        dirs = [null];
+        pending = null;
+      } else if (there) {
+        dirs = next;
+        pending = null;
+      } else {
+        pending = { next, before: here };
+      }
+    } else if (!followable && words[n].some((x) => FOLDER_CHANGERS.has(x))) {
+      dirs = [null];
+      pending = null;
+    }
+    return here;
+  });
+}
+
+/**
+ * Ask when the line empties an existing file (owner, fourth round, 2026-11-20): a shell redirection or command, or
+ * Python or Node code it runs (python3 -c, node -e, or a quoted-or-not body on stdin). A relative name is resolved
+ * where the command runs (emptyingFolders); where that is unknown, it asks. A write with content, a new or
+ * empty file, /dev/null and Claude's own files do not ask, and nor does a file a later command on the line writes or
+ * appends to (`: > f; for …; do … >> f; done`). Text in quotes or in string data is not judged.
+ */
+function emptyingVerdict(shell, parsed, vars, cwd, command) {
+  const ops = [];
+  const segments = splitSegments(shell, ops);
+  const words = segments.map(tokenize);
+  const dirs = emptyingFolders(command, segments, words, ops, splitSegments(parsed.shell).length, vars, cwd);
+  // Every file a later command on the line writes or appends to: `: > f` then `… >> f` rebuilds f with content.
+  const writtenAfter = (n, file) => segments.slice(n + 1).some((s) => redirectTargets(s).includes(file));
+  const lost = [];
+  const judge = (files, n) => {
+    for (const file of files) {
+      if (file !== null && writtenAfter(n, file)) continue;
+      if ((n === -1 ? [null] : dirs[n]).some((dir) => losesContent(file, dir, vars))) {
+        lost.push(file === null ? 'a file named at run time' : file);
+      }
+    }
+  };
+  const codeEmpties = (lang, code) => {
+    if (!(lang === 'python' ? PY_MAY_EMPTY : JS_MAY_EMPTY).test(code)) return [];
+    const facts = lang === 'python' ? pythonFacts(code) : jsFacts(code);
+    if (facts.ok) return facts.empties;
+    // Code that does not parse (bash rewrites it, or it has an error): only text that looks like an emptying asks.
+    return (lang === 'python' ? PY_LOOKS_EMPTYING : JS_LOOKS_EMPTYING).test(code) ? [null] : [];
+  };
+  segments.forEach((segment, n) => {
+    judge(shellEmpties(segment, words[n], n > 0 && ops[n - 1] === '|', n > 0 && ops[n - 1] === ')'), n);
+    const run = interpreterRun(words[n]);
+    if (run && run.code !== undefined) judge(codeEmpties(run.lang, run.code), n);
+  });
+  for (const body of parsed.bodies.filter((b) => b.runs)) {
+    const run = interpreterRun(body.owner);
+    if (!run || run.stdin !== true) continue;
+    judge(codeEmpties(run.lang, body.text), words.findIndex((w) => w.join(' ') === body.owner.join(' ')));
+  }
+  if (!lost.length) return null;
+  return {
+    decision: 'ask',
+    reason: `Destructive operation detected: this empties an existing file (${[...new Set(lost)].join(', ')}), ` +
+      "which is outside Claude's own session and task folders. Its content is lost as surely as with rm.\n" +
+      'Before confirming, state what the file holds, how it is recovered (git, a backup), and whether a write ' +
+      'with content or a new file would do. See ~/.claude/skills/destructive-ops-guard/SKILL.md',
+  };
+}
+
 function judgeShell(rawCommand, cwd) {
   if (!rawCommand.trim()) return null;
   const bound = bindings(withoutHeredocBodies(rawCommand));
@@ -2021,11 +2765,13 @@ function judgeShell(rawCommand, cwd) {
   const runsText = code.length > 0 || segments.some((s) => runsGivenText(commandWord(tokenize(s))));
   const executed = runsText ? [...code, ...data] : [];
   const text = [shell, ...executed].join('\n');
+  const folder = globFolder(command, cwd, vars);
+  const emptied = emptyingVerdict(shell, parsed, shellVars, cwd, command);
   if (!executed.length && segments.length && segments.every(isReadOnly) && !SYSTEM_OVERWRITE.test(shell)) {
-    return null;
+    return emptied;
   }
   const memo = new Map();
-  const deletion = deleteVerdict(shell, executed, shellVars, cwd, vars, null, memo);
+  const deletion = deleteVerdict(shell, executed, shellVars, cwd, vars, null, memo, folder);
   if (deletion.level === 'deny') {
     return {
       decision: 'deny',
@@ -2040,7 +2786,7 @@ function judgeShell(rawCommand, cwd) {
     ? { decision: 'ask', reason: 'Destructive operation detected: kill fed by pgrep -f, which matches full command ' +
         'lines, including the shell that runs it. Kill a PID or process group you recorded instead.' }
     : null;
-  const scanned = worstVerdict([selfKill, runsText
+  const scanned = worstVerdict([selfKill, emptied, runsText
     ? scanPatterns(text, { strict: true, ...where })
     : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s, where)))]);
   if (scanned) return scanned;
@@ -2048,7 +2794,7 @@ function judgeShell(rawCommand, cwd) {
   // Only a delete would ask: look again at the code itself, whose text may only mention one (textOnlyDeletes).
   const bodies = runsText ? [...parsed.bodies.filter((b) => b.runs), ...parsed.bodies.filter((b) => !b.runs)] : [];
   const relax = textOnlyDeletes(shell, parsed, subs, bodies, shellVars, cwd, rawCommand);
-  const relaxed = deleteVerdict(shell, executed, shellVars, cwd, vars, relax, memo);
+  const relaxed = deleteVerdict(shell, executed, shellVars, cwd, vars, relax, memo, folder);
   if (RANK[relaxed.level] >= RANK.ask) {
     return {
       decision: 'ask',
