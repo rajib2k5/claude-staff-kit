@@ -1588,3 +1588,92 @@ for (const [command, why] of dataReachesASink) {
     assert.equal(verdict(bash(command, GIT)), 'ask', command);
   });
 }
+
+// --- Fourth round (owner, 2026-11-20): emptying an existing file asks ---------------------------------------------
+// A command or code that leaves an existing, non-empty file empty destroys its content as surely as rm. A write with
+// content, a new or already empty file, /dev/null and Claude's own session and task folders do not ask. The fixtures
+// are real files: the rule reads the disk.
+const EMPTY_DIR = path.join(FIX, 'empties');
+fs.mkdirSync(EMPTY_DIR);
+const KEPT = path.join(EMPTY_DIR, 'kept.db');
+fs.writeFileSync(KEPT, 'rows\n');
+fs.writeFileSync(path.join(EMPTY_DIR, 'blank.txt'), '');
+fs.symlinkSync(KEPT, path.join(EMPTY_DIR, 'link.db'));
+const OWN = path.join('/tmp', `claude-${process.getuid()}`, `guard-empty-${process.pid}`);
+fs.mkdirSync(OWN, { recursive: true });
+process.on('exit', () => fs.rmSync(OWN, { recursive: true, force: true }));
+fs.writeFileSync(path.join(OWN, 'out.txt'), 'old\n');
+fs.symlinkSync(KEPT, path.join(OWN, 'to-kept'));
+const py = (code) => `python3 - <<'EOF'\n${code}\nEOF`;
+const empties = [
+  [`: > ${KEPT}`, 'shell : >'],
+  [`> ${KEPT}`, 'a bare >'],
+  [`true >| ${KEPT}`, 'true >|'],
+  [`truncate -s 0 ${KEPT}`, 'truncate -s 0'],
+  [`truncate --size=0 ${KEPT}`, 'truncate --size=0'],
+  [`truncate -s0 ${KEPT}`, 'truncate -s0'],
+  [`cp /dev/null ${KEPT}`, 'cp /dev/null'],
+  [`cat /dev/null > ${KEPT}`, 'cat /dev/null >'],
+  [`cd ${EMPTY_DIR} && : > kept.db`, 'a relative target after a literal cd'],
+  [`: > ${path.join(EMPTY_DIR, 'link.db')}`, 'a symlink to a kept file'],
+  [`: > ${path.join(OWN, 'to-kept')}`, 'a symlink in the session folder to a kept file'],
+  [py(`open("${KEPT}", "w").close()`), 'python open w, then close'],
+  [py(`open("${KEPT}", "wb").close()`), 'python open wb, then close'],
+  [py(`with open("${KEPT}", "w"):\n    pass`), 'python with open w: pass'],
+  [py(`f = open("${KEPT}", "w")\nf.close()`), 'python open bound to a name, only closed'],
+  [py(`import os\nos.truncate("${KEPT}", 0)`), 'python os.truncate(p, 0)'],
+  [py(`f = open("${KEPT}", "r+")\nf.truncate(0)`), 'python f.truncate(0)'],
+  [py(`from pathlib import Path\nPath("${KEPT}").write_text("")`), "python Path.write_text('')"],
+  [py(`from pathlib import Path\nPath("${KEPT}").write_bytes(b"")`), "python Path.write_bytes(b'')"],
+  [`python3 -c 'open("${KEPT}", "w").close()'`, 'python -c'],
+  [`node -e 'require("fs").writeFileSync("${KEPT}", "")'`, "node writeFileSync(p, '')"],
+  [`node -e 'require("fs").truncateSync("${KEPT}")'`, 'node truncateSync(p)'],
+  [`node -e 'const fs = require("fs"); fs.truncateSync("${KEPT}", 0)'`, 'node fs.truncateSync(p, 0)'],
+  [py('import sys\nopen(sys.argv[1], "w").close()'), 'python, a computed name'],
+  [`cd ${EMPTY_DIR}; : > kept.db`, 'a relative target after cd and ;'],
+  [`{ cd ${OWN}; }; : > kept.db`, 'a cd inside a group: the folder is unknown after it'],
+  [`(cd ${OWN}); : > kept.db`, 'a cd in a subshell does not move the next command'],
+  ['cd /nonexistent-guard-dir; : > kept.db', 'a cd to a folder that does not exist'],
+  [`python3 -c "open('${KEPT}', 'w').close(); print($N)"`, 'unparsed python that still looks like an emptying'],
+];
+for (const [command, why] of empties) {
+  test(`emptying an existing file asks (${why})`, () => {
+    assert.equal(verdict(bash(command, EMPTY_DIR)), 'ask', command);
+  });
+}
+const notEmpties = [
+  [': > /dev/null', '/dev/null'],
+  [`: > ${path.join(OWN, 'out.txt')}`, "Claude's session folder"],
+  [`truncate -s 0 ${path.join(OWN, 'out.txt')}`, "truncate in Claude's session folder"],
+  [`: > ${path.join(EMPTY_DIR, 'new.log')}`, 'a new file'],
+  [`: > ${path.join(EMPTY_DIR, 'blank.txt')}`, 'an already empty file'],
+  [`echo rows > ${KEPT}`, 'a write with content'],
+  [`printf 'a,b\\n' > ${KEPT}`, 'printf with content'],
+  [`cat ${KEPT} > ${path.join(OWN, 'copy.txt')}`, 'a copy into the session folder'],
+  [`cat > ${KEPT} <<'EOF'\nrows\nEOF`, 'a heredoc with content'],
+  [`echo more >> ${KEPT}`, 'an append'],
+  [`truncate -s 100 ${KEPT}`, 'truncate to a size that is not 0'],
+  [py(`open("${KEPT}", "w").write("rows\\n")`), 'python write with content'],
+  [py(`with open("${KEPT}", "w") as f:\n    f.write("rows")`), 'python with open, then a write'],
+  [py(`f = open("${KEPT}", "r+")\ns = f.read()\nf.seek(0)\nf.write(s.upper())\nf.truncate()`), 'python rewrite in place'],
+  [py(`open("${path.join(OWN, 'out.txt')}", "w").close()`), "python, Claude's session folder"],
+  [py(`print("truncate -s 0 ${KEPT}; : > ${KEPT}")\nx = "open(p, 'w').close()"`), 'the text only in strings'],
+  [`node -e 'require("fs").writeFileSync("${KEPT}", "rows")'`, 'node write with content'],
+  [`node -e 'console.log("truncateSync(${KEPT})")'`, 'node, the text only in a string'],
+  [`echo ': > ${KEPT}; truncate -s 0 ${KEPT}'`, 'shell, the text only in an echo'],
+  [`grep -c rows ${KEPT} > ${path.join(OWN, 'n.txt')}`, 'a count into the session folder'],
+  [`(echo rows) > ${KEPT}`, 'the output of a subshell'],
+  [`{ echo rows; } > ${KEPT}`, 'the output of a group'],
+  [`cd ${EMPTY_DIR} && (time ls) > kept.db 2>&1`, 'a timed subshell after a cd'],
+  ['ls\n# 2 unreadable transcript -> kept.db trace', 'a > inside a comment'],
+  [`x=$(echo rows > ${KEPT})`, 'a write with content inside a substitution'],
+  [`: > ${KEPT}; for x in a b; do echo $x >> ${KEPT}; done`, 'emptied, then rebuilt by appends on the same line'],
+  [`cd ${OWN} && : > out.txt`, "a relative name after a cd to Claude's session folder"],
+  [`S=${OWN}; cd $S && : > out.txt`, 'a cd to a variable bound earlier on the line'],
+  [`python3 -c "print($N); s = open('${KEPT}').read()"`, 'unparsed python that only reads'],
+];
+for (const [command, why] of notEmpties) {
+  test(`not an emptying of an existing file (${why}): allows`, () => {
+    assert.equal(verdict(bash(command, EMPTY_DIR)), 'allow', command);
+  });
+}

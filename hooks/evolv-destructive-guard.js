@@ -51,6 +51,10 @@
  *    node code with process.kill, keep the old verdict. Code that writes a file by a plain name (not an autorun
  *    file, not a module it or Python on the line could import) is data, as `cat > file` is; a write to a computed
  *    name, a copy or a move, and a file another command on the line could load keep the text rule.
+ *  - Fourth round (owner, 2026-11-20): emptying an existing, non-empty file asks (emptyingVerdict): `: > f`, a bare
+ *    `> f`, `truncate -s 0`, `cp /dev/null`, and Python or Node code that opens a file for writing and closes it
+ *    empty, truncates it to 0 or writes an empty string. /dev/null, Claude's own files, a new or empty file, a write
+ *    with content and a file rebuilt later on the line do not ask.
  *
  * Pairs with ~/.claude/skills/destructive-ops-guard/SKILL.md. Tests: evolv-destructive-guard.test.js
  * (node --test ~/.claude/hooks/evolv-destructive-guard.test.js).
@@ -1742,11 +1746,95 @@ for n in ast.walk(tree):
                     writes = True
             elif any(mode_writes(m) for m in n.args[1:2] + modes):
                 target(lit((n.args[:1] + files or [None])[0]))
+# Fourth round (owner, 2026-11-20): what the code leaves empty. An open that truncates and is closed with nothing
+# written, os.truncate(p, 0), f.truncate(0), Path(p).write_text("") or write_bytes(b""), a copy of /dev/null. Each
+# entry is the file's literal name, or None when the name is computed.
+empties = []
+parents = {id(c): p for p in ast.walk(tree) for c in ast.iter_child_nodes(p)}
+def is_path_call(e):
+    return isinstance(e, ast.Call) and ((isinstance(e.func, ast.Name) and e.func.id in PATHS) or
+                                        (isinstance(e.func, ast.Attribute) and e.func.attr in PATHS))
+def truncates(m):
+    return not (isinstance(m, ast.Constant) and isinstance(m.value, str)) or "w" in m.value
+def truncating_open(c):
+    """[the file name or None] when the call is an open that empties its file, else None."""
+    f, modes = c.func, [k.value for k in c.keywords if k.arg in ("mode", "flags")]
+    files = [k.value for k in c.keywords if k.arg == "file"]
+    if isinstance(f, ast.Attribute) and f.attr == "open" and is_path_call(f.value):
+        mode = c.args[:1] + modes
+        return [path_of(f.value)] if mode and truncates(mode[0]) else None
+    opener = isinstance(f, ast.Attribute) and f.attr == "open" and isinstance(f.value, ast.Name) and \
+        f.value.id in ("io", "codecs")
+    if (isinstance(f, ast.Name) and f.id == "open") or opener:
+        mode, name = c.args[1:2] + modes, (c.args[:1] + files or [None])[0]
+        return [lit(name)] if mode and truncates(mode[0]) else None
+    if isinstance(f, ast.Attribute) and f.attr == "open" and isinstance(f.value, ast.Name) and f.value.id == "os":
+        flags = c.args[1:2] + modes
+        if any(isinstance(x, ast.Attribute) and x.attr == "O_TRUNC" for m in flags for x in ast.walk(m)):
+            return [lit(c.args[0]) if c.args else None]
+    return None
+def loads(name):
+    return [n for n in ast.walk(tree) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load) and n.id == name]
+def only_closed(name):
+    """Every use of the name closes it: f.close() or os.close(f)."""
+    for n in loads(name):
+        up = parents.get(id(n))
+        if isinstance(up, ast.Attribute) and up.attr == "close":
+            continue
+        if isinstance(up, ast.Call) and isinstance(up.func, ast.Attribute) and up.func.attr == "close":
+            continue
+        return False
+    return True
+opened = {}
+for n in ast.walk(tree):
+    pairs = [(n.targets[0], n.value)] if isinstance(n, ast.Assign) and len(n.targets) == 1 else \
+        [(n.optional_vars, n.context_expr)] if isinstance(n, ast.withitem) else []
+    for var, value in pairs:
+        if isinstance(var, ast.Name) and stores.get(var.id) == 1 and isinstance(value, ast.Call) and \
+                isinstance(value.func, (ast.Name, ast.Attribute)) and \
+                (value.func.id if isinstance(value.func, ast.Name) else value.func.attr) == "open":
+            opened[var.id] = lit((value.args[:1] or [None])[0]) if isinstance(value.func, ast.Name) else \
+                path_of(value.func.value) if is_path_call(value.func.value) else lit((value.args[:1] or [None])[0])
+for c in ast.walk(tree):
+    if not isinstance(c, ast.Call):
+        continue
+    f = c.func
+    name = truncating_open(c)
+    if name is not None:
+        up = parents.get(id(c))
+        emptied = isinstance(up, ast.Expr)
+        if isinstance(up, ast.Attribute) and up.attr == "close":
+            emptied = True
+        if isinstance(up, ast.Call) and isinstance(up.func, ast.Attribute) and up.func.attr == "close":
+            emptied = True
+        if isinstance(up, ast.withitem):
+            var = up.optional_vars
+            body = parents.get(id(up)).body
+            emptied = not isinstance(var, ast.Name) or not any(
+                isinstance(x, ast.Name) and x.id == var.id for s in body for x in ast.walk(s))
+            emptied = emptied or (isinstance(var, ast.Name) and only_closed(var.id) and stores.get(var.id) == 1)
+        if isinstance(up, ast.Assign) and len(up.targets) == 1 and isinstance(up.targets[0], ast.Name):
+            emptied = stores.get(up.targets[0].id) == 1 and only_closed(up.targets[0].id)
+        if emptied:
+            empties.append(name[0])
+    if not isinstance(f, ast.Attribute):
+        continue
+    zero = lambda e: isinstance(e, ast.Constant) and e.value == 0 and not isinstance(e.value, bool)
+    if f.attr in ("truncate", "ftruncate") and isinstance(f.value, ast.Name) and f.value.id == "os":
+        if len(c.args) < 2 or zero(c.args[1]) or not isinstance(c.args[1], ast.Constant):
+            empties.append(lit(c.args[0]) if f.attr == "truncate" and c.args else None)
+    elif f.attr == "truncate" and len(c.args) == 1 and zero(c.args[0]):
+        empties.append(opened.get(f.value.id) if isinstance(f.value, ast.Name) else None)
+    elif f.attr in ("write_text", "write_bytes") and c.args and isinstance(c.args[0], ast.Constant) and \
+            c.args[0].value in ("", b""):
+        empties.append(path_of(f.value))
+    elif f.attr in ("copy", "copy2", "copyfile") and len(c.args) > 1 and lit(c.args[0]) == "/dev/null":
+        empties.append(lit(c.args[1]))
 # yaml.load builds any Python object a tag names (!!python/object/apply:os.system): with yaml imported, load is a call.
 if "yaml" in imported and seen & YAML_LOADS:
     danger.add("yaml.load")
 print(json.dumps({"parsed": True, "danger": sorted(danger), "writes": writes, "targets": targets,
-                  "imports": sorted(imported)}))
+                  "imports": sorted(imported), "empties": empties}))
 `;
 
 /**
@@ -1756,15 +1844,24 @@ print(json.dumps({"parsed": True, "danger": sorted(danger), "writes": writes, "t
 const PY_MAX_CODE = 64 * 1024;
 
 /** python3 from PATH: only ast.parse runs, in an isolated interpreter (-I), with a time limit. */
+const pythonFactsSeen = new Map();
 function pythonFacts(code) {
   if (code.length > PY_MAX_CODE) return { ok: false };
+  // The emptying pass and the relaxed pass may read the same code: parse it once per hook run.
+  if (pythonFactsSeen.has(code)) return pythonFactsSeen.get(code);
+  const facts = pythonFactsOnce(code);
+  if (pythonFactsSeen.size > 16) pythonFactsSeen.clear();
+  pythonFactsSeen.set(code, facts);
+  return facts;
+}
+function pythonFactsOnce(code) {
   try {
     const r = require('node:child_process').spawnSync('python3', ['-I', '-B', '-c', PY_CHECKER], {
       input: code, encoding: 'utf8', timeout: 3000, cwd: os.tmpdir(), maxBuffer: 1024 * 1024 });
     if (r.error || r.status !== 0) return { ok: false };
     const facts = JSON.parse(r.stdout);
     return { ok: facts.parsed === true, danger: facts.danger.length > 0, writes: facts.writes === true,
-      targets: facts.targets || [], imports: facts.imports || [] };
+      targets: facts.targets || [], imports: facts.imports || [], empties: facts.empties || [] };
   } catch {
     return { ok: false };
   }
@@ -1883,7 +1980,7 @@ function lexJs(src) {
         i += name[0].length;
       } else if (/[0-9]/.test(c) || (c === '.' && /[0-9]/.test(next || ''))) {
         const number = NUMBER.exec(src)[0];
-        tokens.push({ t: 'num' });
+        tokens.push({ t: 'num', v: number });
         skeleton += number;
         i += number.length;
       } else {
@@ -1921,6 +2018,53 @@ function lexJs(src) {
   };
   code(false);
   return { tokens, skeleton };
+}
+
+/** Node calls that write a file whose content is an empty string. */
+const JS_EMPTY_WRITES = new Set(['writeFileSync', 'writeFile', 'outputFile', 'outputFileSync']);
+/** fs calls that cut a file to a length; with no length, or 0, they empty it. */
+const JS_TRUNCATES = new Set(['truncateSync', 'truncate', 'ftruncateSync', 'ftruncate']);
+
+/**
+ * What Node code leaves empty (fourth round, 2026-11-20): writeFileSync(p, '') and its kin, and fs truncate calls with
+ * no length or 0. Each entry is the file's plain string name, or null when it is computed or a descriptor.
+ */
+function jsEmpties(t) {
+  const argsAt = (k) => {
+    const args = [[]];
+    for (let j = k + 1, depth = 0; j < t.length; j += 1) {
+      const v = t[j].v;
+      if (v === '(' || v === '[' || v === '{') depth += 1;
+      else if (v === ')' || v === ']' || v === '}') {
+        if (depth === 0) return args;
+        depth -= 1;
+      } else if (v === ',' && depth === 0) {
+        args.push([]);
+        continue;
+      }
+      args[args.length - 1].push(t[j]);
+    }
+    return null;
+  };
+  const named = (arg) => (arg && arg.length === 1 && arg[0].t === 'str' && !arg[0].v.includes('\\') ? arg[0].v : null);
+  const out = [];
+  t.forEach((x, k) => {
+    if (x.t !== 'id' || !t[k + 1] || t[k + 1].v !== '(') return;
+    const args = argsAt(k + 1);
+    if (!args) return;
+    if (JS_EMPTY_WRITES.has(x.v)) {
+      const data = args[1];
+      if (data && data.length === 1 && data[0].t === 'str' && data[0].v === '') out.push(named(args[0]));
+    } else if (JS_TRUNCATES.has(x.v)) {
+      // A bare truncate( may be a string helper (lodash); fs.truncate, fsp.truncate or require(...).truncate is fs.
+      const onFs = x.v.endsWith('Sync') || (t[k - 1] && t[k - 1].v === '.' && t[k - 2] &&
+        (['fs', 'fsp', 'promises', 'fse'].includes(t[k - 2].v) || t[k - 2].v === ')'));
+      const length = args[1];
+      if (onFs && (!length || length.length === 0 || (length.length === 1 && length[0].t === 'num' &&
+          Number(length[0].v) === 0))) out.push(x.v.startsWith('f') ? null : named(args[0]));
+    }
+  });
+  return out;
 }
 
 /**
@@ -1976,7 +2120,8 @@ function jsFacts(code) {
   });
   const requiresPath = t.some((x, k) => x.t === 'id' && x.v === 'require' && t[k + 2] && t[k + 2].t === 'str' &&
     /^[./]/.test(t[k + 2].v));
-  return { ok: true, danger, writes: writes || (targets.length > 0 && requiresPath), targets, imports: [] };
+  return { ok: true, danger, writes: writes || (targets.length > 0 && requiresPath), targets, imports: [],
+    empties: jsEmpties(t) };
 }
 
 /**
@@ -2359,6 +2504,233 @@ function decideShell(rawCommand, cwd) {
 }
 
 /** decideShell without the case check. */
+/** A redirection that empties its file first: >, >|, N>, &> and >&file, but not >> or a >&N duplicate. */
+const TRUNCATING_REDIRECT = /(?:^|[^<>&])(?:\d+|&)?(?:>\||>&(?=[^\d\s-])|>(?![>&(]))[ \t]*/g;
+/** Code that might empty a file: only such code is parsed for it. */
+const PY_MAY_EMPTY = /\bopen\s*\(|truncate|write_(?:text|bytes)|copy/;
+const JS_MAY_EMPTY = /writeFile|outputFile|truncate/;
+
+/**
+ * The segment with its quoted text, comments (quoteMasker) and substitutions masked, same length: a `>` left in it is
+ * the simple command's own redirection. `# a -> b` is a comment and `x=$(echo a > f)` writes f with content.
+ */
+function ownRedirectText(segment) {
+  const mask = quoteMasker();
+  const masked = segment.split('\n').map((line) => mask(line)).join('\n');
+  let out = '';
+  for (let i = 0; i < masked.length; i += 1) {
+    const c = masked[i];
+    if ((c === '$' || c === '<' || c === '>') && masked[i + 1] === '(') {
+      let depth = 0;
+      let j = i + 1;
+      for (; j < masked.length; j += 1) {
+        if (masked[j] === '(') depth += 1;
+        else if (masked[j] === ')' && (depth -= 1) === 0) break;
+      }
+      out += '_'.repeat(Math.min(j, masked.length - 1) - i + 1);
+      i = j;
+    } else if (c === '`') {
+      const j = masked.indexOf('`', i + 1);
+      const end = j === -1 ? masked.length - 1 : j;
+      out += '_'.repeat(end - i + 1);
+      i = end;
+    } else {
+      out += c;
+    }
+  }
+  return out;
+}
+
+/** Files a simple command's truncating redirections name, quotes removed. */
+function truncatedTargets(segment) {
+  const files = [];
+  for (const m of ownRedirectText(segment).matchAll(TRUNCATING_REDIRECT)) {
+    REDIRECT_WORD.lastIndex = m.index + m[0].length;
+    const word = REDIRECT_WORD.exec(segment);
+    files.push(word ? tokenize(word[0])[0] || '' : '');
+  }
+  return files;
+}
+
+/**
+ * The files one simple command leaves empty (fourth round, 2026-11-20): a redirection with no command or with one
+ * that writes nothing (`: > f`, `> f`, `true > f`, `cat /dev/null > f`, `echo -n > f`, `printf '' > f`, `cat > f`
+ * with no input), `truncate -s 0`, `cp /dev/null f` and `dd if=/dev/null of=f`. `pipedIn` is true when a pipe feeds it,
+ * `afterGroup` when it follows the `)` of a subshell.
+ */
+function shellEmpties(segment, words, pipedIn, afterGroup) {
+  const i = commandIndex(words);
+  // `( … ) > f`: a redirection right after the subshell takes its output, not an empty command's. (`{ …; } > f` reads
+  // as the command `}`.) splitSegments drops the `;` of `( … ); : > f`, where `:` is a command of its own.
+  const cmd = i < words.length ? path.basename(words[i]) : afterGroup ? ')' : '';
+  const args = words.slice(i + 1);
+  const files = args.filter((w) => !w.startsWith('-'));
+  const silent = cmd === '' || cmd === ':' || cmd === 'true' || cmd === 'false' ||
+    (cmd === 'cat' && files.length > 0 && files.every((w) => w === '/dev/null')) ||
+    (cmd === 'cat' && args.length === 0 && !pipedIn && !/<</.test(segment) &&
+     !/(?:^|[^<])<(?![<(&])/.test(maskQuoted(segment))) ||
+    (cmd === 'echo' && args.length > 0 && args.every((w) => /^-[eE]*n[neE]*$/.test(w))) ||
+    (cmd === 'printf' && args.length === 1 && args[0] === '');
+  const out = silent ? truncatedTargets(segment) : [];
+  if (cmd === 'truncate') {
+    const sizes = [];
+    const named = [];
+    for (let k = 0; k < args.length; k += 1) {
+      const w = args[k];
+      if (w === '-s' || w === '--size' || w === '-r' || w === '--reference') sizes.push(`${w}=${args[(k += 1)] || ''}`);
+      else if (/^(?:-s|--size=|-r|--reference=)/.test(w)) sizes.push(w);
+      else if (!w.startsWith('-')) named.push(w);
+    }
+    const zero = sizes.length > 0 && sizes.every((w) => /^(?:-s|--size)=?0+$/.test(w) ||
+      /^(?:-r|--reference)=?\/dev\/null$/.test(w));
+    if (zero) out.push(...named);
+  } else if (cmd === 'cp' && files.length > 1 && files.slice(0, -1).every((w) => w === '/dev/null')) {
+    out.push(files[files.length - 1]);
+  } else if (cmd === 'dd' && args.includes('if=/dev/null') && !args.some((w) => /^conv=.*notrunc/.test(w))) {
+    out.push(...args.filter((w) => w.startsWith('of=')).map((w) => w.slice(3)));
+  }
+  return out;
+}
+
+/**
+ * Whether emptying `file` from `dir` loses data: it names an existing, non-empty regular file that is not Claude's own
+ * (each path to it, through symlinks, is a session or task file). A computed name, a variable or glob the guard cannot
+ * resolve, a relative name with no known folder, or a file it cannot stat counts as one that loses data.
+ */
+function losesContent(file, dir, vars) {
+  if (file === null) return true;
+  let p = expandVars(file, vars);
+  if (vars.HOME && (p === '~' || p.startsWith('~/'))) p = vars.HOME + p.slice(1);
+  if (!p || /[$`*?[{~]/.test(p) || (!p.startsWith('/') && dir === null)) return true;
+  const abs = toAbs(p, p.startsWith('/') ? '/' : dir);
+  if (diskPaths(abs).every((q) => isInternal(toAbs(q, '/')))) return false;
+  try {
+    const stat = fs.statSync(onDisk(abs));
+    return stat.isFile() && stat.size > 0;
+  } catch (error) {
+    return error.code !== 'ENOENT' && error.code !== 'ENOTDIR';
+  }
+}
+
+/** Unparsed code that still looks like it empties a file: a truncate call, an empty write_text, an open("w") closed. */
+const PY_LOOKS_EMPTYING = /\btruncate\s*\(|write_(?:text|bytes)\s*\(\s*b?(?:''|"")\s*\)|\bopen\s*\([^()\n]*['"][wW]b?\+?['"]\s*\)\s*(?:\.\s*close\b|:|$)/m;
+const JS_LOOKS_EMPTYING = /truncate(?:Sync)?\s*\(|(?:writeFile|outputFile)(?:Sync)?\s*\([^()\n]*,\s*(?:''|""|``)\s*[,)]/;
+
+/**
+ * The folder each simple command runs in, for its relative file names: the session folder on a line with no cd, else
+ * the folders each `cd <literal>` may lead to, tracked in order. On a line where the folder cannot
+ * be followed (a subshell, a cd in a substitution, pushd, popd, eval, source, exec, env/sudo -C or --chdir, CDPATH) it
+ * is unknown after the first change, and so is it after a cd inside a block (if, for, while, case, { }). A command of a
+ * substitution (from `count` on) runs in an unknown folder.
+ */
+const BLOCK_OPEN = new Set(['if', 'for', 'while', 'until', 'case', 'select', '{']);
+const BLOCK_CLOSE = new Set(['fi', 'done', 'esac', '}']);
+const BLOCK_MID = new Set(['then', 'else', 'elif', 'do', '!', 'time']);
+function emptyingFolders(command, segments, words, ops, count, vars, cwd) {
+  const text = withoutHeredocBodies(command);
+  const changers = words.slice(0, count).some((w) => w.some((x) => x === 'cd' || FOLDER_CHANGERS.has(x) ||
+    /^--chdir(?:=|$)/.test(x))) || substitutions(text).some((s) => /\b(?:cd|pushd|popd)\b/.test(s));
+  if (!changers && !/\bCDPATH\b/.test(text)) return segments.map((s, n) => (n < count ? [cwd] : [null]));
+  const mask = quoteMasker();
+  const masked = text.split('\n').map((line) => mask(line)).join('\n');
+  const followable = !/\bCDPATH\b/.test(text) && !/(?:^|[^$<>=(\\])\((?!\()/m.test(masked) &&
+    !substitutions(text).some((s) => /\b(?:cd|pushd|popd)\b/.test(s)) &&
+    !words.slice(0, count).some((w) => w.some((x) => FOLDER_CHANGERS.has(x) || /^--chdir(?:=|$)/.test(x)) ||
+      (['env', 'sudo'].some((wrapper) => w.includes(wrapper)) && w.some((x) => /^-[A-Za-z]*[CD]/.test(x))));
+  // The folders a command may run in. A cd to a folder that is not there yet (made earlier on the line, or failing)
+  // leaves both: the commands it chains with && run only if it worked, a later one after ; runs in either.
+  let dirs = [cwd];
+  let pending = null;
+  let depth = 0;
+  return segments.map((s, n) => {
+    if (n >= count) return [null];
+    if (pending && ops[n - 1] !== '&&') {
+      dirs = [...new Set([...pending.next, ...pending.before])];
+      pending = null;
+    }
+    const here = pending ? pending.next : dirs;
+    // Skip the keywords in front of the command; a cd inside if, for, while, case or { } may or may not run.
+    let k = 0;
+    for (const w = words[n]; k < w.length && (BLOCK_OPEN.has(w[k]) || BLOCK_CLOSE.has(w[k]) || BLOCK_MID.has(w[k]));
+      k += 1) depth += BLOCK_OPEN.has(w[k]) ? 1 : BLOCK_CLOSE.has(w[k]) ? -1 : 0;
+    const rest = words[n].slice(k);
+    const i = commandIndex(rest);
+    if (rest[i] === 'cd') {
+      const next = here.map((dir) => (followable && depth === 0 ? nextDir(rest[i + 1], vars, dir) : null));
+      const there = next.every((dir) => {
+        try {
+          return dir !== null && fs.statSync(onDisk(dir)).isDirectory();
+        } catch {
+          return false;
+        }
+      });
+      if (next.includes(null)) {
+        dirs = [null];
+        pending = null;
+      } else if (there) {
+        dirs = next;
+        pending = null;
+      } else {
+        pending = { next, before: here };
+      }
+    } else if (!followable && words[n].some((x) => FOLDER_CHANGERS.has(x))) {
+      dirs = [null];
+      pending = null;
+    }
+    return here;
+  });
+}
+
+/**
+ * Ask when the line empties an existing file (owner, fourth round, 2026-11-20): a shell redirection or command, or
+ * Python or Node code it runs (python3 -c, node -e, or a quoted-or-not body on stdin). A relative name is resolved
+ * where the command runs (emptyingFolders); where that is unknown, it asks. A write with content, a new or
+ * empty file, /dev/null and Claude's own files do not ask, and nor does a file a later command on the line writes or
+ * appends to (`: > f; for …; do … >> f; done`). Text in quotes or in string data is not judged.
+ */
+function emptyingVerdict(shell, parsed, vars, cwd, command) {
+  const ops = [];
+  const segments = splitSegments(shell, ops);
+  const words = segments.map(tokenize);
+  const dirs = emptyingFolders(command, segments, words, ops, splitSegments(parsed.shell).length, vars, cwd);
+  // Every file a later command on the line writes or appends to: `: > f` then `… >> f` rebuilds f with content.
+  const writtenAfter = (n, file) => segments.slice(n + 1).some((s) => redirectTargets(s).includes(file));
+  const lost = [];
+  const judge = (files, n) => {
+    for (const file of files) {
+      if (file !== null && writtenAfter(n, file)) continue;
+      if ((n === -1 ? [null] : dirs[n]).some((dir) => losesContent(file, dir, vars))) {
+        lost.push(file === null ? 'a file named at run time' : file);
+      }
+    }
+  };
+  const codeEmpties = (lang, code) => {
+    if (!(lang === 'python' ? PY_MAY_EMPTY : JS_MAY_EMPTY).test(code)) return [];
+    const facts = lang === 'python' ? pythonFacts(code) : jsFacts(code);
+    if (facts.ok) return facts.empties;
+    // Code that does not parse (bash rewrites it, or it has an error): only text that looks like an emptying asks.
+    return (lang === 'python' ? PY_LOOKS_EMPTYING : JS_LOOKS_EMPTYING).test(code) ? [null] : [];
+  };
+  segments.forEach((segment, n) => {
+    judge(shellEmpties(segment, words[n], n > 0 && ops[n - 1] === '|', n > 0 && ops[n - 1] === ')'), n);
+    const run = interpreterRun(words[n]);
+    if (run && run.code !== undefined) judge(codeEmpties(run.lang, run.code), n);
+  });
+  for (const body of parsed.bodies.filter((b) => b.runs)) {
+    const run = interpreterRun(body.owner);
+    if (!run || run.stdin !== true) continue;
+    judge(codeEmpties(run.lang, body.text), words.findIndex((w) => w.join(' ') === body.owner.join(' ')));
+  }
+  if (!lost.length) return null;
+  return {
+    decision: 'ask',
+    reason: `Destructive operation detected: this empties an existing file (${[...new Set(lost)].join(', ')}), ` +
+      "which is outside Claude's own session and task folders. Its content is lost as surely as with rm.\n" +
+      'Before confirming, state what the file holds, how it is recovered (git, a backup), and whether a write ' +
+      'with content or a new file would do. See ~/.claude/skills/destructive-ops-guard/SKILL.md',
+  };
+}
+
 function judgeShell(rawCommand, cwd) {
   if (!rawCommand.trim()) return null;
   const bound = bindings(withoutHeredocBodies(rawCommand));
@@ -2393,11 +2765,12 @@ function judgeShell(rawCommand, cwd) {
   const runsText = code.length > 0 || segments.some((s) => runsGivenText(commandWord(tokenize(s))));
   const executed = runsText ? [...code, ...data] : [];
   const text = [shell, ...executed].join('\n');
+  const folder = globFolder(command, cwd, vars);
+  const emptied = emptyingVerdict(shell, parsed, shellVars, cwd, command);
   if (!executed.length && segments.length && segments.every(isReadOnly) && !SYSTEM_OVERWRITE.test(shell)) {
-    return null;
+    return emptied;
   }
   const memo = new Map();
-  const folder = globFolder(command, cwd, vars);
   const deletion = deleteVerdict(shell, executed, shellVars, cwd, vars, null, memo, folder);
   if (deletion.level === 'deny') {
     return {
@@ -2413,7 +2786,7 @@ function judgeShell(rawCommand, cwd) {
     ? { decision: 'ask', reason: 'Destructive operation detected: kill fed by pgrep -f, which matches full command ' +
         'lines, including the shell that runs it. Kill a PID or process group you recorded instead.' }
     : null;
-  const scanned = worstVerdict([selfKill, runsText
+  const scanned = worstVerdict([selfKill, emptied, runsText
     ? scanPatterns(text, { strict: true, ...where })
     : worstVerdict(segments.map((s) => scanPatterns(isTextCommand(s) ? withoutQuotedText(s) : s, where)))]);
   if (scanned) return scanned;

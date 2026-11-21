@@ -36,6 +36,36 @@ to the user: they need approval.
 folder, a system folder or the whole `~/.claude`; `mkfs` or `dd` to a device; a force-push to main, master or
 prod; rewriting published history; `terraform destroy`; `snowddl destroy`; `shred`.
 
+**Emptying an existing file asks** (fourth round, 2026-11-20). The hook asks when a command leaves an existing,
+non-empty file empty. These are the shell forms: `: > f`, a bare `> f`, `true > f`, `cat /dev/null > f`,
+`echo -n > f`, `printf '' > f`, `cat > f` with no input, `truncate -s 0 f`, `cp /dev/null f` and
+`dd if=/dev/null of=f`. A `>|`, `N>` or `&>` redirection counts like `>`. Python code given with `-c` or on stdin
+counts too:
+- `open(p, "w")` or `"wb"` closed with nothing written: `.close()` at once, `with open(p, "w"): pass`, or a name
+  that is only closed;
+- `os.truncate(p, 0)`, `os.ftruncate(fd, 0)` and `f.truncate(0)`;
+- `Path(p).write_text("")` and `write_bytes(b"")`;
+- a copy of `/dev/null` with `shutil.copy`, `copy2` or `copyfile`.
+
+Node code given with `-e` counts too: `fs.writeFileSync(p, '')` and its kin, and `fs.truncateSync(p)` or
+`truncate` with no length or 0.
+
+These do not ask:
+- a file that does not exist yet, or that is already empty;
+- `/dev/null` and any other file that is not a regular file;
+- a file in Claude's own session and task folders, when every path to it, through symlinks, is there;
+- a write with content (`echo rows > f`, `open(p, "w").write(s)`, `( … ) > f`);
+- an append;
+- `truncate -s` to a size other than 0;
+- a file that a later command on the same line writes or appends to (`: > f; for …; do … >> f; done`).
+
+A relative name is resolved in the folder the command runs in. The hook follows each `cd <literal>` in order. After a
+`cd` to a folder that is not there, it judges the name in both folders. It asks when it cannot know the folder:
+after a subshell, a `cd` in a substitution or in a block, pushd, popd, eval, source, exec, env or sudo with `-C`, or
+`CDPATH`. It also asks when the name is computed (a variable it cannot resolve, `sys.argv[1]`), and when Python or
+Node code that does not parse still looks like an emptying. Text in quotes, in a comment or in string data is not
+judged: `echo ': > f'` and `print("truncate -s 0 f")` run nothing.
+
 Text that only mentions a verb is not the verb: `grep "DROP DATABASE"`, an `echo`, a commit message, the title,
 body or notes of a `gh pr`, `gh issue` or `gh release` command, or a heredoc that writes a `.sql` file runs nothing.
 A command substitution inside that text, `$(...)` or backticks, does run, and is judged as a command. A heredoc or string handed to an interpreter or a database client does, and so
@@ -165,8 +195,8 @@ history (`rebase`/`filter-branch`/`filter-repo`) · deleting a remote branch or 
 
 **Shell / filesystem** (outside Claude's session and task folders) `rm -rf` · `find -delete` and
 `find -exec rm` · `rm` with a glob or variable that could expand wide ·
-`mv` onto an existing path · `>` truncating a file · `chmod -R` / `chown -R` on a broad path ·
-`dd` · `mkfs` · `shred` · emptying trash
+`mv` onto an existing path · `>`, `: >`, `truncate -s 0` or `cp /dev/null` emptying a file ·
+`chmod -R` / `chown -R` on a broad path · `dd` · `mkfs` · `shred` · emptying trash
 
 **Python / Node / app code** `shutil.rmtree` · `os.remove`/`unlink` in a loop · `Path.unlink` ·
 `fs.rm`/`rmSync` with `recursive: true` · `DROP` issued through an ORM (`drop_all`, `migrate
