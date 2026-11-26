@@ -19,7 +19,7 @@ of the same files found under `~/dev`.
 | `skills/learn-as-you-build` | written in this repo, 2026-10-28 (not captured from `~/.claude/skills/`) | 1 | milestone checkpoints with lessons, quizzes, and five modes (`full`, `queued`, `lite`, `deferred`, `off`); with `references/` |
 | `agents/` | `~/.claude/agents/` | <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> | every file declares `model:` <!-- sync-index:agents-models -->(17 opus, 6 sonnet)<!-- /sync-index:agents-models --> |
 | `commands/` | `~/.claude/commands/` | <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> | thin dispatchers onto the skills |
-| `rules/` | `~/.claude/rules/` | <!-- sync-index:rules-count -->19<!-- /sync-index:rules-count --> | <!-- sync-index:rules-standards -->18<!-- /sync-index:rules-standards --> standards plus `README.md` index |
+| `rules/` | `~/.claude/rules/` | <!-- sync-index:rules-count -->20<!-- /sync-index:rules-count --> | <!-- sync-index:rules-standards -->19<!-- /sync-index:rules-standards --> standards plus `README.md` index |
 | `contexts/` | `~/.claude/contexts/` | 6 | tier 0, three tier 1 roles, one tier 2 domain, README |
 | `hooks/` | `~/.claude/hooks/` | <!-- sync-index:hooks-count -->7<!-- /sync-index:hooks-count --> scripts | `evolv-destructive-guard.js`, `pre-publish-guard.js` (+ `lib/scan_licensed_rows.py`), `evolv-skills-enforcer.js`, `subagent-model-guard.js`, `subagent-cost-ledger.js` (+ `lib/model-prices.json`), `cost-statusline.js`, `compact-journal.js`; node tests beside each script plus the scanner's unittest suite |
 | `memory/` | `~/.claude/memory/` | 7 | six global facts plus `MEMORY.md`; the employer brand rule was dropped |
