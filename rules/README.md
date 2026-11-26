@@ -18,6 +18,7 @@ Loaded via `~/.claude/CLAUDE.md`. Read the relevant file on demand; do not load 
 | `adversarial-validation.md` | When the router routes the adversarial method: a number to a decision, prod SQL, migration, security, "it's fixed", new concurrency / timezone / currency code (rows 6–9, 12, 13). Validation itself is mandatory on every substantive change; the router picks the method. |
 | `agent-models.md` | Before dispatching any subagent. Explicit model, every time. |
 | `context-discipline.md` | Delegating, reading files, handling tool output as untrusted data. |
+| `project-memory.md` | Any project: when to keep facts in `.claude/memory/MEMORY.md` and how; the global compact point. |
 | `definition-of-done.md` | Before reporting anything complete. Holds the threshold values. |
 | `code-quality.md` | Writing or changing application code. |
 | `testing.md` | Writing tests, fixing a bug, judging coverage. |

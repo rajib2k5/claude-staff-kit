@@ -8,7 +8,7 @@ The same files also serve the Snowflake Cortex CLI, which reads `~/.claude/skill
 
 | Layer | Count | What it does |
 |---|---|---|
-| **Rules** (`rules/`) | <!-- sync-index:rules-count -->19<!-- /sync-index:rules-count --> | The standards: engineering bar, adversarial validation (validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13)), testing, code review, security, SQL, dbt, Snowflake, data modelling, migrations, docs. `rules/README.md` is the index and states the conflict order. |
+| **Rules** (`rules/`) | <!-- sync-index:rules-count -->20<!-- /sync-index:rules-count --> | The standards: engineering bar, adversarial validation (validation is mandatory; the method is routed by `skills/evidence-gated-validation/references/validation-router.md`; `adversarial-validation.md` is the contract for the adversarial method (rows 6–9, 12, 13)), testing, code review, security, SQL, dbt, Snowflake, data modelling, migrations, docs. `rules/README.md` is the index and states the conflict order. |
 | **Contexts** (`contexts/`) | 6 | Tiered loading: tier 0 always (the four questions, irreversibility ladder T0 to T4), tier 1 per role, tier 2 per domain. |
 | **Skills** (`skills/`) | <!-- sync-index:skills-count -->43<!-- /sync-index:skills-count --> | Engineering workflows (design, tdd, debug, review, ship, migrate, ...), data-platform workflows (quality, metric, dbt audit, Snowflake audit and tune, cost, ...) and Claude-platform skills: <!-- sync-index:skill-families -->13 `staff-*`, 8 `data-*` and 10 `claude-*` skills, plus `ai-spend`, `cost-conscious-orchestration`, `destructive-ops-guard`, `diagram-kit`, `evidence-gated-validation`, `graphify-refresh`, `heavy-job`, `learn-as-you-build`, `project-memory-compaction`, `real-run-screenshots`, `simple-english`, `snowflake-sql`.<!-- /sync-index:skill-families --> |
 | **Agents** (`agents/`) | <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> | Each declares an explicit `model:`. `adversarial-reviewer` is pinned to Opus and is never downgraded. Mechanical agents (explorer, docs writer, release manager, dependency auditor) run on Sonnet. |
@@ -110,7 +110,7 @@ Checks the manifests, every skill and agent frontmatter (agents must declare a m
 skills/           <!-- sync-index:skills-count -->43<!-- /sync-index:skills-count --> skills, one directory each with SKILL.md
 agents/           <!-- sync-index:agents-count -->23<!-- /sync-index:agents-count --> agents (frontmatter: name, description, model)
 commands/         <!-- sync-index:commands-count -->15<!-- /sync-index:commands-count --> slash commands
-rules/            <!-- sync-index:rules-standards -->18<!-- /sync-index:rules-standards --> standards files plus README.md, the index
+rules/            <!-- sync-index:rules-standards -->19<!-- /sync-index:rules-standards --> standards files plus README.md, the index
 contexts/         tier0-always, tier1-role-*, tier2-domain-*
 hooks/            hooks.json (plugin wiring), the hook scripts and their tests, lib/ (the licensed-data scanner, the model price table)
 memory/           global memory seed (opt-in)

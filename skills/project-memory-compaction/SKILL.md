@@ -25,6 +25,15 @@ after a compaction. Rules without `paths` frontmatter load at launch, like `.cla
 Two hooks call `project_memory.py hook`: `PreCompact` runs the rollover check, and `SessionStart`
 runs the check and, when the source is `compact` or `resume`, adds the newest facts to the context.
 
+## Every project (global mode)
+
+`scripts/install.sh` links `rules/project-memory.md` into `~/.claude/rules/`, and `scripts/merge-settings.py --apply`
+registers this script's `hook` for PreCompact and SessionStart (`compact|resume`) in `~/.claude/settings.json`
+(plugin mode: `hooks/hooks.json`). The hook does nothing in a project without `.claude/memory/MEMORY.md`; the first
+`add` creates the file. The compact point is the global `autoCompactWindow`, so `init` is needed only for a project
+that wants a different point. If you ran `init` with hooks in a project, remove that project's copy of the hook, or
+it runs twice there.
+
 ## Procedure
 
 1. Preview the changes. Nothing is written.

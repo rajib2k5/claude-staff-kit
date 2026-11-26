@@ -25,7 +25,17 @@ class MergeSettings(unittest.TestCase):
         self.assertIn("node /h/compact-journal.js", commands(s, "PreCompact"))
         self.assertIn("node /h/compact-journal.js", commands(s, "SessionStart"))
         self.assertEqual(s["statusLine"]["command"], "node /h/cost-statusline.js")
-        self.assertEqual(added, 10)  # 9 hook entries + the status line
+        self.assertEqual(added, 12)  # 11 hook entries + the status line
+
+    def test_registers_project_memory_hook_beside_the_hook_dir(self):
+        s, _ = ms.merge({}, ms.hook_entries("/x/hooks"), None)
+        cmd = "python3 -I /x/skills/project-memory-compaction/scripts/project_memory.py hook"
+        self.assertIn(cmd, commands(s, "PreCompact"))
+        self.assertEqual([g["matcher"] for g in s["hooks"]["SessionStart"] if g["hooks"][0]["command"] == cmd],
+                         ["compact|resume"])
+        s2, _ = ms.merge({}, ms.hook_entries("~/.claude/hooks/"), None)
+        self.assertIn("python3 -I ~/.claude/skills/project-memory-compaction/scripts/project_memory.py hook",
+                      commands(s2, "PreCompact"))
 
     def test_second_merge_adds_nothing(self):
         s, _ = ms.merge({}, ms.hook_entries("/h"), ms.status_line("/h"))

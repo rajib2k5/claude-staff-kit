@@ -37,6 +37,9 @@ def hook_entries(hook_dir):
     - PreToolUse "Bash" for pre-publish-guard: it judges only git commit and git push.
     - PreToolUse "Agent|Task" for subagent-model-guard; SubagentStop and Stop for the cost ledger;
       PreCompact and SessionStart "compact" for the compaction fact journal.
+    - PreCompact and SessionStart "compact|resume" for project memory (skill project-memory-compaction):
+      the rollover check before a compaction, and the newest facts back after it. It does nothing in a
+      project without .claude/memory/MEMORY.md. The skill folder is a sibling of the hook folder.
     - SessionStart startup|clear|compact, not resume or fork: those sessions already carry the
       policy in their transcript, so re-injecting it only costs tokens. Compaction can drop it.
     """
@@ -46,6 +49,8 @@ def hook_entries(hook_dir):
     model_guard = f"node {hook_dir}/subagent-model-guard.js"
     ledger = f"node {hook_dir}/subagent-cost-ledger.js"
     journal = f"node {hook_dir}/compact-journal.js"
+    skills_dir = os.path.join(os.path.dirname(hook_dir.rstrip("/")), "skills")
+    memory = f"python3 -I {skills_dir}/project-memory-compaction/scripts/project_memory.py hook"
     return {
         "PreToolUse": [
             {"matcher": "", "hooks": [{"type": "command", "command": guard}]},
@@ -58,13 +63,18 @@ def hook_entries(hook_dir):
             {"matcher": "startup|clear|compact", "hooks": [{"type": "command", "command": enforcer}]},
             # compact only: re-inject the fact journal written at PreCompact.
             {"matcher": "compact", "hooks": [{"type": "command", "command": journal, "timeout": 10}]},
+            # compact|resume: re-inject the newest project-memory facts (data only).
+            {"matcher": "compact|resume", "hooks": [{"type": "command", "command": memory, "timeout": 30}]},
         ],
         "Stop": [
             {"matcher": "", "hooks": [{"type": "command", "command": enforcer}]},
             {"matcher": "", "hooks": [{"type": "command", "command": ledger, "timeout": 15}]},
         ],
         "SubagentStop": [{"matcher": "", "hooks": [{"type": "command", "command": ledger, "timeout": 15}]}],
-        "PreCompact": [{"matcher": "", "hooks": [{"type": "command", "command": journal, "timeout": 20}]}],
+        "PreCompact": [
+            {"matcher": "", "hooks": [{"type": "command", "command": journal, "timeout": 20}]},
+            {"matcher": "", "hooks": [{"type": "command", "command": memory, "timeout": 30}]},
+        ],
     }
 
 
