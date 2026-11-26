@@ -102,7 +102,7 @@ class InitTests(Base):
         self.assertIn(".claude/memory/MEMORY.md", rule)
         self.assertIn(str(SCRIPT), rule)
         s = self.settings()
-        self.assertEqual(s["autoCompactWindow"], 700000)
+        self.assertEqual(s["autoCompactWindow"], 750000)
         for event in ("PreCompact", "SessionStart"):
             cmds = [h["command"] for e in s["hooks"][event] for h in e["hooks"]]
             self.assertEqual(len(cmds), 1, event)
@@ -187,25 +187,25 @@ class InitTests(Base):
     def test_init_no_hooks(self):
         self.assertEqual(self.init("--no-hooks")[0], 0)
         self.assertNotIn("hooks", self.settings())
-        self.assertEqual(self.settings()["autoCompactWindow"], 700000)
+        self.assertEqual(self.settings()["autoCompactWindow"], 750000)
 
     def test_init_local_writes_settings_local(self):
         self.assertEqual(self.init("--local")[0], 0)
         self.assertFalse((self.proj / ".claude/settings.json").exists())
-        self.assertEqual(self.settings("settings.local.json")["autoCompactWindow"], 700000)
+        self.assertEqual(self.settings("settings.local.json")["autoCompactWindow"], 750000)
 
     def test_init_copies_user_per_model_keys(self):
         self.user_settings.write_text(json.dumps(
-            {"autoCompactWindow": 750000, "modelSettings": {"claude-opus-5-5": {"autoCompactWindow": 750000}}}))
+            {"autoCompactWindow": 900000, "modelSettings": {"claude-opus-5-5": {"autoCompactWindow": 900000}}}))
         before = self.user_settings.read_bytes()
         self.assertEqual(self.init()[0], 0)
         s = self.settings()
-        self.assertEqual(s["modelSettings"]["claude-opus-5-5"]["autoCompactWindow"], 700000)
+        self.assertEqual(s["modelSettings"]["claude-opus-5-5"]["autoCompactWindow"], 750000)
         self.assertEqual(self.user_settings.read_bytes(), before)  # user file is read only
 
     def test_init_model_option(self):
         self.assertEqual(self.init("--model", "claude-fable-5-1")[0], 0)
-        self.assertEqual(self.settings()["modelSettings"]["claude-fable-5-1"]["autoCompactWindow"], 700000)
+        self.assertEqual(self.settings()["modelSettings"]["claude-fable-5-1"]["autoCompactWindow"], 750000)
 
     @unittest.skipUnless(shutil.which("git"), "git not installed")
     def test_init_git_exclude(self):
@@ -435,7 +435,7 @@ class SearchStatusTests(Base):
         self.assertEqual(code, 0)
         self.assertIn("facts in file: 4", out)
         self.assertIn("rows in db: 0", out)
-        self.assertIn("700000", out)
+        self.assertIn("750000", out)
         self.assertIn(f"lines: {len(self.mem.read_text().splitlines())}", out)
 
 
