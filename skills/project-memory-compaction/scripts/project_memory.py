@@ -41,7 +41,7 @@ POINTER_RE = re.compile(re.escape(POINTER_PREFIX) + r" \d+ facts and \d+ text bl
 FACT_TYPES = ("decision", "constraint", "fact", "result", "pointer")
 TEXT_TYPE = "text"  # free-text blocks that are not facts
 
-DEFAULT_PCT = 70
+DEFAULT_PCT = 75
 DEFAULT_WINDOW = 1_000_000
 MIN_COMPACT_WINDOW = 100_000  # documented minimum for autoCompactWindow
 MAX_COMPACT_WINDOW = 1_000_000  # documented maximum for autoCompactWindow

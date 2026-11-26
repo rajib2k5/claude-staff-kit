@@ -1,6 +1,6 @@
 ---
 name: project-memory-compaction
-description: Set a project to compact the session at a fixed share of the context window (70% by default), keep durable facts in .claude/memory/MEMORY.md, and move them to a SQLite database when the file reaches 1,000 lines. Use when you set up a long-running project, when facts get lost after a compaction, or when you want to compact earlier to save cost. Triggers - auto compact at 70%, project memory file, keep facts after compaction, memory file too long, archive memory to sqlite, search old project facts.
+description: Set a project to compact the session at a fixed share of the context window (75% by default), keep durable facts in .claude/memory/MEMORY.md, and move them to a SQLite database when the file reaches 1,000 lines. Use when you set up a long-running project, when facts get lost after a compaction, or when you want a project to compact earlier or later than the global setting. Triggers - auto compact at 75%, project compact point, project memory file, keep facts after compaction, memory file too long, archive memory to sqlite, search old project facts.
 ---
 
 # Project memory and compaction (`scripts/project_memory.py`)
@@ -16,7 +16,7 @@ The script uses the Python 3 standard library only. Run it with `python3 -I`.
 
 | Part | Where | What it does |
 |---|---|---|
-| Compact point | `.claude/settings.json` (or `settings.local.json` with `--local`) | `autoCompactWindow` = round(pct / 100 x window). The default is 70% of 1,000,000 = 700000 tokens. |
+| Compact point | `.claude/settings.json` (or `settings.local.json` with `--local`) | `autoCompactWindow` = round(pct / 100 x window). The default is 75% of 1,000,000 = 750000 tokens, the same point as the kit's global rule. Pass `--pct 70` to compact earlier and save cost. |
 | Memory file | `.claude/memory/MEMORY.md` | One fact per line: `- [YYYY-MM-DD] (type) text`. The type is decision, constraint, fact, result or pointer. |
 | SQLite rollover | `.claude/memory/memory.db` | At 1,000 lines or more, every entry goes into the `facts` table. The file keeps its header, one pointer line, and the newest facts: at most 300, in at most half the line limit. |
 
@@ -40,7 +40,7 @@ runs the check and, when the source is `compact` or `resume`, adds the newest fa
    python3 -I skills/project-memory-compaction/scripts/project_memory.py init --project /path/to/repo [--local]
    ```
 
-   Options: `--pct 70`, `--window 1000000`, `--model NAME` (repeat it), `--no-hooks`,
+   Options: `--pct 75`, `--window 1000000`, `--model NAME` (repeat it), `--no-hooks`,
    `--no-git-exclude`, `--user-settings PATH`.
 
 3. Read what `init` prints. It lists each change, the compact point, and what is CONFIRMED and
@@ -49,7 +49,7 @@ runs the check and, when the source is `compact` or `resume`, adds the newest fa
    the add command takes the lock that the rollover uses:
 
    ```bash
-   python3 -I skills/project-memory-compaction/scripts/project_memory.py add --project . --type decision "Owner chose 70% compaction"
+   python3 -I skills/project-memory-compaction/scripts/project_memory.py add --project . --type decision "Owner chose 75% compaction"
    ```
 
    The add command makes the text one line, refuses empty text, and then runs the rollover check.
